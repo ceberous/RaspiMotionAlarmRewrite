@@ -67,7 +67,7 @@ function load_custom_event_list() {
 
 		// Error Events
 		// ============================================================
-		events.on( "error_unhandled_rejection" , ( options) => {
+		events.on( "error_unhandled_rejection" , ( options ) => {
 			Publishing.publish_new_item({
 				type: "message-error" ,
 				message: options.message,

@@ -12,16 +12,14 @@ function custom_publish_image_b64( options ) {
 			const imageb64 = require( "fs" ).readFileSync( options.image_path , "base64" );
 			await options.redis_manager_pointer.redis.publish( options.channel , imageb64 );
 			const list_key = `${ options.list_key_prefix }.${ yyyy }.${ mm }.${ dd }`
-			if ( options.list_key ) {
-				const Custom_JSON_Serialized_Image_Object = JSON.stringify({
-					timestamp: now ,
-					message: options.message ,
-					timestamp_string: `${ yyyy }.${ mm }.${ dd } @@ ${ hours }:${ minutes }:${ seconds }`,
-					image_b64: imageb64 ,
-					list_key: list_key
-				});
-				await options.redis_manager_pointer.listLPUSH( list_key , Custom_JSON_Serialized_Image_Object );
-			}
+			const Custom_JSON_Serialized_Image_Object = JSON.stringify({
+				timestamp: now ,
+				message: options.message ,
+				timestamp_string: `${ yyyy }.${ mm }.${ dd } @@ ${ hours }:${ minutes }:${ seconds }`,
+				image_b64: imageb64 ,
+				list_key: list_key
+			});
+			await options.redis_manager_pointer.listLPUSH( list_key , Custom_JSON_Serialized_Image_Object );
 			resolve();
 			return;
 		}
