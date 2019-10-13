@@ -8,7 +8,7 @@ function sleep( ms ) { return new Promise( resolve => setTimeout( resolve , ms )
 module.exports.sleep = sleep;
 
 function OS_COMMAND( wTask ) {
-	return new Promise( function( resolve , reject ) {
+	return new Promise( ( resolve , reject )=> {
 		try {
 			let result = null;
 			let x1 = exec( wTask , { silent: true , async: false } );
@@ -73,9 +73,9 @@ function CHILD_PID_LOOKUP() {
 	return ps.lookup( { command: "python" } ,
 		function( err , resultList ) {
 			if ( err ) { throw new Error( err ); }
-			resultList.forEach(function( process ){
+			resultList.forEach( ( process )=> {
 				if( process ){
-					process.arguments.forEach( function( item ) {
+					process.arguments.forEach( ( item )=> {
 						if ( item === lCode1 ) {
 							wPIDResultSet.push( process.pid );
 							console.log( "python PID = " + process.pid.toString() );
@@ -101,15 +101,15 @@ function START_PY_PROCESS() {
 	CHILD_PID_LOOKUP();
 
 	wState = true;
-	wChild.on( "error" , function( error ) {
+	wChild.on( "error" , ( error )=> {
 		events.emit( "python-new-error" , { message: "Error === " + error.toString() } );
 		console.log( error );
 	});
-	wChild.on( "exit" , function( code ) {
+	wChild.on( "exit" , ( code )=> {
 		events.emit( "python-new-error" , { message: "Exit Code === " + code.toString() } );
 		console.log( code );
 	});
-	setTimeout( function () {
+	setTimeout( ()=> {
 		wChild.unref();
 	} , 3000 );
 }
@@ -117,9 +117,9 @@ module.exports.startPYProcess = START_PY_PROCESS;
 
 function KILL_ALL_PY_PROCESS() {
 	exec( "sudo pkill -9 python" , { silent: true ,  async: false } );
-	wPIDResultSet.forEach(function( item , index ) {
+	wPIDResultSet.forEach( ( item , index )=> {
 		try {
-			ps.kill( item , function( err ){
+			ps.kill( item , ( err )=> {
 				if (err) { console.log( err ); }
 				else {
 					wState = false;
@@ -140,7 +140,7 @@ function RESTART_PY_PROCESS() {
 	console.log("restarting")
 	KILL_ALL_PY_PROCESS();
 	wState = false;
-	setTimeout(function(){
+	setTimeout( ()=> {
 		START_PY_PROCESS();
 	}, 3000 );
 }
@@ -155,99 +155,4 @@ function GRACEFUL_EXIT() {
 	}, 5000 );
 }
 module.exports.gracefulExit = GRACEFUL_EXIT;
-
-
-function custom_publish_image_b64( options ) {
-	return new Promise( async function( resolve , reject ) {
-		try {
-			const now = new Date();
-			const dd = String( now.getDate()).padStart( 2 , '0' );
-			const mm = String( now.getMonth() + 1 ).padStart( 2 , '0' );
-			const yyyy = now.getFullYear();
-			const hours = String( now.getHours() ).padStart( 2 , '0' );
-			const minutes = String( now.getMinutes() ).padStart( 2 , '0' );
-			const seconds = String( now.getSeconds() ).padStart( 2 , '0' );
-
-			const imageb64 = require( "fs" ).readFileSync( options.image_path , "base64" );
-			await options.redis_manager_pointer.redis.publish( options.channel , imageb64 );
-			const list_key = `${ options.list_key_prefix }.${ yyyy }.${ mm }.${ dd }`
-			if ( options.list_key ) {
-				const Custom_JSON_Serialized_Image_Object = JSON.stringify({
-					timestamp: now ,
-					message: options.message ,
-					timestamp_string: `${ yyyy }.${ mm }.${ dd } @@ ${ hours }:${ minutes }:${ seconds }`,
-					image_b64: imageb64 ,
-					list_key: list_key
-				});
-				await options.redis_manager_pointer.listLPUSH( list_key , Custom_JSON_Serialized_Image_Object );
-			}
-			resolve();
-			return;
-		}
-		catch( error ) { console.log( error ); resolve( error ); return; }
-	});
-}
-function publish_new_image_set() {
-	return new Promise( async ( resolve , reject )=> {
-		try {
-			const redis_manager = require( "../main.js" ).redis_manager;
-
-			await custom_publish_image_b64({
-				redis_manager_pointer: redis_manager ,
-				channel: "new-image-frame" ,
-				image_path: "/Users/morpheous/Pictures/Saved/LSRF-M.png" ,
-				list_key_prefix: "sleep.images.frames"
-			});
-
-			await custom_publish_image_b64({
-				redis_manager_pointer: redis_manager ,
-				channel: "new-image-threshold" ,
-				image_path: "/Users/morpheous/Pictures/Saved/LSRF-M.png" ,
-				list_key_prefix: "sleep.images.thresholds"
-			});
-
-			await custom_publish_image_b64({
-				redis_manager_pointer: redis_manager ,
-				channel: "new-image-delta" ,
-				image_path: "/Users/morpheous/Pictures/Saved/LSRF-M.png" ,
-				list_key_prefix: "sleep.images.deltas"
-			});
-
-			resolve();
-			return;
-		}
-		catch( error ) { console.log( error ); reject( error ); return; }
-	});
-}
-module.exports.publish_new_image_set = publish_new_image_set;
-
-function publish_new_item( options ) {
-	return new Promise( async ( resolve , reject )=> {
-		try {
-			console.log( "publish_new_item()" );
-			const now = new Date();
-			const dd = String( now.getDate()).padStart( 2 , '0' );
-			const mm = String( now.getMonth() + 1 ).padStart( 2 , '0' );
-			const yyyy = now.getFullYear();
-			const hours = String( now.getHours() ).padStart( 2 , '0' );
-			const minutes = String( now.getMinutes() ).padStart( 2 , '0' );
-			const seconds = String( now.getSeconds() ).padStart( 2 , '0' );
-
-			const list_key = `${ options.list_key_prefix }.${ yyyy }.${ mm }.${ dd }`;
-			const Custom_JSON_Serialized_Item_Object = JSON.stringify({
-				timestamp: now ,
-				timestamp_string: `${ yyyy }.${ mm }.${ dd } @@ ${ hours }:${ minutes }:${ seconds }`,
-				message: options.message ,
-				list_key: list_key
-			});
-			await options.redis_manager_pointer.redis.publish( options.type , JSON.stringify( Custom_JSON_Serialized_Item_Object ));
-
-			await options.redis_manager_pointer.listLPUSH( list_key , Custom_JSON_Serialized_Item_Object );
-			resolve();
-			return;
-		}
-		catch( error ) { console.log( error ); reject( error ); return; }
-	});
-}
-module.exports.publish_new_item = publish_new_item;
 
