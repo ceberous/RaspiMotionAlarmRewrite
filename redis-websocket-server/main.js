@@ -24,6 +24,7 @@ process.on( "uncaughtException" , function( err ) {
 	const WebSocketManager = require( "./websocket_manager.js" );
 	const websocket_server = new WebSocket.Server( { server } );
 	server.listen( PORT , ()=> {
+		console.log( "Sleep REDIS WebSocket Server Starting" );
 		console.log( `\thttp://:localhost:${ PORT.toString() }` );
 		console.log( `\thttp://:${ LOCAL_IP }:${ PORT.toString() }` );
 	});
