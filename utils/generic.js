@@ -1,5 +1,7 @@
 require( "shelljs/global" );
 const path = require( "path" );
+const ps = require( "ps-node" );
+const spawn = require( "child_process" ).spawn;
 
 
 function sleep( ms ) { return new Promise( resolve => setTimeout( resolve , ms ) ); }
@@ -92,18 +94,19 @@ module.exports.childPIDLookup = CHILD_PID_LOOKUP;
 // https://stackoverflow.com/questions/12871740/how-to-detach-a-spawned-child-process-in-a-node-js-script
 // https://stackoverflow.com/questions/696839/how-do-i-write-a-bash-script-to-restart-a-process-if-it-dies
 function START_PY_PROCESS() {
+	const events = require( "../main.js" ).events;
 	wChild = null;
 	wChild = spawn( "python" , [ lCode1 , arg1 , arg2 , arg3 , arg4 ] , { detached: true, stdio: [ 'ignore' , 'ignore' , 'ignore' ] } );
 	console.log( "launched pyscript" );
 	CHILD_PID_LOOKUP();
 
 	wState = true;
-	wChild.on( "error" , function( code ) {
-		require(  "../slackManager.js" ).postError( code );
-		console.log( code );
+	wChild.on( "error" , function( error ) {
+		events.emit( "python-new-error" , { message: "Error === " + error.toString() } );
+		console.log( error );
 	});
-	wChild.on( "exit" , function(code) {
-		require(  "../slackManager.js" ).postError( code );
+	wChild.on( "exit" , function( code ) {
+		events.emit( "python-new-error" , { message: "Exit Code === " + code.toString() } );
 		console.log( code );
 	});
 	setTimeout( function () {
@@ -171,11 +174,12 @@ function custom_publish_image_b64( options ) {
 			if ( options.list_key ) {
 				const Custom_JSON_Serialized_Image_Object = JSON.stringify({
 					timestamp: now ,
-					timestamp_string: `${ yyyy }.${ mm }.${ dd } @@ ${ hours } : ${ minutes } : ${ seconds }`,
+					message: options.message ,
+					timestamp_string: `${ yyyy }.${ mm }.${ dd } @@ ${ hours }:${ minutes }:${ seconds }`,
 					image_b64: imageb64 ,
 					list_key: list_key
 				});
-				await options.redis_manager_pointer.listRPUSH( list_key , Custom_JSON_Serialized_Image_Object );
+				await options.redis_manager_pointer.listLPUSH( list_key , Custom_JSON_Serialized_Image_Object );
 			}
 			resolve();
 			return;
@@ -217,35 +221,10 @@ function publish_new_image_set() {
 }
 module.exports.publish_new_image_set = publish_new_image_set;
 
-
-function custom_publish_new_event( options ) {
-	return new Promise( async function( resolve , reject ) {
-		try {
-
-
-			const imageb64 = require( "fs" ).readFileSync( options.image_path , "base64" );
-			await options.redis_manager_pointer.redis.publish( options.channel , imageb64 );
-			const list_key = `${ options.list_key_prefix }.${ yyyy }.${ mm }.${ dd }`
-			if ( options.list_key ) {
-				const Custom_JSON_Serialized_Image_Object = JSON.stringify({
-					timestamp: now ,
-					timestamp_string: `${ yyyy }.${ mm }.${ dd } @@ ${ hours } : ${ minutes } : ${ seconds }`,
-					image_b64: imageb64 ,
-					list_key: list_key
-				});
-				await options.redis_manager_pointer.listRPUSH( list_key , Custom_JSON_Serialized_Image_Object );
-			}
-			resolve();
-			return;
-		}
-		catch( error ) { console.log( error ); resolve( error ); return; }
-	});
-}
 function publish_new_item( options ) {
 	return new Promise( async ( resolve , reject )=> {
 		try {
-			const redis_manager = require( "../main.js" ).redis_manager;
-
+			console.log( "publish_new_item()" );
 			const now = new Date();
 			const dd = String( now.getDate()).padStart( 2 , '0' );
 			const mm = String( now.getMonth() + 1 ).padStart( 2 , '0' );
@@ -254,19 +233,16 @@ function publish_new_item( options ) {
 			const minutes = String( now.getMinutes() ).padStart( 2 , '0' );
 			const seconds = String( now.getSeconds() ).padStart( 2 , '0' );
 
-
 			const list_key = `${ options.list_key_prefix }.${ yyyy }.${ mm }.${ dd }`;
 			const Custom_JSON_Serialized_Item_Object = JSON.stringify({
 				timestamp: now ,
-				timestamp_string: `${ yyyy }.${ mm }.${ dd } @@ ${ hours } : ${ minutes } : ${ seconds }`,
+				timestamp_string: `${ yyyy }.${ mm }.${ dd } @@ ${ hours }:${ minutes }:${ seconds }`,
 				message: options.message ,
 				list_key: list_key
 			});
 			await options.redis_manager_pointer.redis.publish( options.type , JSON.stringify( Custom_JSON_Serialized_Item_Object ));
 
-			if ( options.list_key ) {
-				await options.redis_manager_pointer.listRPUSH( list_key , Custom_JSON_Serialized_Image_Object );
-			}
+			await options.redis_manager_pointer.listLPUSH( list_key , Custom_JSON_Serialized_Item_Object );
 			resolve();
 			return;
 		}

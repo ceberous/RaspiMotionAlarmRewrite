@@ -19,6 +19,13 @@ process.on( "uncaughtException" , function( err ) {
 	const PORT = 6262;
 	const LOCAL_IP = ip.address();
 
+	const RedisUtils = require( "redis-manager-utils" );
+
+	console.log( "Starting" );
+	const redis_manager = new RedisUtils( 1 , "localhost" , 10079  );
+	await redis_manager.init();
+	module.exports.redis_manager = redis_manager;
+
 	const express_app = require( "./express_app.js" );
 	const server = http.createServer( express_app );
 	const WebSocketManager = require( "./websocket_manager.js" );

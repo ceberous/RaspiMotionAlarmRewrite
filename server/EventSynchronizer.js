@@ -11,7 +11,7 @@ function load_custom_event_list() {
 			GenericUtils.publish_new_item({
 				redis_manager_pointer: redis_manager ,
 				type: "python-new-error" ,
-				message: options.messsage ,
+				message: options.message ,
 				list_key_prefix: "sleep.errors" ,
 			});
 		});
@@ -20,16 +20,17 @@ function load_custom_event_list() {
 			GenericUtils.publish_new_item({
 				redis_manager_pointer: redis_manager ,
 				type: "python-new-event" ,
-				message: options.messsage ,
+				message: options.message ,
 				list_key_prefix: "sleep.events" ,
 			});
 		});
 		events.on( "python-new-record" , ( options ) => {
 			if ( !options ) { return; }
+			console.log( options );
 			GenericUtils.publish_new_item({
 				redis_manager_pointer: redis_manager,
 				type: "python-new-record" ,
-				message: options.messsage ,
+				message: options.message ,
 				list_key_prefix: "sleep.records" ,
 			});
 		});
@@ -74,7 +75,7 @@ function load_custom_event_list() {
 				redis_manager_pointer: redis_manager,
 				type: "message-error" ,
 				message: options.message,
-				list_key_prefix: "sleep.messages.error" ,
+				list_key_prefix: "sleep.errors" ,
 			});
 			require( "../utils/generic.js" ).restartPYProcess();
 		});
@@ -83,16 +84,16 @@ function load_custom_event_list() {
 				redis_manager_pointer: redis_manager,
 				type: "message-error" ,
 				message: options.message,
-				list_key_prefix: "sleep.messages.error" ,
+				list_key_prefix: "sleep.errors" ,
 			});
 			require( "../utils/generic.js" ).restartPYProcess();
 		});
-		events.on( "error_sigint" , ( options) => {
+		events.on( "error_sigint" , ( options ) => {
 			GenericUtils.publish_new_item({
 				redis_manager_pointer: redis_manager,
 				type: "message-error" ,
-				message: options.message, ,
-				list_key_prefix: "sleep.messages.error" ,
+				message: options.message ,
+				list_key_prefix: "sleep.errors" ,
 			});
 			GenericUtils.stopPYProcess();
 		});
