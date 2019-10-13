@@ -49,7 +49,7 @@ const LIVE_HTML_PAGE = `<img alt="" id="liveimage" src=""/> <script type="text/j
 	// 1.) Setup Synchronized Event Emitter
 	const events = new EventEmitter();
 	module.exports.events = events;
-	require( "./server/EventsSynchronizer.js" ).load_custom_event_list();
+	require( "./server/EventSynchronizer.js" ).load_custom_event_list();
 
 	// 2.) Write 'Current DHCP IP Address to Static HTML File'
 	fs.writeFileSync( path.join( __dirname , "client" , "views" , "live.html" ) , LIVE_HTML_PAGE );
@@ -68,20 +68,24 @@ const LIVE_HTML_PAGE = `<img alt="" id="liveimage" src=""/> <script type="text/j
 	const schedules = require( "./server/ScheduleManager.js" ).load_schedules();
 
 	process.on( "unhandledRejection" , ( reason , p )=> {
-		events.emit( "error_unhandled_rejection" , JSON.stringify({
+		events.emit( "error_unhandled_rejection" , {
 			reason: reason ,
-			p: p
-		}));
+			p: p ,
+			message: `Unhanded Rection === Reason === ${ reason }\n${ p }`
+		});
 	});
 	process.on( "uncaughtException" , ( error )=> {
-		events.emit( "error_unhandled_exception" , JSON.stringify({
+		events.emit( "error_unhandled_exception" , {
 			error: error ,
-		}));
+			message: `Uncaught Exception\n${ error }`
+		});
 	});
 
 	process.on( "SIGINT" , async ()=> {
 		console.log( "\nmain.js crashed !!" );
-		events.emit( "error_sigint" );
+		events.emit( "error_sigint" , {
+			message: "SIGINT === main.js crashed"
+		});
 		setTimeout( ()=> {
 			process.exit( 1 );
 		} , 3000 );

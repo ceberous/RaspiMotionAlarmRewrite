@@ -50,7 +50,10 @@ process.on( "uncaughtException" , function( err ) {
 			case "python-new-record":
 				console.log( message );
 				break;
-			case "generic-message":
+			case "message-generic":
+				console.log( message );
+				break;
+			case "message-generic":
 				console.log( message );
 				break;
 			default:
@@ -67,6 +70,7 @@ process.on( "uncaughtException" , function( err ) {
 	redis_manager.redis.subscribe( "python-new-event" );
 	redis_manager.redis.subscribe( "python-new-record" );
 
-	redis_manager.redis.subscribe( "generic-message" );
+	redis_manager.redis.subscribe( "message-error" );
+	redis_manager.redis.subscribe( "message-generic" );
 
 })();

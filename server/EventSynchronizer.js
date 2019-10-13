@@ -61,7 +61,7 @@ function load_custom_event_list() {
 		events.on( "generic_message" , ( options ) => {
 			GenericUtils.publish_new_item({
 				redis_manager_pointer: redis_manager,
-				type: "generic-message" ,
+				type: "message-generic" ,
 				message: options.message,
 				list_key_prefix: "sleep.messages.generic" ,
 			});
@@ -69,14 +69,32 @@ function load_custom_event_list() {
 
 		// Error Events
 		// ============================================================
-		events.on( "error_unhandled_rejection" , () => {
-			require( "../utils/generic.js" ).restart();
+		events.on( "error_unhandled_rejection" , ( options) => {
+			GenericUtils.publish_new_item({
+				redis_manager_pointer: redis_manager,
+				type: "message-error" ,
+				message: options.message,
+				list_key_prefix: "sleep.messages.error" ,
+			});
+			require( "../utils/generic.js" ).restartPYProcess();
 		});
-		events.on( "error_unhandled_rejection" , () => {
-			require( "../utils/generic.js" ).restart();
+		events.on( "error_unhandled_rejection" , ( options ) => {
+			GenericUtils.publish_new_item({
+				redis_manager_pointer: redis_manager,
+				type: "message-error" ,
+				message: options.message,
+				list_key_prefix: "sleep.messages.error" ,
+			});
+			require( "../utils/generic.js" ).restartPYProcess();
 		});
-		events.on( "error_sigint" , () => {
-			// GenericUtils.stopPYProcess();
+		events.on( "error_sigint" , ( options) => {
+			GenericUtils.publish_new_item({
+				redis_manager_pointer: redis_manager,
+				type: "message-error" ,
+				message: options.message, ,
+				list_key_prefix: "sleep.messages.error" ,
+			});
+			GenericUtils.stopPYProcess();
 		});
 
 		return;
