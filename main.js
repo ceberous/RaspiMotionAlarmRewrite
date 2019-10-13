@@ -25,10 +25,6 @@ module.exports.personal = Personal;
 // Functions
 const GenericUtils = require( "./utils/generic.js" )
 
-// Classes
-// const DiscordWrapper = require( "./server/DiscordWrapper.js" );
-
-
 // Run-Time Variables
 // =========================================
 const PORT = 6161;
