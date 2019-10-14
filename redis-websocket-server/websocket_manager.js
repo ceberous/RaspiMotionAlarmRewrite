@@ -1,6 +1,9 @@
 const RedisUtils = require( "redis-manager-utils" );
-const redis_manager = new RedisUtils( 1 , "localhost" , 6379 );
-await redis_manager.init();
+let redis_manager;
+( async ()=> {
+	redis_manager = new RedisUtils( 1 , "localhost" , 6379 );
+	await redis_manager.init();
+})();
 
 function ON_CONNECTION( socket , req ) {
 	socket.on( "message" , async ( message )=> {
