@@ -104,7 +104,6 @@ function publish_new_item( options ) {
 			});
 			const encrypted = encrypt( Custom_JSON_Serialized_Item_Object );
 			console.log( encrypted );
-			//console.log( Custom_JSON_Serialized_Item_Object );
 			await redis_manager.redis.publish( options.type , encrypted );
 			console.log( list_key );
 			await redis_manager.listLPUSH( list_key , encrypted );

@@ -1,8 +1,18 @@
 ( async ()=> {
 
-	const tweetnacl = require('tweetnacl');
-	tweetnacl.util = require('tweetnacl-util');
-	tweetnacl.sealedbox = require('tweetnacl-sealedbox-js');
+	const RedisUtils = require( "redis-manager-utils" );
+	const path = require( "path" );
+	const util = require( "util" );
+	const { StringDecoder } = require( "string_decoder" );
+	const decoder = new StringDecoder( "utf8" );
+	const PersonalFilePath = path.join( process.env.HOME , ".config" , "personal" , "raspi_motion_alarm_rewrite.json" );
+	const Personal = require( PersonalFilePath );
+	const redis_manager = new RedisUtils( Personal.redis.database_number , Personal.redis.host , Personal.redis.port );
+	await redis_manager.init();
+
+	const tweetnacl = require( "tweetnacl" );
+	tweetnacl.util = require( "tweetnacl-util" );
+	tweetnacl.sealedbox = require( "tweetnacl-sealedbox-js" );
 
 	function generateKeys() {
 		const keyPair = tweetnacl.box.keyPair();
@@ -12,31 +22,38 @@
 	}
 
 	function encrypt( publicKey , encryptMe ) {
-		// Decode publicKey from base64
 		const publicKeyBin = tweetnacl.util.decodeBase64(publicKey);
-		// Encode encryptMe to UTF8
-		const encryptMeUTF8 = (new TextEncoder("utf-8")).encode(encryptMe);
-		// Encrypt
+		const encryptMeUTF8 = ( new TextEncoder( "utf-8" )).encode(encryptMe);
 		const encryptedBin = tweetnacl.sealedbox.seal(encryptMeUTF8, publicKeyBin);
-		// Encode encrypted to base64
 		const encrypted = tweetnacl.util.encodeBase64(encryptedBin);
 		return encrypted;
 	}
 
 	function decrypt( secretKey , decryptMe ) {
-		// Decode secretKey from base64
 		const secretKeyBin = tweetnacl.util.decodeBase64(secretKey);
-		// Get corresponding publicKey
 		const publicKeyBin = tweetnacl.box.keyPair.fromSecretKey(secretKeyBin).publicKey;
-		// Decode decryptMe from base64
 		const decryptMeBin = tweetnacl.util.decodeBase64(decryptMe);
-		// Decrypt
 		const decryptedBin = tweetnacl.sealedbox.open(decryptMeBin, publicKeyBin, secretKeyBin);
-		// Decode decrypted to UTF8
-		const decryptedUTF8 = ( new TextDecoder("utf-8")).decode(decryptedBin);
+		const decryptedUTF8 = decoder.write(decryptedBin);
 		return decryptedUTF8;
 	}
 
-	console.log( generateKeys() );
+	function redis_get_list_range( key , start , end ) {
+		return new Promise( function( resolve , reject ) {
+			try {
+				redis_manager.redis.lrange( key , start , end , ( error , results )=> {
+					resolve( results );
+					return;
+				});
+			}
+			catch( error ) { console.log( error ); reject( error ); return; }
+		});
+	}
+
+	//console.log( generateKeys() );
+
+	//const test = await redis_get_list_range( "sleep.errors.2019.10.14" , 0 , 0 )
+	const test = await redis_get_list_range( "sleep.images.frames.2019.10.14" , 0 , 0 )
+	console.log( decrypt( Personal.libsodium.private_key , test[ 0 ] ) )
 
 })();

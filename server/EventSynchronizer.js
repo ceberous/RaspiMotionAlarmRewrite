@@ -52,7 +52,7 @@ function load_custom_event_list() {
 		events.on( "command_stop_pyprocess" , GenericUtils.stopPYProcess );
 		events.on( "command_restart_pyprocess" , GenericUtils.restartPYProcess );
 		events.on( "publish_new_image_set" , () => {
-			GenericUtils.new_image_set();
+			Publishing.new_image_set();
 		});
 		events.on( "twilio-call" , ( options ) => {
 			console.log( "call()" );

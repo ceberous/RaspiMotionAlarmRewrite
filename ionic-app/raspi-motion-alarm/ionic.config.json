@@ -1,5 +1,7 @@
 {
   "name": "raspi-motion-alarm",
-  "integrations": {},
+  "integrations": {
+    "capacitor": {}
+  },
   "type": "angular"
 }

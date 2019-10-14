@@ -1,6 +1,6 @@
 const process = require( "process" );
 const path = require( "path" );
-const ip = require("ip");
+const ip = require( "ip" );
 const fs = require( "fs" );
 const EventEmitter = require( "events" );
 const WebSocket = require( "ws" );
@@ -28,7 +28,7 @@ const GenericUtils = require( "./utils/generic.js" )
 
 // Run-Time Variables
 // =========================================
-const PORT = 6161;
+const PORT = Personal.express.port;
 module.exports.port = PORT;
 const LOCAL_IP = ip.address();
 module.exports.local_ip = LOCAL_IP;
@@ -43,9 +43,9 @@ const LIVE_HTML_PAGE = `<img alt="" id="liveimage" src=""/> <script type="text/j
 	await redis_manager.init();
 	module.exports.redis_manager = redis_manager;
 	const redis_publishing_manager = await REDIS.createClient({
-		host: "localhost",
-		port: 10079 ,
-		db: 1 ,
+		host: Personal.redis.host,
+		port: Personal.redis.port ,
+		db: Personal.redis.database_number ,
 		retry_strategy: function ( options ) {
 			if ( options.error && options.error.code === "ECONNREFUSED" ) {
 				// End reconnecting on a specific error and flush all commands with
@@ -118,6 +118,8 @@ const LIVE_HTML_PAGE = `<img alt="" id="liveimage" src=""/> <script type="text/j
 	});
 
 	console.log( "SERVER READY" );
+
+	events.emit( "publish_new_image_set" );
 
 
 })();
