@@ -11,11 +11,12 @@ function ON_CONNECTION( socket , req ) {
 			return new Promise( async function( resolve , reject ) {
 				try {
 					const count = message.count || 1;
-					const result = await redis_manager.redis.lrange( "sleep.frames" , count );
-					console.log( result );
-					socket.send( "new_frames" , result );
-					resolve( result );
-					return;
+					redis_manager.redis.lrange( "sleep.frames" , 0 , count , ( results )=> {
+						console.log( result );
+						socket.send( "new_frames" , result );
+						resolve( result );
+						return;
+					});
 				}
 				catch( error ) { console.log( error ); reject( error ); return; }
 			});
