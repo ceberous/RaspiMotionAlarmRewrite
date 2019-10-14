@@ -1,6 +1,11 @@
+const RedisUtils = require( "redis-manager-utils" );
+
 function custom_publish_image_b64( options ) {
 	return new Promise( async ( resolve , reject )=> {
 		try {
+			const redis_manager = new RedisUtils( 1 , "localhost" , 10079  );
+			await redis_manager.init();
+
 			const now = new Date();
 			const dd = String( now.getDate()).padStart( 2 , '0' );
 			const mm = String( now.getMonth() + 1 ).padStart( 2 , '0' );
@@ -10,7 +15,7 @@ function custom_publish_image_b64( options ) {
 			const seconds = String( now.getSeconds() ).padStart( 2 , '0' );
 
 			const imageb64 = require( "fs" ).readFileSync( options.image_path , "base64" );
-			await options.redis_manager_pointer.redis.publish( options.channel , imageb64 );
+			await redis_manager.redis.publish( options.channel , imageb64 );
 			const list_key = `${ options.list_key_prefix }.${ yyyy }.${ mm }.${ dd }`
 			const Custom_JSON_Serialized_Image_Object = JSON.stringify({
 				timestamp: now ,
@@ -19,7 +24,7 @@ function custom_publish_image_b64( options ) {
 				image_b64: imageb64 ,
 				list_key: list_key
 			});
-			await options.redis_manager_pointer.listLPUSH( list_key , Custom_JSON_Serialized_Image_Object );
+			await redis_manager.listLPUSH( list_key , Custom_JSON_Serialized_Image_Object );
 			resolve();
 			return;
 		}
@@ -29,24 +34,20 @@ function custom_publish_image_b64( options ) {
 function publish_new_image_set() {
 	return new Promise( async ( resolve , reject )=> {
 		try {
-			const redis_manager = require( "../main.js" ).redis_manager;
 
 			await custom_publish_image_b64({
-				redis_manager_pointer: redis_manager ,
 				channel: "new-image-frame" ,
 				image_path: "/Users/morpheous/Pictures/Saved/LSRF-M.png" ,
 				list_key_prefix: "sleep.images.frames"
 			});
 
 			await custom_publish_image_b64({
-				redis_manager_pointer: redis_manager ,
 				channel: "new-image-threshold" ,
 				image_path: "/Users/morpheous/Pictures/Saved/LSRF-M.png" ,
 				list_key_prefix: "sleep.images.thresholds"
 			});
 
 			await custom_publish_image_b64({
-				redis_manager_pointer: redis_manager ,
 				channel: "new-image-delta" ,
 				image_path: "/Users/morpheous/Pictures/Saved/LSRF-M.png" ,
 				list_key_prefix: "sleep.images.deltas"
@@ -60,11 +61,14 @@ function publish_new_image_set() {
 }
 module.exports.new_image_set = publish_new_image_set;
 
+
 function publish_new_item( options ) {
 	return new Promise( async ( resolve , reject )=> {
 		try {
 			console.log( "publish_new_item()" );
-			const redis_manager = require( "../main.js" ).redis_manager;
+			const redis_manager = new RedisUtils( 1 , "localhost" , 10079  );
+			await redis_manager.init();
+
 			const now = new Date();
 			const dd = String( now.getDate()).padStart( 2 , '0' );
 			const mm = String( now.getMonth() + 1 ).padStart( 2 , '0' );
@@ -76,13 +80,16 @@ function publish_new_item( options ) {
 			const list_key = `${ options.list_key_prefix }.${ yyyy }.${ mm }.${ dd }`;
 			const Custom_JSON_Serialized_Item_Object = JSON.stringify({
 				timestamp: now ,
-				timestamp_string: `${ yyyy }.${ mm }.${ dd } @@ ${ hours }:${ minutes }:${ seconds }`,
+				timestamp_string: `${ yyyy }.${ mm }.${ dd } @@ ${ hours }:${ minutes }:${ seconds }` ,
 				message: options.message ,
 				list_key: list_key
 			});
-			await redis_manager.redis.publish( options.type , JSON.stringify( Custom_JSON_Serialized_Item_Object ));
 
+			console.log( Custom_JSON_Serialized_Item_Object );
+			await redis_manager.redis.publish( options.type , Custom_JSON_Serialized_Item_Object );
+			console.log( list_key );
 			await redis_manager.listLPUSH( list_key , Custom_JSON_Serialized_Item_Object );
+			console.log( "now finished" );
 			resolve();
 			return;
 		}

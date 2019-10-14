@@ -47,29 +47,40 @@ function custom_publish_image_b64( options ) {
 	module.exports.redisConProxy = redis_manager;
 
 	// Publisher
-	console.log( "Liner 1 ?" );
-	await redis_manager.redis.publish( "new.frame" , "test 2832231" );
-	console.log( "Liner 2 ?" );
+	await redis_manager.redis.publish( "ionic-controller" , JSON.stringify({
+		command: "call" ,
+		number: "XXXXXXXXX" ,
+	}));
 
-	await custom_publish_image_b64({
-		redis_manager_pointer: redis_manager ,
-		channel: "new image frame" ,
-		image_path: "/Users/morpheous/Pictures/Saved/LSRF-M.png" ,
-		list_key_prefix: "sleep.images.frames"
-	});
+	await redis_manager.redis.publish( "ionic-controller" , JSON.stringify({
+		command: "message" ,
+		number: "XXXXXXXXX" ,
+		message: "testing blah blah"
+	}));
 
-	await custom_publish_image_b64({
-		redis_manager_pointer: redis_manager ,
-		channel: "new image threshold" ,
-		image_path: "/Users/morpheous/Pictures/Saved/LSRF-M.png" ,
-		list_key_prefix: "sleep.images.thresholds"
-	});
+	// console.log( "Liner 1 ?" );
+	// await redis_manager.redis.publish( "new.frame" , "test 2832231" );
+	// console.log( "Liner 2 ?" );
 
-	await custom_publish_image_b64({
-		redis_manager_pointer: redis_manager ,
-		channel: "new image delta" ,
-		image_path: "/Users/morpheous/Pictures/Saved/LSRF-M.png" ,
-		list_key_prefix: "sleep.images.deltas"
-	});
+	// await custom_publish_image_b64({
+	// 	redis_manager_pointer: redis_manager ,
+	// 	channel: "new image frame" ,
+	// 	image_path: "/Users/morpheous/Pictures/Saved/LSRF-M.png" ,
+	// 	list_key_prefix: "sleep.images.frames"
+	// });
+
+	// await custom_publish_image_b64({
+	// 	redis_manager_pointer: redis_manager ,
+	// 	channel: "new image threshold" ,
+	// 	image_path: "/Users/morpheous/Pictures/Saved/LSRF-M.png" ,
+	// 	list_key_prefix: "sleep.images.thresholds"
+	// });
+
+	// await custom_publish_image_b64({
+	// 	redis_manager_pointer: redis_manager ,
+	// 	channel: "new image delta" ,
+	// 	image_path: "/Users/morpheous/Pictures/Saved/LSRF-M.png" ,
+	// 	list_key_prefix: "sleep.images.deltas"
+	// });
 
 })();

@@ -1,0 +1,25 @@
+https://www.thepolyglotdeveloper.com/2016/01/creating-a-real-time-chat-application-with-ionic-2-and-socket-io/
+
+
+sudo touch /var/run/autossh-redis1.pid
+sudo chmod 644 /var/run/autossh-redis1.pid
+
+sudo nano /etc/systemd/system/autossh-redis1.service
+
+
+
+[Unit]
+Description=Keeps a tunnel to 'Redis1' Open
+After=network.target
+[Service]
+Environment="AUTOSSH_PIDFILE=/var/run/autossh.pid"
+Environment="AUTOSSH_POLL=60"
+Environment="AUTOSSH_FIRST_POLL=30"
+Environment="AUTOSSH_GATETIME=0"
+Environment="AUTOSSH_DEBUG=1"
+ExecStart=/usr/bin/autossh -M 10003 -N -L 10079:localhost:6379 $VPS_SLEEP_USER@$VPS_IP -o ServerAliveInterval=60 -o ServerAliveCountMax=3 -o IdentitiesOnly=yes  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR -F /dev/null -i /home/pi/.ssh/$SSH_PRIVATE_KEY
+ExecStop=/usr/bin/pkill autossh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

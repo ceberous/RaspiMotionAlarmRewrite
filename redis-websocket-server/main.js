@@ -26,6 +26,17 @@ process.on( "uncaughtException" , function( err ) {
 	await redis_manager.init();
 	module.exports.redis_manager = redis_manager;
 
+	redis_manager.redis.subscribe( "new-image-frame" );
+	redis_manager.redis.subscribe( "new-image-threshold" );
+	redis_manager.redis.subscribe( "new-image-delta" );
+
+	redis_manager.redis.subscribe( "python-new-error" );
+	redis_manager.redis.subscribe( "python-new-event" );
+	redis_manager.redis.subscribe( "python-new-record" );
+
+	redis_manager.redis.subscribe( "message-error" );
+	redis_manager.redis.subscribe( "message-generic" );
+
 	const express_app = require( "./express_app.js" );
 	const server = http.createServer( express_app );
 	const WebSocketManager = require( "./websocket_manager.js" );

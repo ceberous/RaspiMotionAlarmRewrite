@@ -26,7 +26,7 @@ let arg1 = 1    // = Minimum Seconds of Continuous Motion
 let arg2 = 4    // = Total Motion Events Acceptable Before Alert
 let arg3 = 45   // = Minimum Time of Motion Before Alert
 let arg4 = 90   // = Cooloff Period Duration
-const lCode1 = path.join( __dirname , "../../py_scripts" , "motion_simple.py" );
+const lCode1 = path.join( __dirname , "../py_scripts" , "motion_simple.py" );
 console.log( lCode1 );
 let wState = false;
 let wChild = null;
@@ -155,4 +155,30 @@ function GRACEFUL_EXIT() {
 	}, 5000 );
 }
 module.exports.gracefulExit = GRACEFUL_EXIT;
+
+
+const twilio_helper_path = path.join( __dirname , "../py_scripts" , "twilio_helper.py" );
+function MAKE_TWILIO_PYTHON_CALL( options ) {
+	const events = require( "../main.js" ).events;
+	let twilio_child = null;
+	twilio_child = spawn( "python" , [ twilio_helper_path , options.command , options.number , options.message ] , { detached: true, stdio: [ 'ignore' , 'ignore' , 'ignore' ] } );
+	console.log( "launched twilio pyscript" );
+	twilio_child.on( "error" , ( error )=> {
+		events.emit( "python-new-error" , { message: "Twilio via Python === Error === " + error.toString() } );
+		console.log( error );
+	});
+	twilio_child.on( "exit" , ( code )=> {
+		if ( code === 0 ) {
+			events.emit( "message_generic" , { message: `Twilio ${ options.command } to ${ options.number } via Python Succeded }` } );
+		}
+		else {
+			console.log( code );
+			events.emit( "python-new-error" , { message: `Twilio ${ options.command } to ${ options.number } via Python } === Exit Code === ${ code.toString() }` } );
+		}
+	});
+	setTimeout( ()=> {
+		twilio_child.unref();
+	} , 3000 );
+}
+module.exports.makeTwilioPythonCall = MAKE_TWILIO_PYTHON_CALL;
 

@@ -4,6 +4,7 @@ const ip = require("ip");
 const fs = require( "fs" );
 const EventEmitter = require( "events" );
 const WebSocket = require( "ws" );
+	const REDIS = require( "redis" );
 
 //const Unilink1 = require( "unilink1" );
 const RedisUtils = require( "redis-manager-utils" );
@@ -41,11 +42,40 @@ const LIVE_HTML_PAGE = `<img alt="" id="liveimage" src=""/> <script type="text/j
 	const redis_manager = new RedisUtils( 1 , "localhost" , 10079  );
 	await redis_manager.init();
 	module.exports.redis_manager = redis_manager;
+	const redis_publishing_manager = await REDIS.createClient({
+		host: "localhost",
+		port: 10079 ,
+		db: 1 ,
+		retry_strategy: function ( options ) {
+			if ( options.error && options.error.code === "ECONNREFUSED" ) {
+				// End reconnecting on a specific error and flush all commands with
+				// a individual error
+				return new Error( "The server refused the connection" );
+			}
+			if ( options.total_retry_time > 1000 * 60 * 60 ) {
+				// End reconnecting after a specific timeout and flush all commands
+				// with a individual error
+				return new Error( "Retry time exhausted" );
+			}
+			if ( options.attempt > 20 ) {
+				// End reconnecting with built in error
+				return undefined;
+			}
+			// reconnect after
+			return Math.min( options.attempt * 100 , 3000 );
+		}
+	});
+	module.exports.redis_publishing_manager = redis_publishing_manager;
+	// await redis_manager.keySet( 'TESTING' , "TESTING BLAH BLAH" );
+	// await GenericUtils.sleep( 1000 );
 
 	// 1.) Setup Synchronized Event Emitter
 	const events = new EventEmitter();
 	module.exports.events = events;
 	require( "./server/EventSynchronizer.js" ).load_custom_event_list();
+
+	// 3.) Load Redis Subscriptions
+	await require( "./server/RedisSubscriptionManager.js" ).load_subscriptions();
 
 	// 2.) Write 'Current DHCP IP Address to Static HTML File'
 	fs.writeFileSync( path.join( __dirname , "client" , "views" , "live.html" ) , LIVE_HTML_PAGE );

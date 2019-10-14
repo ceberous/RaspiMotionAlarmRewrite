@@ -10,8 +10,8 @@ function ON_CONNECTION( socket , req ) {
 		else if ( message.type === "get_frames" ) {
 			return new Promise( async function( resolve , reject ) {
 				try {
-					count = message.count || 1;
-					await
+					const count = message.count || 1;
+					await redis_manager.redis.lrange( "sleep.frames" ,  )
 					resolve();
 					return;
 				}

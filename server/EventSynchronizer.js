@@ -52,12 +52,29 @@ function load_custom_event_list() {
 		events.on( "command_stop_pyprocess" , GenericUtils.stopPYProcess );
 		events.on( "command_restart_pyprocess" , GenericUtils.restartPYProcess );
 		events.on( "publish_new_image_set" , () => {
-			require( "../utils/generic.js" ).new_image_set();
+			GenericUtils.new_image_set();
+		});
+		events.on( "twilio-call" , ( options ) => {
+			console.log( "call()" );
+			console.log( options );
+			GenericUtils.makeTwilioPythonCall({
+				command: "call" ,
+				number: options.number ,
+			});
+		});
+		events.on( "twilio-message" , ( options ) => {
+			console.log( "message()" );
+			console.log( options );
+			GenericUtils.makeTwilioPythonCall({
+				command: "message" ,
+				number: options.number ,
+				message: options.message
+			});
 		});
 
 		// Client Message Passing
 		// ============================================================
-		events.on( "generic_message" , ( options ) => {
+		events.on( "message_generic" , ( options ) => {
 			Publishing.new_item({
 				type: "message-generic" ,
 				message: options.message,
@@ -68,28 +85,28 @@ function load_custom_event_list() {
 		// Error Events
 		// ============================================================
 		events.on( "error_unhandled_rejection" , ( options ) => {
-			Publishing.publish_new_item({
+			Publishing.new_item({
 				type: "message-error" ,
 				message: options.message,
 				list_key_prefix: "sleep.errors" ,
 			});
-			require( "../utils/generic.js" ).restartPYProcess();
+			//GenericUtils.restartPYProcess();
 		});
 		events.on( "error_unhandled_rejection" , ( options ) => {
-			Publishing.publish_new_item({
+			Publishing.new_item({
 				type: "message-error" ,
 				message: options.message,
 				list_key_prefix: "sleep.errors" ,
 			});
-			require( "../utils/generic.js" ).restartPYProcess();
+			//GenericUtils.restartPYProcess();
 		});
 		events.on( "error_sigint" , ( options ) => {
-			Publishing.publish_new_item({
+			Publishing.new_item({
 				type: "message-error" ,
 				message: options.message ,
 				list_key_prefix: "sleep.errors" ,
 			});
-			Publishing.stopPYProcess();
+			//GenericUtils.stopPYProcess();
 		});
 
 		return;
