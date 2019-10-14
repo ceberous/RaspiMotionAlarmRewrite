@@ -1,5 +1,5 @@
 function ON_CONNECTION( socket , req ) {
-	socket.on( "message" , ( message )=> {
+	socket.on( "message" , async ( message )=> {
 		const RedisUtils = require( "redis-manager-utils" );
 		const redis_manager = new RedisUtils( 1 , "localhost" , 10079  );
 		await redis_manager.init();
