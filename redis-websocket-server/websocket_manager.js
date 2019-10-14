@@ -12,9 +12,9 @@ function ON_CONNECTION( socket , req ) {
 				try {
 					const count = message.count || 1;
 					redis_manager.redis.lrange( "sleep.frames" , 0 , count , ( results )=> {
-						console.log( result );
-						socket.send( "new_frames" , result );
-						resolve( result );
+						console.log( results );
+						socket.send( "new_frames" , results );
+						resolve( results );
 						return;
 					});
 				}
