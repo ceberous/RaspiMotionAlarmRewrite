@@ -22,7 +22,7 @@ process.on( "uncaughtException" , function( err ) {
 	const RedisUtils = require( "redis-manager-utils" );
 
 	console.log( "Starting" );
-	const redis_manager = new RedisUtils( 1 , "localhost" , 10079  );
+	const redis_manager = new RedisUtils( 1 , "localhost" , 6379  );
 	await redis_manager.init();
 	module.exports.redis_manager = redis_manager;
 
