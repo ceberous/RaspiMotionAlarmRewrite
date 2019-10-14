@@ -1,7 +1,8 @@
 function ON_CONNECTION( socket , req ) {
-	const RedisUtils = require( "redis-manager-utils" );
-	const redis_manager = new RedisUtils( 1 , "localhost" , 6379 );
-	socket.on( "message" , ( message )=> {
+	socket.on( "message" , async ( message )=> {
+		const RedisUtils = require( "redis-manager-utils" );
+		const redis_manager = new RedisUtils( 1 , "localhost" , 6379 );
+		await redis_manager.init();
 		try { message = JSON.parse( message ); }
 		catch( e ) { var a = message; message = { "type": a }; }
 		console.log( message );
