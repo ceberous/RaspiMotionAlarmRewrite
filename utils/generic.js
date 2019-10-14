@@ -74,13 +74,17 @@ function CHILD_PID_LOOKUP() {
 		function( err , resultList ) {
 			if ( err ) { throw new Error( err ); }
 			resultList.forEach( ( process )=> {
-				if( process ){
-					process.arguments.forEach( ( item )=> {
-						if ( item === lCode1 ) {
-							wPIDResultSet.push( process.pid );
-							console.log( "python PID = " + process.pid.toString() );
+				if ( process ) {
+					if ( process.arguments ) {
+						if ( process.arguments.length > 0 ) {
+							process.arguments.forEach( ( item )=> {
+								if ( item === lCode1 ) {
+									wPIDResultSet.push( process.pid );
+									console.log( "python PID = " + process.pid.toString() );
+								}
+							});
 						}
-					});
+					}
 				}
 			});
 			return wPIDResultSet;
@@ -130,7 +134,7 @@ function KILL_ALL_PY_PROCESS() {
 		}
 		catch(err){
 			exec( "sudo pkill -9 python" , { silent: true ,  async: false } );
-			console.log(err);
+			events.emit( "python-new-error" , { message: "Either No Python Processes were Found or something Went Wrong Trying to end Python Processes , using sudo pkill -9 now" } );
 		}
 	});
 }

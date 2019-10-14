@@ -1,3 +1,5 @@
+const path = require( "path" );
+const util= require( "util" );
 const RedisUtils = require( "redis-manager-utils" );
 const PersonalFilePath = path.join( process.env.HOME , ".config" , "personal" , "raspi_motion_alarm_rewrite.json" );
 const Personal = require( PersonalFilePath );
@@ -5,6 +7,14 @@ const Personal = require( PersonalFilePath );
 const tweetnacl = require( "tweetnacl" );
 tweetnacl.util = require( "tweetnacl-util" );
 tweetnacl.sealedbox = require( "tweetnacl-sealedbox-js" );
+
+function encrypt( message ) {
+	const publicKeyBinary = tweetnacl.util.decodeBase64( Personal.libsodium.public_key );
+	const messageUTF8 = ( new util.TextEncoder( "utf-8" ) ).encode( message );
+	const encryptedBinary = tweetnacl.sealedbox.seal( messageUTF8 , publicKeyBinary );
+	const encrypted = tweetnacl.util.encodeBase64( encryptedBinary );
+	return encrypted;
+}
 
 function custom_publish_image_b64( options ) {
 	return new Promise( async ( resolve , reject )=> {
@@ -30,7 +40,9 @@ function custom_publish_image_b64( options ) {
 				image_b64: imageb64 ,
 				list_key: list_key
 			});
-			await redis_manager.listLPUSH( list_key , Custom_JSON_Serialized_Image_Object );
+			const encrypted = encrypt( Custom_JSON_Serialized_Image_Object );
+			console.log( encrypted );
+			await redis_manager.listLPUSH( list_key , encrypted );
 			resolve();
 			return;
 		}
@@ -90,11 +102,12 @@ function publish_new_item( options ) {
 				message: options.message ,
 				list_key: list_key
 			});
-
-			console.log( Custom_JSON_Serialized_Item_Object );
-			await redis_manager.redis.publish( options.type , Custom_JSON_Serialized_Item_Object );
+			const encrypted = encrypt( Custom_JSON_Serialized_Item_Object );
+			console.log( encrypted );
+			//console.log( Custom_JSON_Serialized_Item_Object );
+			await redis_manager.redis.publish( options.type , encrypted );
 			console.log( list_key );
-			await redis_manager.listLPUSH( list_key , Custom_JSON_Serialized_Item_Object );
+			await redis_manager.listLPUSH( list_key , encrypted );
 			console.log( "now finished" );
 			resolve();
 			return;
