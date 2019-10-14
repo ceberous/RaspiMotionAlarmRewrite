@@ -13,7 +13,7 @@ function ON_CONNECTION( socket , req ) {
 			return new Promise( async function( resolve , reject ) {
 				try {
 					const count = message.count || 1;
-					redis_manager.redis.lrange( message.list_key , 0 , count , ( results )=> {
+					redis_manager.redis.lrange( message.list_key , 0 , count , ( error , results )=> {
 						console.log( results );
 						socket.send( "new_frames" , results );
 						resolve( results );
