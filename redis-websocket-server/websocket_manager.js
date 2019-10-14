@@ -28,22 +28,88 @@ function ON_CONNECTION( socket , req ) {
 			});
 		}
 		else if ( message.type === "get_thresholds" ) {
-
+			return new Promise( async function( resolve , reject ) {
+				try {
+					const count = message.count || 1;
+					redis_manager.redis.lrange( message.list_key , 0 , ( count - 1 ) , ( error , results )=> {
+						console.log( results );
+						socket.send( "new_thresholds" , results );
+						resolve( results );
+						return;
+					});
+				}
+				catch( error ) { console.log( error ); reject( error ); return; }
+			});
 		}
 		else if ( message.type === "get_deltas" ) {
-
+			return new Promise( async function( resolve , reject ) {
+				try {
+					const count = message.count || 1;
+					redis_manager.redis.lrange( message.list_key , 0 , ( count - 1 ) , ( error , results )=> {
+						console.log( results );
+						socket.send( "new_deltas" , results );
+						resolve( results );
+						return;
+					});
+				}
+				catch( error ) { console.log( error ); reject( error ); return; }
+			});
 		}
 		else if ( message.type === "get_records" ) {
-
+			return new Promise( async function( resolve , reject ) {
+				try {
+					const count = message.count || 1;
+					redis_manager.redis.lrange( message.list_key , 0 , ( count - 1 ) , ( error , results )=> {
+						console.log( results );
+						socket.send( "new_records" , results );
+						resolve( results );
+						return;
+					});
+				}
+				catch( error ) { console.log( error ); reject( error ); return; }
+			});
 		}
 		else if ( message.type === "get_events" ) {
-
+			return new Promise( async function( resolve , reject ) {
+				try {
+					const count = message.count || 1;
+					redis_manager.redis.lrange( message.list_key , 0 , ( count - 1 ) , ( error , results )=> {
+						console.log( results );
+						socket.send( "new_events" , results );
+						resolve( results );
+						return;
+					});
+				}
+				catch( error ) { console.log( error ); reject( error ); return; }
+			});
 		}
 		else if ( message.type === "get_errors" ) {
-
+			return new Promise( async function( resolve , reject ) {
+				try {
+					const count = message.count || 1;
+					redis_manager.redis.lrange( message.list_key , 0 , ( count - 1 ) , ( error , results )=> {
+						console.log( results );
+						socket.send( "new_errors" , results );
+						resolve( results );
+						return;
+					});
+				}
+				catch( error ) { console.log( error ); reject( error ); return; }
+			});
 		}
 		else if ( message.type === "get_messages_generic" ) {
-
+			return new Promise( async function( resolve , reject ) {
+				try {
+					const count = message.count || 1;
+					redis_manager.redis.lrange( message.list_key , 0 , ( count - 1 ) , ( error , results )=> {
+						console.log( results );
+						socket.send( "new_messages_generic" , results );
+						resolve( results );
+						return;
+					});
+				}
+				catch( error ) { console.log( error ); reject( error ); return; }
+			});
 		}
 	});
 }
