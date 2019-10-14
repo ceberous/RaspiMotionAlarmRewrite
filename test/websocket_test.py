@@ -3,7 +3,7 @@ import json
 ws = websocket.WebSocket()
 
 ws.connect( "ws://127.0.0.1:10080" ) # websocket server
-ws.send( json.dumps( { "type": "get_frames" , "count": 1 } ) )
+ws.send( json.dumps( { "type": "get_frames" , "count": 1 , "list_key": "sleep.errors.2019.10.13" } ) )
 
 # ws.connect( "ws://127.0.0.1:6161" ) # actual redis connection
 # ws.send( json.dumps( { "type": "python-new-error" , "message": "this is a test error message" } ) )
