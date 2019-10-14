@@ -1,9 +1,15 @@
 const RedisUtils = require( "redis-manager-utils" );
+const PersonalFilePath = path.join( process.env.HOME , ".config" , "personal" , "raspi_motion_alarm_rewrite.json" );
+const Personal = require( PersonalFilePath );
+
+const tweetnacl = require( "tweetnacl" );
+tweetnacl.util = require( "tweetnacl-util" );
+tweetnacl.sealedbox = require( "tweetnacl-sealedbox-js" );
 
 function custom_publish_image_b64( options ) {
 	return new Promise( async ( resolve , reject )=> {
 		try {
-			const redis_manager = new RedisUtils( 1 , "localhost" , 10079  );
+			const redis_manager = new RedisUtils( Personal.redis.database_number , Personal.redis.host , Personal.redis.port  );
 			await redis_manager.init();
 
 			const now = new Date();
@@ -66,7 +72,7 @@ function publish_new_item( options ) {
 	return new Promise( async ( resolve , reject )=> {
 		try {
 			console.log( "publish_new_item()" );
-			const redis_manager = new RedisUtils( 1 , "localhost" , 10079  );
+			const redis_manager = new RedisUtils( Personal.redis.database_number , Personal.redis.host , Personal.redis.port  );
 			await redis_manager.init();
 
 			const now = new Date();

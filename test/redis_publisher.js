@@ -27,7 +27,6 @@ function custom_publish_image_b64( options ) {
 				image_b64: imageb64 ,
 				list_key: list_key
 			});
-			console.log( Custom_JSON_Serialized_Image_Object );
 			await options.redis_manager_pointer.listRPUSH( list_key , Custom_JSON_Serialized_Image_Object );
 			resolve();
 			return;
@@ -39,9 +38,11 @@ function custom_publish_image_b64( options ) {
 ( async ()=> {
 
 	const RedisUtils = require( "redis-manager-utils" );
+	const PersonalFilePath = path.join( process.env.HOME , ".config" , "personal" , "raspi_motion_alarm_rewrite.json" );
+	const Personal = require( PersonalFilePath );
 
 	console.log( "Starting" );
-	const redis_manager = new RedisUtils( 1 , "localhost" , 10079  );
+	const redis_manager = new RedisUtils( Personal.redis.database_number , Personal.redis.host , Personal.redis.port );
 	await redis_manager.init();
 	module.exports.redisConProxy = redis_manager;
 

@@ -19,7 +19,7 @@ process.on( "uncaughtException" , function( err ) {
 	console.trace();
 });
 
-const PersonalFilePath = path.join( process.env.HOME , ".config" , "personal" , "raspi_motion_alarm_rewrite.js" );
+const PersonalFilePath = path.join( process.env.HOME , ".config" , "personal" , "raspi_motion_alarm_rewrite.json" );
 const Personal = require( PersonalFilePath );
 module.exports.personal = Personal;
 
@@ -39,7 +39,7 @@ const LIVE_HTML_PAGE = `<img alt="" id="liveimage" src=""/> <script type="text/j
 	console.log( "SERVER STARTING" );
 
 	// 0.) Setup Redis Manager
-	const redis_manager = new RedisUtils( 1 , "localhost" , 10079  );
+	const redis_manager = new RedisUtils( Personal.redis.database_number , Personal.redis.host , Personal.redis.port );
 	await redis_manager.init();
 	module.exports.redis_manager = redis_manager;
 	const redis_publishing_manager = await REDIS.createClient({

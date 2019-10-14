@@ -14,15 +14,18 @@ process.on( "uncaughtException" , function( err ) {
 	console.trace();
 });
 
+
 ( async ()=> {
 
 	const PORT = 6262;
 	const LOCAL_IP = ip.address();
 
-	const RedisUtils = require( "redis-manager-utils" );
+	const PersonalFilePath = path.join( process.env.HOME , ".config" , "personal" , "raspi_motion_alarm_rewrite.json" );
+	const Personal = require( PersonalFilePath );
+	module.exports.personal = Personal;
 
 	console.log( "Starting" );
-	const redis_manager = new RedisUtils( 1 , "localhost" , 6379  );
+	const redis_manager = new RedisUtils( Personal.redis.database_number , Personal.redis.host , Personal.redis.port  );
 	await redis_manager.init();
 	module.exports.redis_manager = redis_manager;
 

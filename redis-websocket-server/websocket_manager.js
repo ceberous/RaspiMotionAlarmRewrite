@@ -1,7 +1,9 @@
+const PersonalFilePath = path.join( process.env.HOME , ".config" , "personal" , "raspi_motion_alarm_rewrite.json" );
+const Personal = require( PersonalFilePath );
 const RedisUtils = require( "redis-manager-utils" );
 let redis_manager;
 ( async ()=> {
-	redis_manager = new RedisUtils( 1 , "localhost" , 6379 );
+	redis_manager = new RedisUtils( Personal.redis.database_number , Personal.redis.host , Personal.redis.port );
 	await redis_manager.init();
 })();
 

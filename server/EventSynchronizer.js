@@ -88,7 +88,7 @@ function load_custom_event_list() {
 			Publishing.new_item({
 				type: "message-error" ,
 				message: options.message,
-				list_key_prefix: "sleep.errors" ,
+				list_key_prefix: "sleep.messages.errors" ,
 			});
 			//GenericUtils.restartPYProcess();
 		});
@@ -96,7 +96,7 @@ function load_custom_event_list() {
 			Publishing.new_item({
 				type: "message-error" ,
 				message: options.message,
-				list_key_prefix: "sleep.errors" ,
+				list_key_prefix: "sleep.messages.errors" ,
 			});
 			//GenericUtils.restartPYProcess();
 		});
@@ -104,7 +104,7 @@ function load_custom_event_list() {
 			Publishing.new_item({
 				type: "message-error" ,
 				message: options.message ,
-				list_key_prefix: "sleep.errors" ,
+				list_key_prefix: "sleep.messages.errors" ,
 			});
 			//GenericUtils.stopPYProcess();
 		});
