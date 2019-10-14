@@ -21,15 +21,14 @@ function custom_publish_image_b64( options ) {
 			const imageb64 = require( "fs" ).readFileSync( options.image_path , "base64" );
 			await options.redis_manager_pointer.redis.publish( options.channel , imageb64 );
 			const list_key = `${ options.list_key_prefix }.${ yyyy }.${ mm }.${ dd }`
-			if ( options.list_key ) {
-				const Custom_JSON_Serialized_Image_Object = JSON.stringify({
-					timestamp: now ,
-					timestamp_string: `${ yyyy }.${ mm }.${ dd } @@ ${ hours } : ${ minutes } : ${ seconds }`,
-					image_b64: imageb64 ,
-					list_key: list_key
-				});
-				await options.redis_manager_pointer.listRPUSH( list_key , Custom_JSON_Serialized_Image_Object );
-			}
+			const Custom_JSON_Serialized_Image_Object = JSON.stringify({
+				timestamp: now ,
+				timestamp_string: `${ yyyy }.${ mm }.${ dd } @@ ${ hours } : ${ minutes } : ${ seconds }`,
+				image_b64: imageb64 ,
+				list_key: list_key
+			});
+			console.log( Custom_JSON_Serialized_Image_Object );
+			await options.redis_manager_pointer.listRPUSH( list_key , Custom_JSON_Serialized_Image_Object );
 			resolve();
 			return;
 		}
@@ -47,40 +46,40 @@ function custom_publish_image_b64( options ) {
 	module.exports.redisConProxy = redis_manager;
 
 	// Publisher
-	await redis_manager.redis.publish( "ionic-controller" , JSON.stringify({
-		command: "call" ,
-		number: "XXXXXXXXX" ,
-	}));
+	// await redis_manager.redis.publish( "ionic-controller" , JSON.stringify({
+	// 	command: "call" ,
+	// 	number: "XXXXXXXXX" ,
+	// }));
 
-	await redis_manager.redis.publish( "ionic-controller" , JSON.stringify({
-		command: "message" ,
-		number: "XXXXXXXXX" ,
-		message: "testing blah blah"
-	}));
+	// await redis_manager.redis.publish( "ionic-controller" , JSON.stringify({
+	// 	command: "message" ,
+	// 	number: "XXXXXXXXX" ,
+	// 	message: "testing blah blah"
+	// }));
 
 	// console.log( "Liner 1 ?" );
 	// await redis_manager.redis.publish( "new.frame" , "test 2832231" );
 	// console.log( "Liner 2 ?" );
 
-	// await custom_publish_image_b64({
-	// 	redis_manager_pointer: redis_manager ,
-	// 	channel: "new image frame" ,
-	// 	image_path: "/Users/morpheous/Pictures/Saved/LSRF-M.png" ,
-	// 	list_key_prefix: "sleep.images.frames"
-	// });
+	await custom_publish_image_b64({
+		redis_manager_pointer: redis_manager ,
+		channel: "new image frame" ,
+		image_path: "/Users/morpheous/Pictures/Saved/LSRF-M.png" ,
+		list_key_prefix: "sleep.images.frames"
+	});
 
-	// await custom_publish_image_b64({
-	// 	redis_manager_pointer: redis_manager ,
-	// 	channel: "new image threshold" ,
-	// 	image_path: "/Users/morpheous/Pictures/Saved/LSRF-M.png" ,
-	// 	list_key_prefix: "sleep.images.thresholds"
-	// });
+	await custom_publish_image_b64({
+		redis_manager_pointer: redis_manager ,
+		channel: "new image threshold" ,
+		image_path: "/Users/morpheous/Pictures/Saved/LSRF-M.png" ,
+		list_key_prefix: "sleep.images.thresholds"
+	});
 
-	// await custom_publish_image_b64({
-	// 	redis_manager_pointer: redis_manager ,
-	// 	channel: "new image delta" ,
-	// 	image_path: "/Users/morpheous/Pictures/Saved/LSRF-M.png" ,
-	// 	list_key_prefix: "sleep.images.deltas"
-	// });
+	await custom_publish_image_b64({
+		redis_manager_pointer: redis_manager ,
+		channel: "new image delta" ,
+		image_path: "/Users/morpheous/Pictures/Saved/LSRF-M.png" ,
+		list_key_prefix: "sleep.images.deltas"
+	});
 
 })();
