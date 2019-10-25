@@ -37,7 +37,7 @@ function custom_publish_image_b64( options ) {
 			const seconds = String( now.getSeconds() ).padStart( 2 , '0' );
 
 			const imageb64 = require( "fs" ).readFileSync( options.image_path , "base64" );
-			await redis_manager.redis.publish( options.channel , imageb64 );
+			//await redis_manager.redis.publish( options.channel , imageb64 );
 			const list_key = `${ options.list_key_prefix }.${ yyyy }.${ mm }.${ dd }`
 			const Custom_JSON_Serialized_Image_Object = JSON.stringify({
 				timestamp: now ,
@@ -49,6 +49,7 @@ function custom_publish_image_b64( options ) {
 			const encrypted = encrypt( Custom_JSON_Serialized_Image_Object );
 			console.log( encrypted );
 			await redis_manager.listLPUSH( list_key , encrypted );
+			await redis_manager.redis.publish( options.channel , encrypted );
 			resolve();
 			return;
 		}

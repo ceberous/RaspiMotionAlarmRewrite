@@ -7,12 +7,31 @@ process.on( "uncaughtException" , function( err ) {
 	console.trace();
 });
 
+const path = require( "path" );
+const utf8 = require( "utf8" );
+const { StringDecoder } = require( "string_decoder" );
+const decoder = new StringDecoder( "utf8" );
+const PersonalFilePath = path.join( process.env.HOME , ".config" , "personal" , "raspi_motion_alarm_rewrite.json" );
+const Personal = require( PersonalFilePath );
+
+function decrypt( secretKey , decryptMe ) {
+	const secretKeyBin = tweetnacl.util.decodeBase64(secretKey);
+	const publicKeyBin = tweetnacl.box.keyPair.fromSecretKey(secretKeyBin).publicKey;
+	const decryptMeBin = tweetnacl.util.decodeBase64(decryptMe);
+	const decryptedBin = tweetnacl.sealedbox.open(decryptMeBin, publicKeyBin, secretKeyBin);
+	const decryptedUTF8 = decoder.write(decryptedBin);
+	return decryptedUTF8;
+}
+
+function save_new_frame( message ) {
+	const decrypted = decrypt( Personal.libsodium.private_key , message );
+	console.log( decrypted );
+}
+
 ( async ()=> {
 
 
 	const RedisUtils = require( "redis-manager-utils" );
-	const PersonalFilePath = path.join( process.env.HOME , ".config" , "personal" , "raspi_motion_alarm_rewrite.json" );
-	const Personal = require( PersonalFilePath );
 
 	console.log( "Starting" );
 	const redis_manager = new RedisUtils( Personal.redis.database_number , Personal.redis.host , Personal.redis.port  );
@@ -34,6 +53,7 @@ process.on( "uncaughtException" , function( err ) {
 			case "new-image-frame":
 				// Add Image to DOM ?
 				//
+				save_new_frame( message );
 				break;
 			case "new-image-threshold":
 				// Add Image to DOM ?
