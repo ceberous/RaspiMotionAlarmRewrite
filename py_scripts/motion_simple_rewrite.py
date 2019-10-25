@@ -165,21 +165,6 @@ class TenvisVideo():
 		print ( "MAX_TIME_ACCEPTABLE === " + str( self.MAX_TIME_ACCEPTABLE ) )
 		print ( "MAX_TIME_ACCEPTABLE_STAGE_2 === " + str( self.MAX_TIME_ACCEPTABLE_STAGE_2 ) )
 
-
-		## Setup Video Saving Folders
-
-		# five seconds of video ?
-		self.TOTAL_RECORDING_EVENT_FRAMES = 149
-		self.FRAME_EVENT_COUNT = 0
-		self.WRITING_EVENT_FRAMES = False
-		make_folder( os.path.abspath( os.path.join( __file__ , ".." , ".." , "RECORDS" )  ) )
-
-		self.TODAY_DATE_STRING = datetime.now( eastern_tz ).strftime( "%d%b%Y" ).upper()
-		self.TODAY_DATE_FILE_PATH = os.path.abspath( os.path.join( __file__ , ".." , ".." , "RECORDS" , self.TODAY_DATE_STRING ) )
-		make_folder( self.TODAY_DATE_FILE_PATH )
-		self.CURRENT_EVENT_FOLDER_PATH = os.path.abspath( os.path.join( self.TODAY_DATE_FILE_PATH , "0" ) )
-		make_folder( self.CURRENT_EVENT_FOLDER_PATH )
-
 		# Start
 		self.w_Capture = cv2.VideoCapture( 0 )
 		self.motionTracking()
@@ -229,26 +214,6 @@ class TenvisVideo():
 
 			# https://stackoverflow.com/questions/39622281/capture-one-frame-from-a-video-file-after-every-10-seconds
 			cv2.imwrite( frameLiveImagePath , frame )
-			# if self.WRITING_EVENT_FRAMES == True:
-			#   if self.FRAME_EVENT_COUNT < self.TOTAL_RECORDING_EVENT_FRAMES:
-			#       if self.FRAME_EVENT_COUNT < 10:
-			#           cur_path = os.path.abspath( os.path.join( self.CURRENT_EVENT_FOLDER_PATH , '{}.jpg'.format( "00" + str( self.FRAME_EVENT_COUNT ) ) ) )
-			#       elif self.FRAME_EVENT_COUNT < 100:
-			#           cur_path = os.path.abspath( os.path.join( self.CURRENT_EVENT_FOLDER_PATH , '{}.jpg'.format( "0" + str( self.FRAME_EVENT_COUNT ) ) ) )
-			#       else:
-			#           cur_path = os.path.abspath( os.path.join( self.CURRENT_EVENT_FOLDER_PATH , '{}.jpg'.format( self.FRAME_EVENT_COUNT ) ) )
-			#       cv2.imwrite( cur_path , frame )
-			#       self.FRAME_EVENT_COUNT += 1
-			#   else:
-			#       if self.EVENT_TOTAL > 0:
-			#           broadcast_video_ready( self.TODAY_DATE_STRING , str( self.EVENT_TOTAL - 1 ) )
-
-			#       self.WRITING_EVENT_FRAMES = False
-			#       self.FRAME_EVENT_COUNT = 0
-					#self.EVENT_TOTAL += 1
-					#self.CURRENT_EVENT_FOLDER_PATH = os.path.abspath( os.path.join( self.TODAY_DATE_FILE_PATH , str( self.EVENT_TOTAL ) ) )
-					#make_folder( self.CURRENT_EVENT_FOLDER_PATH )
-
 			sleep( .1 )
 
 			if self.last_email_time is not None:
@@ -346,8 +311,6 @@ class TenvisVideo():
 					self.WRITING_EVENT_FRAMES = True
 					self.FRAME_EVENT_COUNT = 0
 					self.EVENT_TOTAL += 1
-					self.CURRENT_EVENT_FOLDER_PATH = os.path.abspath( os.path.join( self.TODAY_DATE_FILE_PATH , str( self.EVENT_TOTAL ) ) )
-					make_folder( self.CURRENT_EVENT_FOLDER_PATH )
 
 					try:
 						self.ExtraAlertPool.insert( 0 , self.last_email_time )
