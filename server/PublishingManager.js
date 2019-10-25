@@ -1,6 +1,7 @@
 const process = require( "process" );
 const path = require( "path" );
 const util= require( "util" );
+const fs = require( "fs" );
 const RedisUtils = require( "redis-manager-utils" );
 const PersonalFilePath = path.join( process.env.HOME , ".config" , "personal" , "raspi_motion_alarm_rewrite.json" );
 const Personal = require( PersonalFilePath );
@@ -36,7 +37,9 @@ function custom_publish_image_b64( options ) {
 			const minutes = String( now.getMinutes() ).padStart( 2 , '0' );
 			const seconds = String( now.getSeconds() ).padStart( 2 , '0' );
 
-			const imageb64 = require( "fs" ).readFileSync( options.image_path , "base64" );
+			const imageb64 = fs.readFileSync( options.image_path , "base64" );
+			console.log( imageb64 );
+			console.log( options.image_path );
 			//await redis_manager.redis.publish( options.channel , imageb64 );
 			const list_key = `${ options.list_key_prefix }.${ yyyy }.${ mm }.${ dd }`
 			const Custom_JSON_Serialized_Image_Object = JSON.stringify({
