@@ -40,7 +40,12 @@ with open( personal_file_path , 'r' ) as f:
 		Personal = json.load( f )
 print( Personal )
 
-ws = create_connection( "ws://localhost:6161" )
+try:
+	ws = create_connection( "ws://localhost:6161" )
+except Exception as e:
+	print( e )
+	print( "failed to make twilio call" )
+	send_web_socket_message( "python-new-error" , "Couldn't Connect To WebSocket Manager" )
 
 TwilioClient = Client( Personal[ 'twilio' ][ 'twilio_sid' ] , Personal[ 'twilio' ][ 'twilio_auth_token' ] )
 
@@ -82,9 +87,12 @@ def twilio_message( number , message ):
 		broadcast_error( "failed to send sms" )
 
 def send_web_socket_message( type , message ):
-	json_string = json.dumps( { "type": type , "message": message } )
-	print ( json_string )
-	ws.send( json_string )
+	try:
+		json_string = json.dumps( { "type": type , "message": message } )
+		print ( json_string )
+		ws.send( json_string )
+	except Exception as e:
+		send_web_socket_message( "python-new-error" , "Couldn't Send WebSocket Message" )
 
 def broadcast_error( message ):
 	send_web_socket_message( "python-new-error" , message )
