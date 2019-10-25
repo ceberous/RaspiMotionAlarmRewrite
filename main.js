@@ -119,7 +119,4 @@ const LIVE_HTML_PAGE = `<html><img alt="" id="liveimage" src=""/> <script type="
 
 	console.log( "SERVER READY" );
 
-	events.emit( "publish_new_image_set" );
-
-
 })();
