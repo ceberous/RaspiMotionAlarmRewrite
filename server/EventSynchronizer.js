@@ -31,6 +31,7 @@ function load_custom_event_list() {
 				message: options.message ,
 				list_key_prefix: "sleep.records" ,
 			});
+			Publishing.new_image_set();
 		});
 
 		// Scheduled Events

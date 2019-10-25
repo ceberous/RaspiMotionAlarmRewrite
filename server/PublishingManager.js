@@ -49,25 +49,44 @@ function custom_publish_image_b64( options ) {
 		catch( error ) { console.log( error ); resolve( error ); return; }
 	});
 }
+
+function publish_new_frame() {
+	return new Promise( async ( resolve , reject )=> {
+		try {
+
+			await custom_publish_image_b64({
+				channel: "new-image-frame" ,
+				image_path: "../client/frameThresh.jpg" ,
+				list_key_prefix: "sleep.images.frames"
+			});
+
+			resolve();
+			return;
+		}
+		catch( error ) { console.log( error ); reject( error ); return; }
+	});
+}
+module.exports.new_frame = publish_new_frame;
+
 function publish_new_image_set() {
 	return new Promise( async ( resolve , reject )=> {
 		try {
 
 			await custom_publish_image_b64({
 				channel: "new-image-frame" ,
-				image_path: "/Users/morpheous/Pictures/Saved/LSRF-M.png" ,
+				image_path: "../client/frameThresh.jpg" ,
 				list_key_prefix: "sleep.images.frames"
 			});
 
 			await custom_publish_image_b64({
 				channel: "new-image-threshold" ,
-				image_path: "/Users/morpheous/Pictures/Saved/LSRF-M.png" ,
+				image_path: "../client/frameThresh.jpg" ,
 				list_key_prefix: "sleep.images.thresholds"
 			});
 
 			await custom_publish_image_b64({
 				channel: "new-image-delta" ,
-				image_path: "/Users/morpheous/Pictures/Saved/LSRF-M.png" ,
+				image_path: "../client/frameThresh.jpg" ,
 				list_key_prefix: "sleep.images.deltas"
 			});
 
