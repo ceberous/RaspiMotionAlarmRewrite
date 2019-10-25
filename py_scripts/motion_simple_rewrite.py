@@ -78,7 +78,7 @@ def send_web_socket_message( type , message ):
 		print ( json_string )
 		ws.send( json_string )
 	except Exception as e:
-		send_web_socket_message( "python-new-error" , "Couldn't Send WebSocket Message" )
+		print( "Couldn't Send WebSocket Message" )
 
 def broadcast_error( message ):
 	send_web_socket_message( "python-new-error" , message )
