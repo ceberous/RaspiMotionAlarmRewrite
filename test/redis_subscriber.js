@@ -14,6 +14,10 @@ const decoder = new StringDecoder( "utf8" );
 const PersonalFilePath = path.join( process.env.HOME , ".config" , "personal" , "raspi_motion_alarm_rewrite.json" );
 const Personal = require( PersonalFilePath );
 
+const tweetnacl = require( "tweetnacl" );
+tweetnacl.util = require( "tweetnacl-util" );
+tweetnacl.sealedbox = require( "tweetnacl-sealedbox-js" );
+
 function decrypt( secretKey , decryptMe ) {
 	const secretKeyBin = tweetnacl.util.decodeBase64(secretKey);
 	const publicKeyBin = tweetnacl.box.keyPair.fromSecretKey(secretKeyBin).publicKey;
@@ -64,19 +68,19 @@ function save_new_frame( message ) {
 				//
 				break;
 			case "python-new-error":
-				console.log( message );
+				console.log( decrypt( Personal.libsodium.private_key , message ) );
 				break;
 			case "python-new-event":
-				console.log( message );
+				console.log( decrypt( Personal.libsodium.private_key , message ) );
 				break;
 			case "python-new-record":
-				console.log( message );
+				console.log( decrypt( Personal.libsodium.private_key , message ) );
 				break;
 			case "message-generic":
-				console.log( message );
+				console.log( decrypt( Personal.libsodium.private_key , message ) );
 				break;
-			case "message-generic":
-				console.log( message );
+			case "message-error":
+				console.log( decrypt( Personal.libsodium.private_key , message ) );
 				break;
 			default:
 				console.log( channel );
