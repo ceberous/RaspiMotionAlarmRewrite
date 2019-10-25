@@ -89,6 +89,7 @@ def broadcast_event( message ):
 def broadcast_record( message ):
 	#twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message ) # testing
 	twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message )
+	twilio_call( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] ) # testing
 	send_web_socket_message( "python-new-record" , message )
 
 def broadcast_extra_record( message ):
