@@ -17,6 +17,9 @@
 	};
 
 	socket.onmessage = function ( message ) {
+		if ( !message ) { return; }
+		console.log( message );
+		message = JSON.parse( message.data );
 		console.log( message );
 	};
 

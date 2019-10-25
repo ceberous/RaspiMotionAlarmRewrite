@@ -73,7 +73,7 @@ function ON_CONNECTION( socket , req ) {
 					const count = message.count || 1;
 					redis_manager.redis.lrange( message.list_key , 0 , ( count - 1 ) , ( error , results )=> {
 						console.log( results );
-						socket.send(JSON.stringify({
+						socket.send( JSON.stringify({
 							message: "new_records" ,
 							data: results
 						}));

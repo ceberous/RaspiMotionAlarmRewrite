@@ -63,7 +63,7 @@ function publish_new_frame() {
 
 			await custom_publish_image_b64({
 				channel: "new-image-frame" ,
-				image_path: framePath ,
+				image_path: FramePath ,
 				list_key_prefix: "sleep.images.frames"
 			});
 

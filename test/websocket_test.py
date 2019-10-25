@@ -1,6 +1,5 @@
 import websocket
 import json
-import asyncio
 
 try:
     import thread
@@ -15,27 +14,27 @@ from pytz import timezone
 eastern_tz = timezone( "US/Eastern" )
 
 
-ws = websocket.WebSocket()
-ws.connect( "ws://127.0.0.1:10080" ) # websocket server
-ws.send( json.dumps( { "type": "get_frames" , "count": 1 , "list_key": "sleep.images.frames.2019.10.25" } ) )
+# ws = websocket.WebSocket()
+# ws.connect( "ws://127.0.0.1:10080" ) # websocket server
+# ws.send( json.dumps( { "type": "get_frames" , "count": 1 , "list_key": "sleep.images.frames.2019.10.25" } ) )
 
-# def on_open(ws):
-# 	print( "websocket connected" )
-# 	ws.send( json.dumps( { "type": "get_frames" , "count": 1 , "list_key": "sleep.images.frames.2019.10.25" } ) )
+def on_open(ws):
+	print( "websocket connected" )
+	ws.send( json.dumps( { "type": "get_frames" , "count": 1 , "list_key": "sleep.images.frames.2019.10.25" } ) )
 
 
-# def on_message(ws, message):
-# 	print(message)
+def on_message(ws, message):
+	print(message)
 
-# def on_error(ws, error):
-# 	print(error)
+def on_error(ws, error):
+	print(error)
 
-# def on_close(ws):
-# 	print("### closed ###")
+def on_close(ws):
+	print("### closed ###")
 
-# ws = websocket.WebSocketApp( "ws://127.0.0.1:10080" , on_message = on_message , on_error = on_error , on_close = on_close )
-# ws.on_open = on_open
-# ws.run_forever()
+ws = websocket.WebSocketApp( "ws://127.0.0.1:10080" , on_message = on_message , on_error = on_error , on_close = on_close )
+ws.on_open = on_open
+ws.run_forever()
 
 
 # from websocket import create_connection
