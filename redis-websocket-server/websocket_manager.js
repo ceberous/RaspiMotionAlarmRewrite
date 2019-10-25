@@ -22,7 +22,10 @@ function ON_CONNECTION( socket , req ) {
 					const count = message.count || 1;
 					redis_manager.redis.lrange( message.list_key , 0 , ( count - 1 ) , ( error , results )=> {
 						console.log( results );
-						socket.send( "new_frames" , results );
+						socket.send(JSON.stringify({
+							message: "new_frames" ,
+							data: results
+						}));
 						resolve( results );
 						return;
 					});
@@ -36,7 +39,10 @@ function ON_CONNECTION( socket , req ) {
 					const count = message.count || 1;
 					redis_manager.redis.lrange( message.list_key , 0 , ( count - 1 ) , ( error , results )=> {
 						console.log( results );
-						socket.send( "new_thresholds" , results );
+						socket.send(JSON.stringify({
+							message: "new_thresholds" ,
+							data: results
+						}));
 						resolve( results );
 						return;
 					});
@@ -50,7 +56,10 @@ function ON_CONNECTION( socket , req ) {
 					const count = message.count || 1;
 					redis_manager.redis.lrange( message.list_key , 0 , ( count - 1 ) , ( error , results )=> {
 						console.log( results );
-						socket.send( "new_deltas" , results );
+						socket.send(JSON.stringify({
+							message: "new_deltas" ,
+							data: results
+						}));
 						resolve( results );
 						return;
 					});
@@ -64,7 +73,10 @@ function ON_CONNECTION( socket , req ) {
 					const count = message.count || 1;
 					redis_manager.redis.lrange( message.list_key , 0 , ( count - 1 ) , ( error , results )=> {
 						console.log( results );
-						socket.send( "new_records" , results );
+						socket.send(JSON.stringify({
+							message: "new_records" ,
+							data: results
+						}));
 						resolve( results );
 						return;
 					});
@@ -78,7 +90,10 @@ function ON_CONNECTION( socket , req ) {
 					const count = message.count || 1;
 					redis_manager.redis.lrange( message.list_key , 0 , ( count - 1 ) , ( error , results )=> {
 						console.log( results );
-						socket.send( "new_events" , results );
+						socket.send(JSON.stringify({
+							message: "new_events" ,
+							data: results
+						}));
 						resolve( results );
 						return;
 					});
@@ -92,7 +107,10 @@ function ON_CONNECTION( socket , req ) {
 					const count = message.count || 1;
 					redis_manager.redis.lrange( message.list_key , 0 , ( count - 1 ) , ( error , results )=> {
 						console.log( results );
-						socket.send( "new_errors" , results );
+						socket.send(JSON.stringify({
+							message: "new_errors" ,
+							data: results
+						}));
 						resolve( results );
 						return;
 					});
@@ -106,7 +124,10 @@ function ON_CONNECTION( socket , req ) {
 					const count = message.count || 1;
 					redis_manager.redis.lrange( message.list_key , 0 , ( count - 1 ) , ( error , results )=> {
 						console.log( results );
-						socket.send( "new_messages_generic" , results );
+						socket.send(JSON.stringify({
+							message: "new_messages_generic" ,
+							data: results
+						}));
 						resolve( results );
 						return;
 					});
