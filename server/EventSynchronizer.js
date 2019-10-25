@@ -52,6 +52,9 @@ function load_custom_event_list() {
 		events.on( "command_start_pyprocess" , GenericUtils.startPYProcess );
 		events.on( "command_stop_pyprocess" , GenericUtils.stopPYProcess );
 		events.on( "command_restart_pyprocess" , GenericUtils.restartPYProcess );
+		events.on( "publish_new_frame" , () => {
+			Publishing.new_frame();
+		});
 		events.on( "publish_new_image_set" , () => {
 			Publishing.new_image_set();
 		});
