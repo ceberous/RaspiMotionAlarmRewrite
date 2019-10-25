@@ -5,7 +5,7 @@ const bodyParser = require( "body-parser" );
 const cors = require( "cors" );
 const PORT = require( "../../main.js" ).port;
 
-const app = express();
+let app = express();
 app.use( express.static( path.join( __dirname , "client" ) ) );
 app.use( cors( { origin: "http://localhost:" + PORT.toString() } ) );
 app.use( bodyParser.json() );
