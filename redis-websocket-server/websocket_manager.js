@@ -1,3 +1,4 @@
+const path = require( "path" );
 const PersonalFilePath = path.join( process.env.HOME , ".config" , "personal" , "raspi_motion_alarm_rewrite.json" );
 const Personal = require( PersonalFilePath );
 const RedisUtils = require( "redis-manager-utils" );
