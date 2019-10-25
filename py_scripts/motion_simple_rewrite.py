@@ -49,27 +49,28 @@ def twilio_call( number ):
 
 
 def inside_message_time_window():
-	result = False
-	now = datetime.now( eastern_tz )
-	if now.hour > 22:
-		if now.minute >= 30:
-			result = True
-	elif now.hour < 3:
-		if now.minute <= 30:
-			result = True
-	return result
+	# result = False
+	# now = datetime.now( eastern_tz )
+	# if now.hour > 22:
+	# 	if now.minute >= 30:
+	# 		result = True
+	# elif now.hour < 3:
+	# 	if now.minute <= 30:
+	# 		result = True
+	# return result
+	return True # testing
 
 def twilio_message( number , message ):
 	try:
 		if inside_message_time_window() == False:
-			broadcast_message( "Outside SMS Alert Time Window" )
+			send_web_socket_message( "python-new-error" , "Outside SMS Alert Time Window" )
 			return;
 		message = TwilioClient.messages.create( number ,
 			body=message ,
 			from_=Personal[ 'twilio' ][ 'fromSMSNumber' ] ,
 		)
 		print( "sent sms" )
-		broadcast_message( "Sent SMS to: " + str( number ) )
+		send_web_socket_message( "python-new-error" , "Sent SMS to: " + str( number ) )
 	except Exception as e:
 		print ( e )
 		print ( "failed to send sms" )
@@ -87,7 +88,7 @@ def broadcast_event( message ):
 	send_web_socket_message( "python-new-event" , message )
 
 def broadcast_record( message ):
-	#twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
+	#twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message ) # testing
 	twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message )
 	send_web_socket_message( "python-new-record" , message )
 
