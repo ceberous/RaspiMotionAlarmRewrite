@@ -87,15 +87,15 @@ def broadcast_event( message ):
 	send_web_socket_message( "python-new-event" , message )
 
 def broadcast_record( message ):
-	#send_twilio_sms( message )
-	send_twilio_extra_sms( message )
+	#twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
+	twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message )
 	send_web_socket_message( "python-new-record" , message )
 
 def broadcast_extra_record( message ):
 	print( "Broadcasting Extra Event" )
 	send_web_socket_message( "python-new-extra" , message )
-	#send_twilio_sms( message )
-	send_twilio_extra_sms( message )
+	#twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
+	twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message )
 
 def broadcast_video_ready( wTodayDateString , wEventNumber ):
 	print( "Today Date String == " + wTodayDateString )
@@ -352,7 +352,7 @@ class TenvisVideo():
 							wS1 = wNowString + " @@ " + str( num_records_in_10_minutes ) + " Records in 10 Minutes"
 							broadcast_extra_record( wS1 )
 						if num_records_in_20_minutes >= 4:
-							voice_call_me()
+							twilio_call( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] )
 							self.ExtraAlertPool = [ datetime.now( eastern_tz ) - timedelta( minutes=59 ) ] * 8
 						if num_records_in_30_minutes >= 7:
 							self.ExtraAlertPool = [ datetime.now( eastern_tz ) - timedelta( minutes=59 ) ] * 8
