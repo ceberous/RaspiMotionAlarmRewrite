@@ -11,6 +11,9 @@ function IONIC_CONTROLLER( options ) {
 		if ( options.command === "message" ) {
 			events.emit( "twilio-message" , options );
 		}
+		if ( options.command === "frame" ) {
+			events.emit( "publish_new_frame" );
+		}
 	}
 	catch ( error ) { console.error( error ); }
 }

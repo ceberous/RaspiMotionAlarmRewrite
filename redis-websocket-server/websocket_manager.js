@@ -8,6 +8,9 @@ let redis_manager;
 	await redis_manager.init();
 })();
 
+function sleep( ms ) { return new Promise( resolve => setTimeout( resolve , ms ) ); }
+
+
 function ON_CONNECTION( socket , req ) {
 	socket.on( "message" , async ( message )=> {
 		try { message = JSON.parse( message ); }
@@ -19,6 +22,13 @@ function ON_CONNECTION( socket , req ) {
 		else if ( message.type === "get_frames" ) {
 			return new Promise( async function( resolve , reject ) {
 				try {
+
+					await redis_manager.redis.publish( "ionic-controller" , JSON.stringify({
+						command: "frame" ,
+					}));
+
+					await sleep( 1000 );
+
 					const count = message.count || 1;
 					redis_manager.redis.lrange( message.list_key , 0 , ( count - 1 ) , ( error , results )=> {
 						console.log( results );
