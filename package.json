@@ -1,0 +1,40 @@
+{
+  "name": "raspimotionalarmrewrite",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ceberous/RaspiMotionAlarmRewrite.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ceberous/RaspiMotionAlarmRewrite/issues"
+  },
+  "homepage": "https://github.com/ceberous/RaspiMotionAlarmRewrite#readme",
+  "dependencies": {
+    "child_process": "^1.0.2",
+    "events": "^3.0.0",
+    "fs": "0.0.1-security",
+    "ip": "^1.1.5",
+    "node-schedule": "^1.3.2",
+    "path": "^0.12.7",
+    "process": "^0.11.10",
+    "ps-node": "^0.1.6",
+    "redis": "^2.8.0",
+    "redis-manager-utils": "^1.1.8",
+    "shelljs": "^0.8.3",
+    "tweetnacl": "^1.0.1",
+    "tweetnacl-sealedbox-js": "^1.2.0",
+    "tweetnacl-util": "^0.15.0",
+    "util": "^0.12.1",
+    "ws": "^7.2.0"
+  }
+}
