@@ -1,8 +1,14 @@
+const process = require( "process" );
 const path = require( "path" );
 const util= require( "util" );
 const RedisUtils = require( "redis-manager-utils" );
 const PersonalFilePath = path.join( process.env.HOME , ".config" , "personal" , "raspi_motion_alarm_rewrite.json" );
 const Personal = require( PersonalFilePath );
+
+const MainFilePath = process.mainModule.paths[ 0 ].split( "node_modules" )[ 0 ].slice( 0 , -1 );
+const FramePath = path.join( MainFilePath , "client" , "frame.jpeg" );
+const FrameDeltaPath = path.join( MainFilePath , "client" , "frameDelta.jpeg" );
+const FrameThresholdPath = path.join( MainFilePath , "client" , "frameThresh.jpeg" );
 
 const tweetnacl = require( "tweetnacl" );
 tweetnacl.util = require( "tweetnacl-util" );
@@ -56,7 +62,7 @@ function publish_new_frame() {
 
 			await custom_publish_image_b64({
 				channel: "new-image-frame" ,
-				image_path: "../client/frameThresh.jpg" ,
+				image_path: framePath ,
 				list_key_prefix: "sleep.images.frames"
 			});
 
@@ -74,20 +80,20 @@ function publish_new_image_set() {
 
 			await custom_publish_image_b64({
 				channel: "new-image-frame" ,
-				image_path: "../client/frameThresh.jpg" ,
+				image_path: FramePath ,
 				list_key_prefix: "sleep.images.frames"
 			});
 
 			await custom_publish_image_b64({
-				channel: "new-image-threshold" ,
-				image_path: "../client/frameThresh.jpg" ,
-				list_key_prefix: "sleep.images.thresholds"
+				channel: "new-image-delta" ,
+				image_path: FrameDeltaPath ,
+				list_key_prefix: "sleep.images.deltas"
 			});
 
 			await custom_publish_image_b64({
-				channel: "new-image-delta" ,
-				image_path: "../client/frameThresh.jpg" ,
-				list_key_prefix: "sleep.images.deltas"
+				channel: "new-image-threshold" ,
+				image_path: FrameThresholdPath ,
+				list_key_prefix: "sleep.images.thresholds"
 			});
 
 			resolve();
