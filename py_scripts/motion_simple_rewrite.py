@@ -127,7 +127,6 @@ try:
 except Exception as e:
 	print( e )
 	print( "failed to make twilio call" )
-	send_web_socket_message( "python-new-error" , "Couldn't Connect To WebSocket Manager" )
 
 class TenvisVideo():
 
