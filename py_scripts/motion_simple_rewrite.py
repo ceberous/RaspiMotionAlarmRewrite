@@ -45,16 +45,15 @@ TwilioClient = Client( Personal[ 'twilio' ][ 'twilio_sid' ] , Personal[ 'twilio'
 ws = False
 
 def inside_message_time_window():
-	# result = False
-	# now = datetime.now( eastern_tz )
-	# if now.hour > 22:
-	# 	if now.minute >= 30:
-	# 		result = True
-	# elif now.hour < 3:
-	# 	if now.minute <= 30:
-	# 		result = True
-	# return result
-	return True # testing
+	result = False
+	now = datetime.now( eastern_tz )
+	if now.hour > 22:
+		if now.minute >= 30:
+			result = True
+	elif now.hour < 3:
+		if now.minute <= 30:
+			result = True
+	return result
 
 def twilio_message( number , message ):
 	try:
@@ -87,9 +86,8 @@ def broadcast_event( message ):
 	send_web_socket_message( "python-new-event" , message )
 
 def broadcast_record( message ):
-	#twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message ) # testing
-	twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message )
-	twilio_call( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] ) # testing
+	twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
+	#twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message ) # testing
 	send_web_socket_message( "python-new-record" , message )
 
 def broadcast_extra_record( message ):

@@ -2,10 +2,7 @@ const schedule = require( "node-schedule" );
 
 let startTime = new schedule.RecurrenceRule();
 startTime.dayOfWeek = [ new schedule.Range( 0 , 6 ) ];
-// # testing
-// startTime.hour = 22;
-// startTime.minute = 30;
-startTime.hour = 16;
+startTime.hour = 22;
 startTime.minute = 30;
 let stopTime = new schedule.RecurrenceRule();
 stopTime.dayOfWeek = [ new schedule.Range( 0 , 6 ) ];
