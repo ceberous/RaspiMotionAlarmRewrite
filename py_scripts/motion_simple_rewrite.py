@@ -40,23 +40,9 @@ with open( personal_file_path , 'r' ) as f:
 		Personal = json.load( f )
 print( Personal )
 
-try:
-	ws = create_connection( "ws://localhost:6161" )
-except Exception as e:
-	print( e )
-	print( "failed to make twilio call" )
-	send_web_socket_message( "python-new-error" , "Couldn't Connect To WebSocket Manager" )
 
 TwilioClient = Client( Personal[ 'twilio' ][ 'twilio_sid' ] , Personal[ 'twilio' ][ 'twilio_auth_token' ] )
-
-def twilio_call( number ):
-	try:
-		new_call = TwilioClient.calls.create( url=Personal[ 'twilio' ][ 'twilio_response_server_url' ] , to=Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , from_=Personal[ 'twilio' ][ 'fromSMSNumber' ] , method="POST" )
-	except Exception as e:
-		print( e )
-		print( "failed to make twilio call" )
-		send_web_socket_message( "python-new-error" , "Failed to Make Twilio Call to: " + str( number ) )
-
+ws = False
 
 def inside_message_time_window():
 	# result = False
@@ -125,6 +111,23 @@ def make_folder( path ):
 		pass
 		#if exception.errno != errno.EEXIST:
 			#raise
+
+
+def twilio_call( number ):
+	try:
+		new_call = TwilioClient.calls.create( url=Personal[ 'twilio' ][ 'twilio_response_server_url' ] , to=Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , from_=Personal[ 'twilio' ][ 'fromSMSNumber' ] , method="POST" )
+	except Exception as e:
+		print( e )
+		print( "failed to make twilio call" )
+		send_web_socket_message( "python-new-error" , "Failed to Make Twilio Call to: " + str( number ) )
+
+
+try:
+	ws = create_connection( "ws://localhost:6161" )
+except Exception as e:
+	print( e )
+	print( "failed to make twilio call" )
+	send_web_socket_message( "python-new-error" , "Couldn't Connect To WebSocket Manager" )
 
 class TenvisVideo():
 
