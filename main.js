@@ -32,7 +32,7 @@ const PORT = Personal.express.port;
 module.exports.port = PORT;
 const LOCAL_IP = ip.address();
 module.exports.local_ip = LOCAL_IP;
-const LIVE_HTML_PAGE = `<img alt="" id="liveimage" src=""/> <script type="text/javascript">(function(){setInterval(function(){var myImageElement=document.getElementById("liveimage");myImageElement.src="http://${ LOCAL_IP }:${ PORT }/live_image?" + new Date().getTime()},500)}());</script>`;
+const LIVE_HTML_PAGE = `<html><img alt="" id="liveimage" src=""/> <script type="text/javascript">(function(){setInterval(function(){var myImageElement=document.getElementById("liveimage");myImageElement.src="http://${ LOCAL_IP }:${ PORT }/live_image?" + new Date().getTime()},500)}());</script></html>`;
 
 ( async ()=> {
 
