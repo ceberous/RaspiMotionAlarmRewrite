@@ -38,6 +38,7 @@ function custom_publish_image_b64( options ) {
 			const seconds = String( now.getSeconds() ).padStart( 2 , '0' );
 
 			const imageb64 = fs.readFileSync( options.image_path , "base64" );
+			if ( imageb64.length < 3 ) { resolve( "empty" ); return; }
 			console.log( imageb64 );
 			console.log( options.image_path );
 			//await redis_manager.redis.publish( options.channel , imageb64 );

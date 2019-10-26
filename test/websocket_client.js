@@ -29,7 +29,7 @@ function get_eastern_time_key_suffix() {
 	const now = new Date( new Date().toLocaleString( "en-US" , { timeZone: "America/New_York" } ) );
 	const now_hours = now.getHours();
 	const now_minutes = now.getMinutes();
-	const dd = String( now.getDate()).padStart( 2 , '0' );
+	const dd = String( now.getDate() - 1 ).padStart( 2 , '0' );
 	const mm = String( now.getMonth() + 1 ).padStart( 2 , '0' );
 	const yyyy = now.getFullYear();
 	const hours = String( now.getHours() ).padStart( 2 , '0' );
@@ -58,8 +58,8 @@ function get_frames() {
 
 const ws = new WebSocket( "ws://127.0.0.1:10080" );
 ws.on( "open" , function open() {
-	//get_frames();
-	get_latest_frame();
+	get_frames();
+	//get_latest_frame();
 });
 
 ws.on( "message" , ( data )=> {
