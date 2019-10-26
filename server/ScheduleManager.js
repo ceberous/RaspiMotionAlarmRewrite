@@ -32,7 +32,10 @@ function load_schedules() {
 		else if ( hours <= stopTime.hour ) {
 			RESTART = true;
 			if ( hours === stopTime.hour ) {
-				if ( now.getMinutes() >= stopTime.minute ) { RESTART = false; }
+				if ( now.getMinutes() >= stopTime.minute ) {
+					RESTART = false;
+					//events.emit( "command_stop_pyprocess" );
+				}
 			}
 		}
 		if ( RESTART ) {

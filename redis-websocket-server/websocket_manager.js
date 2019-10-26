@@ -19,7 +19,7 @@ function ON_CONNECTION( socket , req ) {
 		if ( message.type === "pong" ) {
 			console.log( "inside pong()" );
 		}
-		else if ( message.type === "get_frames" ) {
+		else if ( message.type === "get_latest_frame" ) {
 			return new Promise( async function( resolve , reject ) {
 				try {
 
@@ -28,7 +28,22 @@ function ON_CONNECTION( socket , req ) {
 					}));
 
 					await sleep( 1000 );
-
+					redis_manager.redis.lrange( message.list_key , 0 , 0 , ( error , results )=> {
+						console.log( results );
+						socket.send(JSON.stringify({
+							message: "new_frames" ,
+							data: results
+						}));
+						resolve( results );
+						return;
+					});
+				}
+				catch( error ) { console.log( error ); reject( error ); return; }
+			});
+		}
+		else if ( message.type === "get_frames" ) {
+			return new Promise( async function( resolve , reject ) {
+				try {
 					const count = message.count || 1;
 					redis_manager.redis.lrange( message.list_key , 0 , ( count - 1 ) , ( error , results )=> {
 						console.log( results );
