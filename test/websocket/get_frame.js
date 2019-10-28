@@ -1,4 +1,5 @@
 const process = require( "process" );
+const { execSync } = require( "child_process" );
 const WebSocket = require( "ws" );
 const path = require( "path" );
 const utf8 = require( "utf8" );
@@ -29,7 +30,7 @@ function get_eastern_time_key_suffix() {
 	const now = new Date( new Date().toLocaleString( "en-US" , { timeZone: "America/New_York" } ) );
 	const now_hours = now.getHours();
 	const now_minutes = now.getMinutes();
-	const dd = String( now.getDate() - 1 ).padStart( 2 , '0' );
+	const dd = String( now.getDate() ).padStart( 2 , '0' );
 	const mm = String( now.getMonth() + 1 ).padStart( 2 , '0' );
 	const yyyy = now.getFullYear();
 	const hours = String( now.getHours() ).padStart( 2 , '0' );
@@ -47,19 +48,9 @@ function get_latest_frame() {
 	}));
 }
 
-function get_frames() {
-	const key = "sleep.images.frames." + get_eastern_time_key_suffix();
-	ws.send( JSON.stringify({
-		"type": "get_frames" ,
-		"count": 10 ,
-		"list_key": key
-	}));
-}
-
 const ws = new WebSocket( "ws://127.0.0.1:10080" );
 ws.on( "open" , function open() {
-	get_frames();
-	//get_latest_frame();
+	get_latest_frame();
 });
 
 ws.on( "message" , ( data )=> {
@@ -82,13 +73,9 @@ ws.on( "message" , ( data )=> {
 	for ( let i = 0; i < decrypted_messages.length; ++i ) {
 		console.log( `${ decrypted_messages[ i ].timestamp_string } === ${ decrypted_messages[ i ].list_key } === Image String Length === ${ decrypted_messages[ i ].image_b64.length.toString() }` );
 		const file_safe_time_string = decrypted_messages[ i ].timestamp_string.replace( /\./g , "-" );
-		const frame_path = path.join( FramePathBase , `frame-${ String( i ).padStart( 2 , "0" ) } === ${ file_safe_time_string }.jpeg` );
+		const frame_path = path.join( FramePathBase , `latest-frame === ${ file_safe_time_string }.jpeg` );
 		fs.writeFileSync( frame_path , decrypted_messages[ i ].image_b64 , "base64" );
+		execSync( `open "${ frame_path }"` );
 	}
 	process.exit( 1 );
 });
-
-
-
-
-

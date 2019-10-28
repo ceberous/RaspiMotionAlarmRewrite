@@ -137,7 +137,6 @@ function publish_new_item( options ) {
 			await redis_manager.redis.publish( options.type , encrypted );
 			console.log( list_key );
 			await redis_manager.listLPUSH( list_key , encrypted );
-			console.log( "now finished" );
 			resolve();
 			return;
 		}
