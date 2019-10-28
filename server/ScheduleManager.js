@@ -12,11 +12,6 @@ stopTime.dayOfWeek = [ new schedule.Range( 0 , 6 ) ];
 stopTime.hour = 9;
 stopTime.minute = 0;
 
-let testTime = new schedule.RecurrenceRule();
-testTime.dayOfWeek = [ new schedule.Range( 0 , 6 ) ];
-testTime.hour = 18;
-testTime.minute = 42;
-
 function load_schedules() {
 	try {
 
@@ -51,15 +46,9 @@ function load_schedules() {
 			events.emit( "scheduled_stop" );
 		});
 
-		const testEvent = schedule.scheduleJob( testTime , ()=> {
-			console.log( "Scheduled Test Task Starting" );
-			events.emit( "generic_message" , { message: "this is a test event from the schedule manager" } );
-		});
 
 		schedules.push( startEvent );
 		schedules.push( stopEvent );
-
-		schedules.push( testEvent );
 
 		return schedules;
 	}
