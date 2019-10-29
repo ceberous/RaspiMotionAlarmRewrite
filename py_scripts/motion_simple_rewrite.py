@@ -7,7 +7,7 @@ import signal
 import imutils
 import json
 
-from datetime import datetime , timedelta
+from datetime import datetime , timedelta , time
 from time import localtime, strftime , sleep
 from pytz import timezone
 eastern_tz = timezone( "US/Eastern" )
@@ -44,27 +44,34 @@ print( Personal )
 TwilioClient = Client( Personal[ 'twilio' ][ 'twilio_sid' ] , Personal[ 'twilio' ][ 'twilio_auth_token' ] )
 ws = False
 
+
 def inside_message_time_window():
 	result = False
+	window_hours = [ 22 , 23 , 24 , 0 , 1 , 2 ]
 	now = datetime.now( eastern_tz )
-	if now.hour > 22:
-		if now.minute >= 30:
-			result = True
-	elif now.hour < 3:
-		if now.minute <= 30:
+	if now.hour in window_hours:
+		if now.hour == 22:
+			if now.minute >= 30:
+				result = True
+			else:
+				result = False
+		elif now.hour == 2:
+			if now.minute <= 30:
+				result = True
+			else:
+				result = False
+		else:
 			result = True
 	return result
 
-def inside_extra_alert_call_window():
+def ignore_extra_alert_call():
 	result = False
+	ignore_hours = [ 22 , 23 , 24 , 0 , 1 ]
 	now = datetime.now( eastern_tz )
-	if now.hour > 22:
-		if now.minute >= 30:
-			result = True
-	elif now.hour < 1:
-		if now.minute <= 30:
-			result = True
+	if now.hour in window_hours:
+		result = True
 	return result
+
 
 def twilio_message( number , message ):
 	try:
@@ -341,8 +348,7 @@ class TenvisVideo():
 							wS1 = wNowString + " @@ " + str( num_records_in_10_minutes ) + " Records in 10 Minutes"
 							broadcast_extra_record( wS1 )
 						if num_records_in_20_minutes >= 3:
-							too_early = inside_extra_alert_call_window()
-							if too_early == False:
+							if ignore_extra_alert_call() == False:
 								print( "3 or More Records in 20 Minutes , making Twilio Call To ExtraEventNumber" )
 								twilio_call( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] )
 							self.ExtraAlertPool = [ datetime.now( eastern_tz ) - timedelta( minutes=59 ) ] * 8

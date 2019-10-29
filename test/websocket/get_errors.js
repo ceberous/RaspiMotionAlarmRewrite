@@ -50,7 +50,7 @@ function get_errors() {
 }
 
 const ws = new WebSocket( "ws://127.0.0.1:10080" );
-ws.on( "open" , get_errors );
+ws.on( "open" , get_events );
 
 ws.on( "message" , ( data )=> {
     if ( !data ) { return; }
