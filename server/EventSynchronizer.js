@@ -12,7 +12,7 @@ function load_custom_event_list() {
 			Publishing.new_item({
 				type: "python-new-error" ,
 				message: options.message ,
-				list_key_prefix: "sleep.errors" ,
+				list_key_prefix: "sleep.python.errors" ,
 			});
 		});
 		events.on( "python-new-event" , ( options ) => {
@@ -20,7 +20,7 @@ function load_custom_event_list() {
 			Publishing.new_item({
 				type: "python-new-event" ,
 				message: options.message ,
-				list_key_prefix: "sleep.events" ,
+				list_key_prefix: "sleep.python.events" ,
 			});
 		});
 		events.on( "python-new-record" , ( options ) => {
@@ -29,7 +29,7 @@ function load_custom_event_list() {
 			Publishing.new_item({
 				type: "python-new-record" ,
 				message: options.message ,
-				list_key_prefix: "sleep.records" ,
+				list_key_prefix: "sleep.python.records" ,
 			});
 			Publishing.new_image_set();
 		});
@@ -82,7 +82,7 @@ function load_custom_event_list() {
 			Publishing.new_item({
 				type: "message-generic" ,
 				message: options.message,
-				list_key_prefix: "sleep.messages.generic" ,
+				list_key_prefix: "sleep.node.messages.generic" ,
 			});
 		});
 
@@ -92,7 +92,7 @@ function load_custom_event_list() {
 			Publishing.new_item({
 				type: "message-error" ,
 				message: options.message,
-				list_key_prefix: "sleep.messages.errors" ,
+				list_key_prefix: "sleep.node.errors" ,
 			});
 			//GenericUtils.restartPYProcess();
 		});
@@ -100,7 +100,7 @@ function load_custom_event_list() {
 			Publishing.new_item({
 				type: "message-error" ,
 				message: options.message,
-				list_key_prefix: "sleep.messages.errors" ,
+				list_key_prefix: "sleep.node.errors" ,
 			});
 			//GenericUtils.restartPYProcess();
 		});
@@ -108,7 +108,7 @@ function load_custom_event_list() {
 			Publishing.new_item({
 				type: "message-error" ,
 				message: options.message ,
-				list_key_prefix: "sleep.messages.errors" ,
+				list_key_prefix: "sleep.node.errors" ,
 			});
 			//GenericUtils.stopPYProcess();
 		});
