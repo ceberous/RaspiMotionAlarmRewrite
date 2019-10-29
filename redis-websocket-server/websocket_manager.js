@@ -46,7 +46,7 @@ function ON_CONNECTION( socket , req ) {
 			return new Promise( async function( resolve , reject ) {
 				try {
 					const count = message.count || 1;
-					redis_manager.redis.lrange( message.list_key , 0 , ( count - 1 ) , ( error , results )=> {
+					redis_manager.redis.lrange( message.list_key , 0 , count , ( error , results )=> {
 						console.log( results );
 						socket.send(JSON.stringify({
 							message: "new_frames" ,
@@ -63,7 +63,7 @@ function ON_CONNECTION( socket , req ) {
 			return new Promise( async function( resolve , reject ) {
 				try {
 					const count = message.count || 1;
-					redis_manager.redis.lrange( message.list_key , 0 , ( count - 1 ) , ( error , results )=> {
+					redis_manager.redis.lrange( message.list_key , 0 , count , ( error , results )=> {
 						console.log( results );
 						socket.send(JSON.stringify({
 							message: "new_thresholds" ,
@@ -80,7 +80,7 @@ function ON_CONNECTION( socket , req ) {
 			return new Promise( async function( resolve , reject ) {
 				try {
 					const count = message.count || 1;
-					redis_manager.redis.lrange( message.list_key , 0 , ( count - 1 ) , ( error , results )=> {
+					redis_manager.redis.lrange( message.list_key , 0 , count , ( error , results )=> {
 						console.log( results );
 						socket.send(JSON.stringify({
 							message: "new_deltas" ,
@@ -97,7 +97,7 @@ function ON_CONNECTION( socket , req ) {
 			return new Promise( async function( resolve , reject ) {
 				try {
 					const count = message.count || 1;
-					redis_manager.redis.lrange( message.list_key , 0 , ( count - 1 ) , ( error , results )=> {
+					redis_manager.redis.lrange( message.list_key , 0 , count , ( error , results )=> {
 						console.log( results );
 						socket.send( JSON.stringify({
 							message: "new_records" ,
@@ -114,7 +114,7 @@ function ON_CONNECTION( socket , req ) {
 			return new Promise( async function( resolve , reject ) {
 				try {
 					const count = message.count || 1;
-					redis_manager.redis.lrange( message.list_key , 0 , ( count - 1 ) , ( error , results )=> {
+					redis_manager.redis.lrange( message.list_key , 0 , count , ( error , results )=> {
 						console.log( results );
 						socket.send(JSON.stringify({
 							message: "new_events" ,
@@ -131,7 +131,7 @@ function ON_CONNECTION( socket , req ) {
 			return new Promise( async function( resolve , reject ) {
 				try {
 					const count = message.count || 1;
-					redis_manager.redis.lrange( message.list_key , 0 , ( count - 1 ) , ( error , results )=> {
+					redis_manager.redis.lrange( message.list_key , 0 , count , ( error , results )=> {
 						console.log( results );
 						socket.send(JSON.stringify({
 							message: "new_errors" ,
@@ -148,7 +148,7 @@ function ON_CONNECTION( socket , req ) {
 			return new Promise( async function( resolve , reject ) {
 				try {
 					const count = message.count || 1;
-					redis_manager.redis.lrange( message.list_key , 0 , ( count - 1 ) , ( error , results )=> {
+					redis_manager.redis.lrange( message.list_key , 0 , count , ( error , results )=> {
 						console.log( results );
 						socket.send(JSON.stringify({
 							message: "new_messages_generic" ,

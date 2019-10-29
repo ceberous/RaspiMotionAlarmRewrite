@@ -42,17 +42,19 @@ function get_eastern_time_key_suffix() {
 
 function get_frames() {
 	const key = "sleep.images.frames." + get_eastern_time_key_suffix();
+	// Its Really An Array Based Counting Scheme
+	// So count = 31 , really means get 30 frames
+	// -1 = Get ALL in Redis List
+	const count = -1;
 	ws.send( JSON.stringify({
 		"type": "get_frames" ,
-		"count": 30 ,
+		"count": count ,
 		"list_key": key
 	}));
 }
 
 const ws = new WebSocket( "ws://127.0.0.1:10080" );
-ws.on( "open" , function open() {
-	get_frames();
-});
+ws.on( "open" , get_frames );
 
 ws.on( "message" , ( data )=> {
 	if ( !data ) { return; }

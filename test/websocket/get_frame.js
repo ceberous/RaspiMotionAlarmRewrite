@@ -49,9 +49,7 @@ function get_latest_frame() {
 }
 
 const ws = new WebSocket( "ws://127.0.0.1:10080" );
-ws.on( "open" , function open() {
-	get_latest_frame();
-});
+ws.on( "open" , get_latest_frame );
 
 ws.on( "message" , ( data )=> {
 	if ( !data ) { return; }
