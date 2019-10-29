@@ -7,7 +7,7 @@ import signal
 import imutils
 import json
 
-from datetime import datetime , timedelta , time
+from datetime import datetime , timedelta
 from time import localtime, strftime , sleep
 from pytz import timezone
 eastern_tz = timezone( "US/Eastern" )
@@ -44,46 +44,28 @@ print( Personal )
 TwilioClient = Client( Personal[ 'twilio' ][ 'twilio_sid' ] , Personal[ 'twilio' ][ 'twilio_auth_token' ] )
 ws = False
 
-
 def inside_message_time_window():
-	result = True
-	# window_hours = [ 22 , 23 , 24 , 0 , 1 , 2 ]
-	# now = datetime.now( eastern_tz )
-	# if now.hour in window_hours:
-	# 	if now.hour == 22:
-	# 		if now.minute >= 30:
-	# 			result = True
-	# 		else:
-	# 			result = False
-	# 	elif now.hour == 2:
-	# 		if now.minute <= 30:
-	# 			result = True
-	# 		else:
-	# 			result = False
-	# 	else:
-	# 		result = True
-	return result
-
-def ignore_extra_alert_call():
 	result = False
-	# ignore_hours = [ 22 , 23 , 24 , 0 , 1 ]
-	# now = datetime.now( eastern_tz )
-	# if now.hour in window_hours:
-	# 	result = True
+	now = datetime.now( eastern_tz )
+	if now.hour > 22:
+		if now.minute >= 30:
+			result = True
+	elif now.hour < 3:
+		if now.minute <= 30:
+			result = True
 	return result
-
 
 def twilio_message( number , message ):
 	try:
 		if inside_message_time_window() == False:
-			send_web_socket_message( "python-new-event" , "Outside SMS Alert Time Window" )
+			send_web_socket_message( "python-new-error" , "Outside SMS Alert Time Window" )
 			return;
 		message = TwilioClient.messages.create( number ,
 			body=message ,
 			from_=Personal[ 'twilio' ][ 'fromSMSNumber' ] ,
 		)
 		print( "sent sms" )
-		send_web_socket_message( "python-new-event" , "Sent SMS to: " + str( number ) )
+		send_web_socket_message( "python-new-error" , "Sent SMS to: " + str( number ) )
 	except Exception as e:
 		print ( e )
 		print ( "failed to send sms" )
@@ -348,8 +330,7 @@ class TenvisVideo():
 							wS1 = wNowString + " @@ " + str( num_records_in_10_minutes ) + " Records in 10 Minutes"
 							broadcast_extra_record( wS1 )
 						if num_records_in_20_minutes >= 3:
-							#if ignore_extra_alert_call() == False:
-							print( "3 or More Records in 20 Minutes , making Twilio Call To ExtraEventNumber" )
+							print( "More than 4 Records in 20 Minutes , making Twilio Call To ExtraEventNumber" )
 							twilio_call( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] )
 							self.ExtraAlertPool = [ datetime.now( eastern_tz ) - timedelta( minutes=59 ) ] * 8
 						if num_records_in_30_minutes >= 7:
