@@ -44,7 +44,7 @@ function get_frames() {
 	const key = "sleep.images.frames." + get_eastern_time_key_suffix();
 	ws.send( JSON.stringify({
 		"type": "get_frames" ,
-		"count": 10 ,
+		"count": 30 ,
 		"list_key": key
 	}));
 }

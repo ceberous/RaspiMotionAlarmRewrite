@@ -24,7 +24,6 @@ function ON_CONNECTION( socket , req ) {
 				try {
 
 					console.log( "Inside get_latest_frame message" );
-					console.log( message );
 					await redis_manager.redis.publish( "ionic-controller" , JSON.stringify({
 						command: "frame" ,
 					}));

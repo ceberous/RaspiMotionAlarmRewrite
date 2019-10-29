@@ -55,6 +55,17 @@ def inside_message_time_window():
 			result = True
 	return result
 
+def inside_extra_alert_call_window():
+	result = False
+	now = datetime.now( eastern_tz )
+	if now.hour > 22:
+		if now.minute >= 30:
+			result = True
+	elif now.hour < 1:
+		if now.minute <= 30:
+			result = True
+	return result
+
 def twilio_message( number , message ):
 	try:
 		if inside_message_time_window() == False:
@@ -326,12 +337,14 @@ class TenvisVideo():
 							if time_diff < 600:
 								num_records_in_10_minutes = num_records_in_10_minutes + 1
 
-						if num_records_in_10_minutes >= 3:
+						if num_records_in_10_minutes >= 2:
 							wS1 = wNowString + " @@ " + str( num_records_in_10_minutes ) + " Records in 10 Minutes"
 							broadcast_extra_record( wS1 )
-						if num_records_in_20_minutes >= 4:
-							print( "More than 4 Records in 20 Minutes , making Twilio Call To ExtraEventNumber" )
-							twilio_call( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] )
+						if num_records_in_20_minutes >= 3:
+							too_early = inside_extra_alert_call_window()
+							if too_early == False:
+								print( "3 or More Records in 20 Minutes , making Twilio Call To ExtraEventNumber" )
+								twilio_call( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] )
 							self.ExtraAlertPool = [ datetime.now( eastern_tz ) - timedelta( minutes=59 ) ] * 8
 						if num_records_in_30_minutes >= 7:
 							self.ExtraAlertPool = [ datetime.now( eastern_tz ) - timedelta( minutes=59 ) ] * 8
