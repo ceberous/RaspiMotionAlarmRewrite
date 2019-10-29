@@ -69,14 +69,14 @@ def inside_extra_alert_call_window():
 def twilio_message( number , message ):
 	try:
 		if inside_message_time_window() == False:
-			send_web_socket_message( "python-new-error" , "Outside SMS Alert Time Window" )
+			send_web_socket_message( "python-new-event" , "Outside SMS Alert Time Window" )
 			return;
 		message = TwilioClient.messages.create( number ,
 			body=message ,
 			from_=Personal[ 'twilio' ][ 'fromSMSNumber' ] ,
 		)
 		print( "sent sms" )
-		send_web_socket_message( "python-new-error" , "Sent SMS to: " + str( number ) )
+		send_web_socket_message( "python-new-event" , "Sent SMS to: " + str( number ) )
 	except Exception as e:
 		print ( e )
 		print ( "failed to send sms" )
