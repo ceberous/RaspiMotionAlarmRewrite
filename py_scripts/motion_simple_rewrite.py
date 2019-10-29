@@ -348,9 +348,9 @@ class TenvisVideo():
 							wS1 = wNowString + " @@ " + str( num_records_in_10_minutes ) + " Records in 10 Minutes"
 							broadcast_extra_record( wS1 )
 						if num_records_in_20_minutes >= 3:
-							if ignore_extra_alert_call() == False:
-								print( "3 or More Records in 20 Minutes , making Twilio Call To ExtraEventNumber" )
-								twilio_call( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] )
+							#if ignore_extra_alert_call() == False:
+							print( "3 or More Records in 20 Minutes , making Twilio Call To ExtraEventNumber" )
+							twilio_call( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] )
 							self.ExtraAlertPool = [ datetime.now( eastern_tz ) - timedelta( minutes=59 ) ] * 8
 						if num_records_in_30_minutes >= 7:
 							self.ExtraAlertPool = [ datetime.now( eastern_tz ) - timedelta( minutes=59 ) ] * 8
