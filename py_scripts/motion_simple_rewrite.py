@@ -46,30 +46,30 @@ ws = False
 
 
 def inside_message_time_window():
-	result = False
-	window_hours = [ 22 , 23 , 24 , 0 , 1 , 2 ]
-	now = datetime.now( eastern_tz )
-	if now.hour in window_hours:
-		if now.hour == 22:
-			if now.minute >= 30:
-				result = True
-			else:
-				result = False
-		elif now.hour == 2:
-			if now.minute <= 30:
-				result = True
-			else:
-				result = False
-		else:
-			result = True
+	result = True
+	# window_hours = [ 22 , 23 , 24 , 0 , 1 , 2 ]
+	# now = datetime.now( eastern_tz )
+	# if now.hour in window_hours:
+	# 	if now.hour == 22:
+	# 		if now.minute >= 30:
+	# 			result = True
+	# 		else:
+	# 			result = False
+	# 	elif now.hour == 2:
+	# 		if now.minute <= 30:
+	# 			result = True
+	# 		else:
+	# 			result = False
+	# 	else:
+	# 		result = True
 	return result
 
 def ignore_extra_alert_call():
 	result = False
-	ignore_hours = [ 22 , 23 , 24 , 0 , 1 ]
-	now = datetime.now( eastern_tz )
-	if now.hour in window_hours:
-		result = True
+	# ignore_hours = [ 22 , 23 , 24 , 0 , 1 ]
+	# now = datetime.now( eastern_tz )
+	# if now.hour in window_hours:
+	# 	result = True
 	return result
 
 
