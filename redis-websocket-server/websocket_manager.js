@@ -24,7 +24,7 @@ function get_eastern_time_key_suffix() {
 	return key_suffix;
 }
 
-function pluralize = ( noun , suffix = 's') {
+function pluralize( noun , suffix = "s" ) {
 	if ( !noun ) { return; }
 	if ( noun.length < 2 ) { return noun; }
 	if ( noun.charAt( noun.length - 1 ) === "s" ) { return noun; }

@@ -1,4 +1,3 @@
-import threading
 import numpy as np
 import cv2
 import sys
@@ -15,11 +14,8 @@ eastern_tz = timezone( "US/Eastern" )
 
 from twilio.rest import Client
 
-redis = redis.Redis( host='localhost' , port=6379 , db=1 )
-
-# from websocket import create_connectio
-# import websocket
-# import threading
+redis_manager = False
+redis_subscriber = False
 
 videoPath = os.path.abspath( os.path.join( __file__ , ".." , ".." , "videos" ) )
 framePathBase = os.path.abspath( os.path.join( __file__ , ".." , ".." , "client" ) )
@@ -161,7 +157,6 @@ def update_loaded_config( config ):
 			if config[ 'clipping' ][ 'reset' ] == True or config[ 'clipping' ][ 'reset' ] == "true" or config[ 'clipping' ][ 'reset' ] == "True":
 				LOADED_CONFIG[ 'clipping' ] = DEFAULT_CLIPPING
 				redis_publish( { "channel": "log" , "message": "LOADED_CONFIG == DEFAULT_CLIPPING" } )
-
 			return
 		if 'x' in config[ 'clipping' ]:
 			if '1' in config[ 'clipping' ][ 'x' ]:
@@ -180,40 +175,26 @@ def update_loaded_config( config ):
 				LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] = config[ 'clipping' ][ 'y' ][ '2' ]
 				redis_publish( { "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] == " + str( config[ 'clipping' ][ 'y' ][ '2' ] ) } )
 
-ws = False
-def on_message( ws , message ):
+
+def redis_on_message( message ):
 	try:
-		print message
 		message = json.loads( message )
-		if 'type' in message:
-			if message[ 'type' ] == 'python-script-command':
-				if 'command' in message:
-					if message[ 'command' ] == 'update-config':
-						if 'config' in message:
-							update_loaded_config( options[ 'config' ] )
-
+		print( message )
+		if 'command' in message:
+			if message[ 'command' ] == "update_loaded_config":
+				if 'config' in message:
+					update_loaded_config( message.config )
 	except Exception as e:
-		print( e )
-		print( "Failed to Parse WebSocket Message JSON")
-		redis_publish( { "channel": "errors" , "message": "Failed to Parse WebSocket Message JSON" } )
-
-
-def on_close( ws ):
-	print( "### closed ###" )
-	redis_publish( { "channel": "errors" , "message": "WebSocket Connection Closed" } )
-
+		pring( e )
+		print( "Failed To Parse Redis Message" )
 
 try:
-	#ws = create_connection( "ws://localhost:6161" )
-	websocket.enableTrace( True )
-	ws = websocket.WebSocketApp( "ws://localhost:6161" , on_message = on_message , on_close = on_close )
-	wst = threading.Thread( target=ws.run_forever )
-	wst.daemon = True
-	wst.start()
+	redis_manager = redis.Redis( host='localhost' , port=6379 , db=1 )
+	redis_subscriber = redis.pubsub()
+	redis_subscriber.subscribe( **{ 'python-script-update' : redis_on_message } )
 except Exception as e:
 	print( e )
-	print( "failed to connect to websocket server" )
-
+	print( "Failed to connect to REDIS" )
 
 def signal_handler( signal , frame ):
 	message_string = "motion_simple_rewrite_fixed.py closed , Signal = " + str( signal )
