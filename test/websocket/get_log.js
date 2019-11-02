@@ -43,7 +43,7 @@ function get_log() {
 	const count = -1;
 	ws.send( JSON.stringify({
 		"type": "get_redis_lrange" ,
-		"starting_position":
+		"starting_position": 0 ,
 		"ending_position": count ,
 		"list_key": key ,
 		"channel": "log"
@@ -60,7 +60,7 @@ ws.on( "message" , ( data )=> {
 	if ( data.message === "new_redis_lrange_items" ) {
 		if ( data.channel === "log" ) {
 			data = data.data;
-			console.log( websocket_announcement_message );
+			console.log( data.message );
 			let decrypted_messages = [];
 			for ( let i = 0; i < data.length; ++i ) {
 				try {
