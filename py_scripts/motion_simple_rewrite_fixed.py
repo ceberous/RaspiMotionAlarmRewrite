@@ -190,7 +190,7 @@ def redis_on_message( message ):
 
 try:
 	redis_manager = redis.Redis( host='localhost' , port=6379 , db=1 )
-	redis_subscriber = redis.pubsub()
+	redis_subscriber = redis_manager.pubsub()
 	redis_subscriber.subscribe( **{ 'python-script-update' : redis_on_message } )
 except Exception as e:
 	print( e )
