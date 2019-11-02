@@ -139,7 +139,7 @@ def twilio_call( number ):
 		send_web_socket_message( "errors" , "Failed to Make Twilio Call to: " + str( number ) )
 
 
-def update_config( config ):
+def update_loaded_config( config ):
 	if 'EMAIL_COOLOFF' in config:
 		LOADED_CONFIG[ 'EMAIL_COOLOFF' ] = config[ 'EMAIL_COOLOFF' ]
 	if 'MIN_MOTION_SECONDS' in config:
