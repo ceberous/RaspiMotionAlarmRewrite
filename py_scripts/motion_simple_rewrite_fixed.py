@@ -164,19 +164,19 @@ def update_loaded_config( config ):
 		if 'x' in config[ 'clipping' ]:
 			if '1' in config[ 'clipping' ][ 'x' ]:
 				LOADED_CONFIG[ 'clipping' ][ 'x' ][ '1' ] = config[ 'clipping' ][ 'x' ][ '1' ]
-				send_web_socket_message( "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'x' ][ '1' ] == " + str( config[ 'clipping' ][ 'x' ][ '1' ] ) )
+				send_web_socket_message( { "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'x' ][ '1' ] == " + str( config[ 'clipping' ][ 'x' ][ '1' ] ) } )
 
 			if '2' in config[ 'clipping' ][ 'x' ]:
 				LOADED_CONFIG[ 'clipping' ][ 'x' ][ '2' ] = config[ 'clipping' ][ 'x' ][ '2' ]
-				send_web_socket_message( "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'x' ][ '2' ] == " + str( config[ 'clipping' ][ 'x' ][ '2' ] ) )
+				send_web_socket_message( { "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'x' ][ '2' ] == " + str( config[ 'clipping' ][ 'x' ][ '2' ] ) } )
 		if 'y' in config[ 'clipping' ]:
 			if '1' in config[ 'clipping' ][ 'y' ]:
 				LOADED_CONFIG[ 'clipping' ][ 'y' ][ '1' ] = config[ 'clipping' ][ 'y' ][ '1' ]
-				send_web_socket_message( "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] == " + str( config[ 'clipping' ][ 'y' ][ '1' ] ) )
+				send_web_socket_message( { "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] == " + str( config[ 'clipping' ][ 'y' ][ '1' ] ) } )
 
 			if '2' in config[ 'clipping' ][ 'y' ]:
 				LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] = config[ 'clipping' ][ 'y' ][ '2' ]
-				send_web_socket_message( "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] == " + str( config[ 'clipping' ][ 'y' ][ '2' ] ) )
+				send_web_socket_message( { "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] == " + str( config[ 'clipping' ][ 'y' ][ '2' ] ) } )
 
 ws = False
 def on_message( ws , message ):
