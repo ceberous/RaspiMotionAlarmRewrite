@@ -32,10 +32,6 @@ function custom_publish_image_b64( options ) {
 			console.log( options.image_path );
 			options.image_b64 = imageb64;
 			await publish_new_item( options );
-			const encrypted = encrypt( Custom_JSON_Serialized_Image_Object );
-			console.log( encrypted );
-			await redis_manager.listLPUSH( list_key , encrypted );
-			await redis_manager.redis.publish( options.channel , encrypted );
 			resolve();
 			return;
 		}
@@ -118,6 +114,7 @@ function publish_new_item( options ) {
 					message: `${ time_stamp_string } === ${ options.message }`
 				}
 			});
+			console.log( Custom_JSON_Serialized_Item_Object );
 			const encrypted = encrypt( Custom_JSON_Serialized_Item_Object );
 			console.log( encrypted );
 			await redis_manager.redis.publish( options.type , encrypted );
