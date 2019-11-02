@@ -18,14 +18,6 @@ from twilio.rest import Client
 import websocket
 import threading
 
-
-signal.signal( signal.SIGABRT , signal_handler )
-signal.signal( signal.SIGFPE , signal_handler )
-signal.signal( signal.SIGILL , signal_handler )
-signal.signal( signal.SIGSEGV , signal_handler )
-signal.signal( signal.SIGTERM , signal_handler )
-signal.signal( signal.SIGINT , signal_handler )
-
 videoPath = os.path.abspath( os.path.join( __file__ , ".." , ".." , "videos" ) )
 framePathBase = os.path.abspath( os.path.join( __file__ , ".." , ".." , "client" ) )
 frameLiveImagePath = os.path.abspath( os.path.join( framePathBase , "frame.jpeg" ) )
@@ -203,6 +195,13 @@ def signal_handler( signal , frame ):
 	print( message_string )
 	broadcast_error( message_string )
 	sys.exit( 0 )
+
+signal.signal( signal.SIGABRT , signal_handler )
+signal.signal( signal.SIGFPE , signal_handler )
+signal.signal( signal.SIGILL , signal_handler )
+signal.signal( signal.SIGSEGV , signal_handler )
+signal.signal( signal.SIGTERM , signal_handler )
+signal.signal( signal.SIGINT , signal_handler )
 
 class TenvisVideo():
 
