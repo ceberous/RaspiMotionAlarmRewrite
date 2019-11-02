@@ -26,7 +26,8 @@ let arg1 = 1    // = Minimum Seconds of Continuous Motion
 let arg2 = 4    // = Total Motion Events Acceptable Before Alert
 let arg3 = 45   // = Minimum Time of Motion Before Alert
 let arg4 = 90   // = Cooloff Period Duration
-const lCode1 = path.join( __dirname , "../py_scripts" , "motion_simple_rewrite.py" );
+//const lCode1 = path.join( __dirname , "../py_scripts" , "motion_simple_rewrite.py" );
+const lCode1 = path.join( __dirname , "../py_scripts" , "motion_simple_rewrite_fixed.py" );
 console.log( lCode1 );
 let wState = false;
 let wChild = null;

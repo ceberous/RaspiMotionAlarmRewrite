@@ -36,8 +36,8 @@ function get_eastern_time_key_suffix() {
 }
 
 function get_events() {
-    //const key = "sleep.python.events." + get_eastern_time_key_suffix();
-    const key = "sleep.records." + get_eastern_time_key_suffix();
+    const key = "sleep.python.records." + get_eastern_time_key_suffix();
+    //const key = "sleep.records." + get_eastern_time_key_suffix();
     // Its Really An Array Based Counting Scheme
     // So count = 31 , really means get 30 events
     // -1 = Get ALL in Redis List

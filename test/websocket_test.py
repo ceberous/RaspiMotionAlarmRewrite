@@ -36,7 +36,6 @@ ws = websocket.WebSocketApp( "ws://127.0.0.1:10080" , on_message = on_message , 
 ws.on_open = on_open
 ws.run_forever()
 
-
 # from websocket import create_connection
 # ws = create_connection( "ws://127.0.0.1:10080" )
 # ws.send( json.dumps( { "type": "get_frames" , "count": 1 , "list_key": "sleep.images.frames.2019.10.25" } ) )

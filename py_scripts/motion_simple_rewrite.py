@@ -48,10 +48,16 @@ def inside_message_time_window():
 	result = False
 	now = datetime.now( eastern_tz )
 	if now.hour > 22:
-		if now.minute >= 30:
+		if now.hour == 22:
+			if now.minute >= 30:
+				result = True
+		else:
 			result = True
 	elif now.hour < 3:
-		if now.minute <= 30:
+		if now.hour == 3:
+			if now.minute <= 30:
+				result = True
+		else:
 			result = True
 	return result
 

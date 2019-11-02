@@ -1,5 +1,9 @@
 function ON_CONNECTION( socket , req ) {
 	const events = require( "../main.js" ).events;
+	// events.on( "python-script-command" , ( options ) => {
+	// 	if ( !options ) { return; }
+	// 	socket.send( "python-script-command" , options );
+	// });
 	socket.on( "message" ,  function( message ) {
 		try { message = JSON.parse( message ); }
 		catch( e ) { var a = message; message = { "type": a }; }
@@ -8,6 +12,12 @@ function ON_CONNECTION( socket , req ) {
 			case "pong":
 				console.log( "inside pong()" );
 				this.isAlive = true;
+				break;
+			case "python-script":
+				try{
+					events.emit( "python-script" , message );
+				}
+				catch( error ) { console.log( error ); }
 				break;
 			case "python-new-error":
 				try{

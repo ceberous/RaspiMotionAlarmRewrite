@@ -36,8 +36,8 @@ function get_eastern_time_key_suffix() {
 }
 
 function get_errors() {
-    //const key = "sleep.python.errors." + get_eastern_time_key_suffix();
-    const key = "sleep.errors." + get_eastern_time_key_suffix();
+    const key = "sleep.python.errors." + get_eastern_time_key_suffix();
+    //const key = "sleep.errors." + get_eastern_time_key_suffix();
     // Its Really An Array Based Counting Scheme
     // So count = 31 , really means get 30 events
     // -1 = Get ALL in Redis List
@@ -50,7 +50,7 @@ function get_errors() {
 }
 
 const ws = new WebSocket( "ws://127.0.0.1:10080" );
-ws.on( "open" , get_events );
+ws.on( "open" , get_errors );
 
 ws.on( "message" , ( data )=> {
     if ( !data ) { return; }

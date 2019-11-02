@@ -7,6 +7,22 @@ function load_custom_event_list() {
 
 		// Python Motion Script Events
 		// ============================================================
+		events.on( "python-script" , ( options ) => {
+			if ( !options ) { return; }
+			try{
+				Publishing.new_item({
+					type: "python-script" ,
+					message: `${ GenericUtils.time() } === PYTHON-SCRIPT === ${ options.message }` ,
+					list_key_prefix: "sleep.log" ,
+				});
+				Publishing.new_item({
+					type: "python-script" ,
+					message: `${ GenericUtils.time() } === PYTHON-SCRIPT === ${ options.message }` ,
+					list_key_prefix: `sleep.python.${ options.channel }` ,
+				});
+			}
+			catch( error ) { console.log( error ); }
+		});
 		events.on( "python-new-error" , ( options ) => {
 			if ( !options ) { return; }
 			Publishing.new_item({
