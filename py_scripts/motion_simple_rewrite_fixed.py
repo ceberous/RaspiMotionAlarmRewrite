@@ -183,16 +183,16 @@ def on_message( ws , message ):
 		send_web_socket_message( "errors" , "Failed to Parse WebSocket Message JSON" )
 
 def on_close( ws ):
-    print( "### closed ###" )
-    send_web_socket_message( "errors" , "WebSocket Connection Closed" )
+	print( "### closed ###" )
+	send_web_socket_message( "errors" , "WebSocket Connection Closed" )
 
 try:
-	ws = create_connection( "ws://localhost:6161" )
-    websocket.enableTrace( True )
-    ws = websocket.WebSocketApp( "ws://localhost:6161" , on_message = on_message , on_close = on_close )
-    wst = threading.Thread( target=ws.run_forever )
-    wst.daemon = True
-    wst.start()
+	#ws = create_connection( "ws://localhost:6161" )
+	websocket.enableTrace( True )
+	ws = websocket.WebSocketApp( "ws://localhost:6161" , on_message = on_message , on_close = on_close )
+	wst = threading.Thread( target=ws.run_forever )
+	wst.daemon = True
+	wst.start()
 except Exception as e:
 	print( e )
 	print( "failed to connect to websocket server" )
