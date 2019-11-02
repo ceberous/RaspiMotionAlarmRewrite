@@ -91,7 +91,6 @@ module.exports.new_image_set = publish_new_image_set;
 function publish_new_item( options ) {
 	return new Promise( async ( resolve , reject )=> {
 		try {
-			console.log( "publish_new_item()" );
 			const redis_manager = new RedisUtils( Personal.redis.database_number , Personal.redis.host , Personal.redis.port  );
 			await redis_manager.init();
 
@@ -114,11 +113,11 @@ function publish_new_item( options ) {
 					message: `${ time_stamp_string } === ${ options.message }`
 				}
 			});
+			console.log( "publish_new_item() === "  + list_key );
 			console.log( Custom_JSON_Serialized_Item_Object );
 			const encrypted = encrypt( Custom_JSON_Serialized_Item_Object );
 			console.log( encrypted );
 			await redis_manager.redis.publish( options.type , encrypted );
-			console.log( list_key );
 			await redis_manager.listLPUSH( list_key , encrypted );
 			resolve();
 			return;
