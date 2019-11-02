@@ -36,15 +36,17 @@ function get_eastern_time_key_suffix() {
 }
 
 function get_log() {
-	const key = "sleep.log" + get_eastern_time_key_suffix();
+	const key = "sleep.log." + get_eastern_time_key_suffix();
 	// Its Really An Array Based Counting Scheme
 	// So count = 31 , really means get 30 events
 	// -1 = Get ALL in Redis List
 	const count = -1;
 	ws.send( JSON.stringify({
-		"type": "get_log" ,
-		"count": count ,
-		"list_key": key
+		"type": "get_redis_lrange" ,
+		"starting_position":
+		"ending_position": count ,
+		"list_key": key ,
+		"channel": "log"
 	}));
 }
 
@@ -55,21 +57,22 @@ ws.on( "message" , ( data )=> {
 	if ( !data ) { return; }
 	data = JSON.parse( data );
 	if ( !data ) { return; }
-	const websocket_announcement_message = data.message;
-	if ( websocket_announcement_message === "new_redis_lrange_items" ) {
-		data = data.data;
-		console.log( websocket_announcement_message );
-		let decrypted_messages = [];
-		for ( let i = 0; i < data.length; ++i ) {
-			try {
-				let decrypted = decrypt( Personal.libsodium.private_key , data[ i ] );
-				decrypted = JSON.parse( decrypted );
-				decrypted_messages.push( decrypted );
+	if ( data.message === "new_redis_lrange_items" ) {
+		if ( data.channel === "log" ) {
+			data = data.data;
+			console.log( websocket_announcement_message );
+			let decrypted_messages = [];
+			for ( let i = 0; i < data.length; ++i ) {
+				try {
+					let decrypted = decrypt( Personal.libsodium.private_key , data[ i ] );
+					decrypted = JSON.parse( decrypted );
+					decrypted_messages.push( decrypted );
+				}
+				catch ( error ) { console.log( error ); }
 			}
-			catch ( error ) { console.log( error ); }
-		}
-		for ( let i = 0; i < decrypted_messages.length; ++i ) {
-			console.log( decrypted_messages[ i ].message );
+			for ( let i = 0; i < decrypted_messages.length; ++i ) {
+				console.log( decrypted_messages[ i ].message );
+			}
 		}
 	}
 	process.exit( 1 );
