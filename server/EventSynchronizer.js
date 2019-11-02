@@ -25,7 +25,7 @@ function load_custom_event_list() {
 				options.list_key_prefix = `sleep.python.${ options.channel }`;
 				Publishing.new_item( options );
 				if ( options.command ) {
-					if options.command === "publish_new_image_set" {
+					if( options.command === "publish_new_image_set" ) {
 						PublisherManager.new_image_set();
 					}
 					else if ( options.command === "publish_new_frame" ) {
