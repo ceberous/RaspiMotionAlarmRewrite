@@ -26,30 +26,12 @@ function encrypt( message ) {
 function custom_publish_image_b64( options ) {
 	return new Promise( async ( resolve , reject )=> {
 		try {
-			const redis_manager = new RedisUtils( Personal.redis.database_number , Personal.redis.host , Personal.redis.port  );
-			await redis_manager.init();
-
-			const now = new Date();
-			const dd = String( now.getDate()).padStart( 2 , '0' );
-			const mm = String( now.getMonth() + 1 ).padStart( 2 , '0' );
-			const yyyy = now.getFullYear();
-			const hours = String( now.getHours() ).padStart( 2 , '0' );
-			const minutes = String( now.getMinutes() ).padStart( 2 , '0' );
-			const seconds = String( now.getSeconds() ).padStart( 2 , '0' );
-
 			const imageb64 = fs.readFileSync( options.image_path , "base64" );
 			if ( imageb64.length < 3 ) { resolve( "empty" ); return; }
 			console.log( imageb64 );
 			console.log( options.image_path );
-			//await redis_manager.redis.publish( options.channel , imageb64 );
-			const list_key = `${ options.list_key_prefix }.${ yyyy }.${ mm }.${ dd }`
-			const Custom_JSON_Serialized_Image_Object = JSON.stringify({
-				timestamp: now ,
-				message: options.message ,
-				timestamp_string: `${ yyyy }.${ mm }.${ dd } @@ ${ hours }:${ minutes }:${ seconds }`,
-				image_b64: imageb64 ,
-				list_key: list_key
-			});
+			options.image_b64 = imageb64;
+			await publish_new_item( options );
 			const encrypted = encrypt( Custom_JSON_Serialized_Image_Object );
 			console.log( encrypted );
 			await redis_manager.listLPUSH( list_key , encrypted );
@@ -126,12 +108,14 @@ function publish_new_item( options ) {
 			const seconds = String( now.getSeconds() ).padStart( 2 , '0' );
 
 			const list_key = `${ options.list_key_prefix }.${ yyyy }.${ mm }.${ dd }`;
-			const Custom_JSON_Serialized_Item_Object = JSON.stringify({
+			let Custom_JSON_Serialized_Item_Object = {
 				timestamp: now ,
 				timestamp_string: `${ yyyy }.${ mm }.${ dd } @@ ${ hours }:${ minutes }:${ seconds }` ,
-				message: options.message ,
 				list_key: list_key
-			});
+			};
+			Custom_JSON_Serialized_Item_Object = { ...Custom_JSON_Serialized_Item_Object , ...options };
+			Custom_JSON_Serialized_Item_Object = JSON.stringify( Custom_JSON_Serialized_Item_Object );
+
 			const encrypted = encrypt( Custom_JSON_Serialized_Item_Object );
 			console.log( encrypted );
 			await redis_manager.redis.publish( options.type , encrypted );
