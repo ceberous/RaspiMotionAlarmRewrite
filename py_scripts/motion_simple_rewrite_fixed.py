@@ -138,7 +138,6 @@ def twilio_call( number ):
 		print( "failed to make twilio call" )
 		send_web_socket_message( "errors" , "Failed to Make Twilio Call to: " + str( number ) )
 
-def update_loaded_clipping( clipping ):
 
 def update_config( config ):
 	if 'EMAIL_COOLOFF' in config:
