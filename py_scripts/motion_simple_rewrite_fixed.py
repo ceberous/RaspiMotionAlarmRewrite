@@ -151,7 +151,7 @@ def twilio_call( number ):
 def update_loaded_clipping( options ):
 	print( options )
 	if 'reset' in options:
-		if options[ 'reset' ] = True or options[ 'reset' ] = "true" or options[ 'reset' ] = "True":
+		if options[ 'reset' ] == True or options[ 'reset' ] == "true" or options[ 'reset' ] == "True":
 		LOADED_CLIPPING = DEFAULT_CLIPPING
 		send_web_socket_message( "log" , "LOADED_CLIPPING == DEFAULT_CLIPPING" )
 		return
