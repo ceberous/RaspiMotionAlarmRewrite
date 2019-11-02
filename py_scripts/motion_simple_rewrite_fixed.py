@@ -181,7 +181,7 @@ def on_message( ws , message ):
 		if 'type' in message:
 			if message[ 'type' ] == 'python-script-command':
 				if 'command' in message:
-					elif message[ 'command' ] == 'update-config':
+					if message[ 'command' ] == 'update-config':
 						if 'config' in message:
 							update_loaded_config( options[ 'config' ] )
 
