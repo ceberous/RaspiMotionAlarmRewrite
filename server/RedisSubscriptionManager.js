@@ -8,10 +8,10 @@ function LOAD_SUBSCRIPTIONS() {
 				console.log( "new message from: " + channel );
 				switch( channel ) {
 					case "ionic-controller":
-						events.emit( "command" , JSON.parse( options ) );
+						events.emit( "command" , JSON.parse( message ) );
 						break;
 					case "python-script-controller":
-						events.emit( "python-script" , JSON.parse( options ) );
+						events.emit( "python-script" , JSON.parse( message ) );
 						break;
 					default:
 						console.log( channel );
