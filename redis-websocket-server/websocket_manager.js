@@ -111,7 +111,7 @@ function ON_CONNECTION( socket , req ) {
 					const ending_position = message.ending_position || 1;
 					const result = await redis_get_lrange( message.list_key , starting_position , ending_position );
 					socket.send( JSON.stringify( { message: `new_${ pluralize( message.channel ) }` , data: result } ) );
-					resolve( results );
+					resolve( result );
 					return;
 
 				}
