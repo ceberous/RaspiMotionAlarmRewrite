@@ -1,34 +1,17 @@
-function IONIC_CONTROLLER( options ) {
-	try {
-		console.log( "Inside IONIC_CONTROLLER()" );
-		require( "../main.js" ).events.emit( "command" , JSON.parse( options ) );
-	}
-	catch( error ) { console.log( error ); }
-
-}
-
-function PYTHON_SCRIPT_CONTROLLER( options ) {
-	try {
-		console.log( "Inside PYTHON_SCRIPT_CONTROLLER()" );
-		require( "../main.js" ).events.emit( "python-script" , JSON.parse( options ) );
-	}
-	catch( error ) { console.log( error ); }
-
-}
-
 function LOAD_SUBSCRIPTIONS() {
 	return new Promise( function( resolve , reject ) {
 		try {
+			const events = require( "../main.js" ).events;
 			const redis_manager = require( "../main.js" ).redis_manager;
 			redis_manager.redis.on( "message" , function ( channel , message ) {
 				//console.log( "sub channel " + channel + ": " + message );
 				console.log( "new message from: " + channel );
 				switch( channel ) {
 					case "ionic-controller":
-						IONIC_CONTROLLER( message );
+						events.emit( "command" , JSON.parse( options ) );
 						break;
 					case "python-script-controller":
-						PYTHON_SCRIPT_CONTROLLER( message );
+						events.emit( "python-script" , JSON.parse( options ) );
 						break;
 					default:
 						console.log( channel );

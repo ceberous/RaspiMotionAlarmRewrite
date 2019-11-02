@@ -15,6 +15,7 @@ function load_custom_event_list() {
 						list_key_prefix: "sleep.log"
 					}
 				};
+				console.log( global_log_options );
 				Publishing.new_item( global_log_options );
 				let python_log_options = { ...global_log_options };
 				python_log_options.list_key_prefix = `sleep.python.${ options.channel }`;

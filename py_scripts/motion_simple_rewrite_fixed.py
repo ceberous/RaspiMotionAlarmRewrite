@@ -91,11 +91,20 @@ def twilio_message( number , message ):
 		redis_publish( { "channel": "errors" , "message": "failed to send sms" } )
 
 # { "type": "python-script" , "channel": channel , "command": command , "message": message }
+def get_redis_key_suffix():
+	now = datetime.now( eastern_tz )
+	return = now.strftime( "%Y.%m.%d" )
+
 def redis_publish( options ):
 	try:
 		json_string = json.dumps( options )
 		print( json_string )
 		redis_manager.publish( "python-script-controller" , json_string )
+		# key_suffix = get_redis_key_suffix()
+		# global_log_key = "redis.sleep.log." + key_suffix
+		# channel_key = "redis.sleep." + options.channel + "." + key_suffix
+		# redis_manager.lpush( global_log_key , json_string )
+		# redis_manager.lpush( global_log_key , json_string )
 	except Exception as e:
 		print( "Couldn't Publish Message to REDIS" )
 
