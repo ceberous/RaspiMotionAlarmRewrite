@@ -48,7 +48,7 @@ function publish_new_frame() {
 		try {
 
 			await custom_publish_image_b64({
-				channel: "new-image-frame" ,
+				channel: "frames" ,
 				image_path: FramePath ,
 				list_key_prefix: "sleep.images.frames"
 			});
@@ -66,19 +66,19 @@ function publish_new_image_set() {
 		try {
 
 			await custom_publish_image_b64({
-				channel: "new-image-frame" ,
+				channel: "frames" ,
 				image_path: FramePath ,
 				list_key_prefix: "sleep.images.frames"
 			});
 
 			await custom_publish_image_b64({
-				channel: "new-image-delta" ,
+				channel: "deltas" ,
 				image_path: FrameDeltaPath ,
 				list_key_prefix: "sleep.images.deltas"
 			});
 
 			await custom_publish_image_b64({
-				channel: "new-image-threshold" ,
+				channel: "thresholds" ,
 				image_path: FrameThresholdPath ,
 				list_key_prefix: "sleep.images.thresholds"
 			});
@@ -108,14 +108,17 @@ function publish_new_item( options ) {
 			const seconds = String( now.getSeconds() ).padStart( 2 , '0' );
 
 			const list_key = `${ options.list_key_prefix }.${ yyyy }.${ mm }.${ dd }`;
-			let Custom_JSON_Serialized_Item_Object = {
-				timestamp: now ,
-				timestamp_string: `${ yyyy }.${ mm }.${ dd } @@ ${ hours }:${ minutes }:${ seconds }` ,
-				list_key: list_key
-			};
-			Custom_JSON_Serialized_Item_Object = { ...Custom_JSON_Serialized_Item_Object , ...options };
-			Custom_JSON_Serialized_Item_Object = JSON.stringify( Custom_JSON_Serialized_Item_Object );
-
+			const time_stamp_string = `${ yyyy }.${ mm }.${ dd } @@ ${ hours }:${ minutes }:${ seconds }`;
+			const Custom_JSON_Serialized_Item_Object = JSON.stringify({
+				...options ,
+				...{
+					timestamp: now ,
+					timestamp_string:  ,
+					list_key: list_key ,
+					time_stamp_string: timestamp_string ,
+					message: `${ time_stamp_string } === ${ options.message }`
+				}
+			});
 			const encrypted = encrypt( Custom_JSON_Serialized_Item_Object );
 			console.log( encrypted );
 			await redis_manager.redis.publish( options.type , encrypted );

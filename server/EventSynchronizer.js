@@ -5,21 +5,19 @@ function load_custom_event_list() {
 		const Publishing = require( "./RedisPublishingManager.js" );
 		const redis_manager = require( "../main.js" ).redis_manager;
 
+		function publish_wrapper( options ) {
+			Publishing.new_item({
+				...options ,
+				...{
+				}
+			});
+		}
+
 		// Python Motion Script Events
 		// ============================================================
 		events.on( "python-script" , ( options ) => {
 			if ( !options ) { return; }
 			try{
-				options = {
-					...options ,
-					...{
-						type: "python-script" ,
-						channel: options.channel ,
-						command: options.command ,
-						message: `${ GenericUtils.time() } === PYTHON-SCRIPT === ${ options.message }` ,
-						list_key_prefix: "sleep.log" ,
-					}
-				};
 				options.list_key_prefix = "sleep.log"
 				Publishing.new_item( options );
 				options.list_key_prefix = `sleep.python.${ options.channel }`;
@@ -38,7 +36,7 @@ function load_custom_event_list() {
 				Publishing.new_item({
 					type: "node" ,
 					channel: "errors" ,
-					message: `${ GenericUtils.time() } === PYTHON-SCRIPT === ${ options.message }` ,
+					message: `PYTHON-SCRIPT === ${ options.message }` ,
 					list_key_prefix: `sleep.node.errors` ,
 				});
 			}
@@ -54,11 +52,6 @@ function load_custom_event_list() {
 				Publishing.new_item({
 					type: "node" ,
 					channel: "log" ,
-					message: `${ GenericUtils.time() } === NODE === ${ message }` ,
-					list_key_prefix: "sleep.log" ,
-				});
-				Publishing.new_item({
-					type: "node" ,
 					message: `${ GenericUtils.time() } === NODE === ${ message }` ,
 					list_key_prefix: "sleep.log" ,
 				});
@@ -80,10 +73,39 @@ function load_custom_event_list() {
 			}
 		});
 		events.on( "scheduled_stop" , () => {
-			const cur_state = GenericUtils.getState();
-			if ( !cur_state.state ) { GenericUtils.startPYProcess(); }
-			else { GenericUtils.restartrestartPYProcess(); }
-
+			try{
+				const cur_state = GenericUtils.getState();
+				let message;
+				if ( !cur_state.state ) { message = "Scheduled Start of Python Motion Script"; GenericUtils.startPYProcess(); }
+				else { message = "Scheduled Start of Python Motion Script: Scheduled Stop"; GenericUtils.restartPYProcess(); }
+				Publishing.new_item({
+					type: "node" ,
+					channel: "log" ,
+					message: `${ GenericUtils.time() } === NODE === ${ message }` ,
+					list_key_prefix: "sleep.node.log" ,
+				});
+				Publishing.new_item({
+					type: "node" ,
+					channel: "log" ,
+					message: `${ GenericUtils.time() } === NODE === ${ message }` ,
+					list_key_prefix: "sleep.log" ,
+				});
+			}
+			catch( error ) {
+				console.log( error );
+				Publishing.new_item({
+					type: "node" ,
+					channel: "log" ,
+					message: `${ GenericUtils.time() } === NODE === Scheduled Start of Python Motion Script FAILED` ,
+					list_key_prefix: "sleep.log" ,
+				});
+				Publishing.new_item({
+					type: "node" ,
+					channel: "errors" ,
+					message: `${ GenericUtils.time() } === NODE === Scheduled Start of Python Motion Script FAILED` ,
+					list_key_prefix: "sleep.node.errors" ,
+				});
+			}
 		});
 
 		// Command Control Events
@@ -137,7 +159,7 @@ function load_custom_event_list() {
 		// ============================================================
 		events.on( "message_generic" , ( options ) => {
 			Publishing.new_item({
-				type: "message-generic" ,
+				type: "typ" ,
 				message: options.message,
 				list_key_prefix: "sleep.node.messages.generic" ,
 			});
