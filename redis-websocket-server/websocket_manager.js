@@ -10,49 +10,116 @@ let redis_manager;
 
 function sleep( ms ) { return new Promise( resolve => setTimeout( resolve , ms ) ); }
 
+function get_eastern_time_key_suffix() {
+	const now = new Date( new Date().toLocaleString( "en-US" , { timeZone: "America/New_York" } ) );
+	const now_hours = now.getHours();
+	const now_minutes = now.getMinutes();
+	const dd = String( now.getDate() ).padStart( 2 , '0' );
+	const mm = String( now.getMonth() + 1 ).padStart( 2 , '0' );
+	const yyyy = now.getFullYear();
+	const hours = String( now.getHours() ).padStart( 2 , '0' );
+	const minutes = String( now.getMinutes() ).padStart( 2 , '0' );
+	const seconds = String( now.getSeconds() ).padStart( 2 , '0' );
+	const key_suffix = `${ yyyy }.${ mm }.${ dd }`;
+	return key_suffix;
+}
+
+function pluralize = ( noun , suffix = 's') {
+	if ( !noun ) { return; }
+	if ( noun.length < 2 ) { return noun; }
+	if ( noun.charAt( noun.length - 1 ) === "s" ) { return noun; }
+	return noun + "s";
+}
+
+
+function redis_get_lrange( key , start , end ) {
+	return new Promise( function( resolve , reject ) {
+		try {
+			redis_manager.redis.lrange(  , ( error , results )=> {
+				console.log( results );
+				socket.send( JSON.stringify({
+					message: "new_redis_lrange_items" ,
+					channel: message.channel ,
+					data: results
+				}));
+				resolve( results );
+				return;
+			});
+			resolve();
+			return;
+		}
+		catch( error ) { console.log( error ); reject( error ); return; }
+	});
+}
+
+function redis_publish( key , message_object ) {
+	return new Promise( function( resolve , reject ) {
+		try {
+			redis_manager.redis.publish( key , JSON.stringify( message_object ) , ( error , results )=> {
+				console.log( results );
+				resolve( results );
+				return;
+			});
+		}
+		catch( error ) { console.log( error ); reject( error ); return; }
+	});
+}
 
 function ON_CONNECTION( socket , req ) {
 	socket.on( "message" , async ( message )=> {
 		try { message = JSON.parse( message ); }
-		catch( e ) { var a = message; message = { "type": a }; }
 		console.log( message );
 		if ( message.type === "pong" ) {
 			console.log( "inside pong()" );
 		}
-		else if ( message.type === "get_frame" ) {
+		else if ( message.type === "ionic-controller" ) {
 			return new Promise( async function( resolve , reject ) {
 				try {
-					const starting_position = message.starting_position || 0;
-					const ending_position = message.ending_position || 1;
-					redis_manager.redis.lrange( message.list_key , starting_position , ending_position , ( error , results )=> {
-						console.log( results );
-						socket.send(JSON.stringify({
-							message: "new_redis_lrange_items" ,
-							channel: message.channel ,
-							data: results
-						}));
-						resolve( results );
-						return;
-					});
+					if ( !message.command ) { resolve(); return; }
+					if ( message.command === "redis_get_lrange" ) {
+						if ( !messsage.key ) { break; }
+						message.starting_position = message.starting_position || 0;
+						message.ending_position = message.ending_position || -1;
+						const result = await get_redis_lrange( message.key , message.starting_position , message );
+						socket.send( JSON.stringify( { message: `new_${ pluralize( message.channel ) }` , data: result } ) );
+					}
+					else if ( message.command === "frame" ) {
+						await redi_publish( "ionic-controller" , {
+							command: "frame" ,
+						});
+						await sleep( 1000 );
+						const result = await redis_get_lrange( `sleep.images.frames.${ get_eastern_time_key_suffix() }` , 0 , 0 );
+						socket.send( JSON.stringify( { message: "new_frames" , data: result } ) );
+
+					}
+					else if ( message.command === "call" ) {
+						if ( !messsage.number ) { break; }
+						await redi_publish( "ionic-controller" , message );
+
+					}
+					else if ( message.command === "message" ) {
+						if ( !messsage.number ) { break; }
+						if ( !messsage.message ) { break; }
+						await redi_publish( "ionic-controller" , message );
+					}
+					resolve();
+					return;
 				}
 				catch( error ) { console.log( error ); reject( error ); return; }
 			});
 		}
-		else if ( message.type === "get_redis_lrange" ) {
+		else if ( message.type === "redis_get_lrange" ) {
 			return new Promise( function( resolve , reject ) {
 				try {
+					if ( !message.list_key ) { resolve(); return; }
+					if ( !messsge.channel ) { resolve(); return; }
 					const starting_position = message.starting_position || 0;
 					const ending_position = message.ending_position || 1;
-					redis_manager.redis.lrange( message.list_key , starting_position , ending_position , ( error , results )=> {
-						console.log( results );
-						socket.send(JSON.stringify({
-							message: "new_redis_lrange_items" ,
-							channel: message.channel ,
-							data: results
-						}));
-						resolve( results );
-						return;
-					});
+					const result = await get_redis_lrange( messsge.list_key , starting_position , ending_position );
+					socket.send( JSON.stringify( { message: `new_${ pluralize( message.channel ) }` , data: result } ) );
+					resolve( results );
+					return;
+
 				}
 				catch( error ) { console.log( error ); reject( error ); return; }
 			});

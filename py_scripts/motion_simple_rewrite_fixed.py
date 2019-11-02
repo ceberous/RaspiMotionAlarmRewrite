@@ -6,6 +6,7 @@ import os
 import signal
 import imutils
 import json
+import redis
 
 from datetime import datetime , timedelta , time
 from time import localtime, strftime , sleep
@@ -14,9 +15,11 @@ eastern_tz = timezone( "US/Eastern" )
 
 from twilio.rest import Client
 
+redis = redis.Redis( host='localhost' , port=6379 , db=0 )
+
 # from websocket import create_connectio
-import websocket
-import threading
+# import websocket
+# import threading
 
 videoPath = os.path.abspath( os.path.join( __file__ , ".." , ".." , "videos" ) )
 framePathBase = os.path.abspath( os.path.join( __file__ , ".." , ".." , "client" ) )

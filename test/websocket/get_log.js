@@ -42,7 +42,7 @@ function get_log() {
 	// -1 = Get ALL in Redis List
 	const count = -1;
 	ws.send( JSON.stringify({
-		"type": "get_redis_lrange" ,
+		"type": "redis_get_lrange" ,
 		"starting_position": 0 ,
 		"ending_position": count ,
 		"list_key": key ,

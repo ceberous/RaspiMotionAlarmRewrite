@@ -43,8 +43,9 @@ function get_eastern_time_key_suffix() {
 function get_latest_frame() {
 	const key = "sleep.images.frames." + get_eastern_time_key_suffix();
 	ws.send( JSON.stringify({
-		"type": "get_latest_frame" ,
-		"list_key": key
+		"type": "ionic-controller" ,
+		"command": "frame" ,
+		"key": key
 	}));
 }
 
@@ -58,22 +59,24 @@ ws.on( "message" , ( data )=> {
 	const websocket_announcement_message = data.message;
 	data = data.data;
 	console.log( websocket_announcement_message );
-	let decrypted_messages = [];
-	for ( let i = 0; i < data.length; ++i ) {
-		try {
-			let decrypted = decrypt( Personal.libsodium.private_key , data[ i ] );
-			decrypted = JSON.parse( decrypted );
-			if ( decrypted.image_b64.length < 3 ) { continue; }
-			decrypted_messages.push( decrypted );
+	if ( websocket_announcement_message === "new_frame" ) {
+		let decrypted_messages = [];
+		for ( let i = 0; i < data.length; ++i ) {
+			try {
+				let decrypted = decrypt( Personal.libsodium.private_key , data[ i ] );
+				decrypted = JSON.parse( decrypted );
+				if ( decrypted.image_b64.length < 3 ) { continue; }
+				decrypted_messages.push( decrypted );
+			}
+			catch ( error ) { console.log( error ); }
 		}
-		catch ( error ) { console.log( error ); }
-	}
-	for ( let i = 0; i < decrypted_messages.length; ++i ) {
-		console.log( `${ decrypted_messages[ i ].timestamp_string } === ${ decrypted_messages[ i ].list_key } === Image String Length === ${ decrypted_messages[ i ].image_b64.length.toString() }` );
-		const file_safe_time_string = decrypted_messages[ i ].timestamp_string.replace( /\./g , "-" );
-		const frame_path = path.join( FramePathBase , `latest-frame === ${ file_safe_time_string }.jpeg` );
-		fs.writeFileSync( frame_path , decrypted_messages[ i ].image_b64 , "base64" );
-		execSync( `open "${ frame_path }"` );
+		for ( let i = 0; i < decrypted_messages.length; ++i ) {
+			console.log( `${ decrypted_messages[ i ].timestamp_string } === ${ decrypted_messages[ i ].list_key } === Image String Length === ${ decrypted_messages[ i ].image_b64.length.toString() }` );
+			const file_safe_time_string = decrypted_messages[ i ].timestamp_string.replace( /\./g , "-" );
+			const frame_path = path.join( FramePathBase , `latest-frame === ${ file_safe_time_string }.jpeg` );
+			fs.writeFileSync( frame_path , decrypted_messages[ i ].image_b64 , "base64" );
+			execSync( `open "${ frame_path }"` );
+		}
 	}
 	process.exit( 1 );
 });
