@@ -368,7 +368,7 @@ class TenvisVideo():
 				# Condition 1.) Check Elapsed Time Between Last 2 Motion Events
 				wElapsedTime_1 = int( ( self.EVENT_POOL[ -1 ] - self.EVENT_POOL[ 0 ] ).total_seconds() )
 				if wElapsedTime_1 <= self.MAX_TIME_ACCEPTABLE:
-					broadcast_log( "( Stage-1-Check ) === PASSED === Elapsed Time Between Previous 2 Events: " + str( wElapsedTime_1 ) " <= " + str( self.MAX_TIME_ACCEPTABLE ) +" Maximum Time Acceptable" )
+					broadcast_log( "( Stage-1-Check ) === PASSED === Elapsed Time Between Previous 2 Events: " + str( wElapsedTime_1 ) + " <= " + str( self.MAX_TIME_ACCEPTABLE ) + " Maximum Time Acceptable" )
 					wNeedToAlert = True
 
 				# Condition 2.) Check if there are multiple events in a greater window
