@@ -20,8 +20,13 @@ function load_custom_event_list() {
 					message: `${ GenericUtils.time() } === PYTHON-SCRIPT === ${ options.message }` ,
 					list_key_prefix: `sleep.python.${ options.channel }` ,
 				});
+				if ( options.command ) {
+
+				}
 			}
-			catch( error ) { console.log( error ); }
+			catch( error ) {
+				console.log( error );
+			}
 		});
 		// Scheduled Events
 		// ============================================================
@@ -36,9 +41,6 @@ function load_custom_event_list() {
 					message: `${ GenericUtils.time() } === NODE === ${ message }` ,
 					list_key_prefix: "sleep.log" ,
 				});
-				let message;
-				if ( !cur_state.state ) { message = "Scheduled Start of Python Motion Script"; GenericUtils.startPYProcess(); }
-				else { message = "Scheduled Start of Python Motion Script: RESTARTING"; GenericUtils.restartPYProcess(); }
 				Publishing.new_item({
 					type: "node" ,
 					message: `${ GenericUtils.time() } === NODE === ${ message }` ,
