@@ -273,7 +273,7 @@ class TenvisVideo():
 				break
 
 			frame = imutils.resize( frame , width = 500 )
-			frame = frame[ LOADED_CLIPPING[ 'y' ][ '1' ]:LOADED_CLIPPING[ 'y' ][ '2' ] , LOADED_CLIPPING[ 'x' ][ '1' ]:LOADED_CLIPPING[ 'x' ][ '2' ] ]
+			frame = frame[ LOADED_CONFIG[ 'clipping' ][ 'y' ][ '1' ]:LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] , LOADED_CONFIG[ 'clipping' ][ 'x' ][ '1' ]:LOADED_CONFIG[ 'clipping' ][ 'x' ][ '2' ] ]
 
 			# https://stackoverflow.com/questions/39622281/capture-one-frame-from-a-video-file-after-every-10-seconds
 			cv2.imwrite( frameLiveImagePath , frame )
