@@ -7,7 +7,7 @@ function load_custom_event_list() {
 
 		function python_publish( options ) {
 			try {
-				options = {
+				const global_log_options = {
 					...options ,
 					...{
 						type: "python" ,
@@ -15,15 +15,16 @@ function load_custom_event_list() {
 						list_key_prefix: "sleep.log"
 					}
 				};
-				Publishing.new_item( options );
-				options.list_key_prefix = `sleep.python.${ options.channel }`;
-				Publishing.new_item( options );
+				Publishing.new_item( global_log_options );
+				let python_log_options = { ...global_log_options };
+				python_log_options.list_key_prefix = `sleep.python.${ options.channel }`;
+				Publishing.new_item( python_log_options );
 			}
 			catch( error ) { console.log( error ); }
 		}
 		function node_publish( options ) {
 			try {
-				options = {
+				const global_log_options = {
 					...options ,
 					...{
 						type: "node" ,
@@ -31,11 +32,10 @@ function load_custom_event_list() {
 						list_key_prefix: "sleep.log"
 					}
 				};
-				console.log( options );
-				Publishing.new_item( options );
-				options.list_key_prefix = `sleep.node.${ options.channel }`;
-				console.log( options );
-				Publishing.new_item( options );
+				Publishing.new_item( global_log_options );
+				let node_log_options = { ...global_log_options };
+				node_log_options.list_key_prefix = `sleep.node.${ options.channel }`;
+				Publishing.new_item( node_log_options );
 			}
 			catch( error ) { console.log( error ); }
 		}
