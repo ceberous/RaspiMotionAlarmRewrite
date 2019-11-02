@@ -105,7 +105,7 @@ function ON_CONNECTION( socket , req ) {
 			});
 		}
 		else if ( message.type === "redis_get_lrange" ) {
-			return new Promise( function( resolve , reject ) {
+			return new Promise( async function( resolve , reject ) {
 				try {
 					if ( !message.list_key ) { resolve(); return; }
 					if ( !messsge.channel ) { resolve(); return; }
