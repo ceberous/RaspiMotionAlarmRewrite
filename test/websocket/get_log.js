@@ -37,6 +37,7 @@ function get_eastern_time_key_suffix() {
 
 function get_log() {
 	const key = "sleep.log." + get_eastern_time_key_suffix();
+	console.log( key );
 	// Its Really An Array Based Counting Scheme
 	// So count = 31 , really means get 30 events
 	// -1 = Get ALL in Redis List
@@ -56,24 +57,21 @@ ws.on( "open" , get_log );
 ws.on( "message" , ( data )=> {
 	if ( !data ) { return; }
 	data = JSON.parse( data );
-	console.log( data );
 	if ( !data ) { return; }
 	if ( data.message === "new_logs" ) {
-		if ( data.channel === "log" ) {
-			data = data.data;
-			console.log( data.message );
-			let decrypted_messages = [];
-			for ( let i = 0; i < data.length; ++i ) {
-				try {
-					let decrypted = decrypt( Personal.libsodium.private_key , data[ i ] );
-					decrypted = JSON.parse( decrypted );
-					decrypted_messages.push( decrypted );
-				}
-				catch ( error ) { console.log( error ); }
+		data = data.data;
+		console.log( data.message );
+		let decrypted_messages = [];
+		for ( let i = 0; i < data.length; ++i ) {
+			try {
+				let decrypted = decrypt( Personal.libsodium.private_key , data[ i ] );
+				decrypted = JSON.parse( decrypted );
+				decrypted_messages.push( decrypted );
 			}
-			for ( let i = 0; i < decrypted_messages.length; ++i ) {
-				console.log( decrypted_messages[ i ].message );
-			}
+			catch ( error ) { console.log( error ); }
+		}
+		for ( let i = 0; i < decrypted_messages.length; ++i ) {
+			console.log( decrypted_messages[ i ].message );
 		}
 	}
 	process.exit( 1 );

@@ -36,7 +36,6 @@ function redis_get_lrange( key , start , end ) {
 	return new Promise( function( resolve , reject ) {
 		try {
 			redis_manager.redis.lrange( key , start , end , ( error , results )=> {
-				console.log( results );
 				resolve( results );
 				return;
 			});
@@ -49,7 +48,6 @@ function redis_publish( key , message_object ) {
 	return new Promise( function( resolve , reject ) {
 		try {
 			redis_manager.redis.publish( key , JSON.stringify( message_object ) , ( error , results )=> {
-				console.log( results );
 				resolve( results );
 				return;
 			});
