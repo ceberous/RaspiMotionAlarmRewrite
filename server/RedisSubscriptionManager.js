@@ -1,4 +1,3 @@
-
 function IONIC_CONTROLLER( options ) {
 	try {
 		console.log( "Inside IONIC_CONTROLLER()" );
