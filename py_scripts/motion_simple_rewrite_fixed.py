@@ -93,7 +93,7 @@ def twilio_message( number , message ):
 # { "type": "python-script" , "channel": channel , "command": command , "message": message }
 def get_redis_key_suffix():
 	now = datetime.now( eastern_tz )
-	return = now.strftime( "%Y.%m.%d" )
+	return now.strftime( "%Y.%m.%d" )
 
 def redis_publish( options ):
 	try:
