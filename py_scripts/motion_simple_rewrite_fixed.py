@@ -234,6 +234,7 @@ class TenvisVideo():
 		print ( "MAX_TIME_ACCEPTABLE_STAGE_2 === " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) )
 
 		# Start
+		redis_publish( { "channel": "log" , "message": "Starting" } )
 		self.w_Capture = cv2.VideoCapture( 0 )
 		self.motionTracking()
 
