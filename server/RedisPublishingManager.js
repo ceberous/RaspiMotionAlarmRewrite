@@ -113,7 +113,7 @@ function publish_new_item( options ) {
 				...options ,
 				...{
 					timestamp: now ,
-					timestamp_string:  ,
+					timestamp_string:  timestamp_string,
 					list_key: list_key ,
 					time_stamp_string: timestamp_string ,
 					message: `${ time_stamp_string } === ${ options.message }`
