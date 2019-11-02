@@ -41,6 +41,7 @@ const LIVE_HTML_PAGE = `<html><img alt="" id="liveimage" src=""/> <script type="
 	// 0.) Setup Redis Managers
 	const redis_manager = new RedisUtils( Personal.redis.database_number , Personal.redis.host , Personal.redis.port );
 	await redis_manager.init();
+	module.exports.redis_manager = redis_manager;
 
 	// 1.) Setup Synchronized Event Emitter
 	const events = new EventEmitter();
