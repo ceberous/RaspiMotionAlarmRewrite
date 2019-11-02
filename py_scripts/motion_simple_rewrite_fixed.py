@@ -95,7 +95,7 @@ def redis_publish( options ):
 	try:
 		json_string = json.dumps( options )
 		print( json_string )
-		redis.publish( "python-script-controller" , json_string )
+		redis_manager.publish( "python-script-controller" , json_string )
 	except Exception as e:
 		print( "Couldn't Publish Message to REDIS" )
 
