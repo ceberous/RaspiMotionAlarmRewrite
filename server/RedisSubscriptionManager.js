@@ -8,10 +8,16 @@ function LOAD_SUBSCRIPTIONS() {
 				console.log( "new message from: " + channel );
 				switch( channel ) {
 					case "ionic-controller":
-						events.emit( "command" , JSON.parse( message ) );
+						try{
+							events.emit( "command" , JSON.parse( message ) );
+						}
+						catch( error ) { console.log( error ); }
 						break;
 					case "python-script-controller":
-						events.emit( "python-script" , JSON.parse( message ) );
+						try{
+							events.emit( "python-script" , JSON.parse( message ) );
+						}
+						catch( error ) { console.log( error ); }
 						break;
 					default:
 						console.log( channel );
@@ -23,7 +29,7 @@ function LOAD_SUBSCRIPTIONS() {
 			resolve();
 			return;
 		}
-		catch( error ) { console.log( error ); reject( error ); return; }
+		catch( error ) { console.log( error ); resolve( error ); return; }
 	});
 }
 module.exports.load_subscriptions = LOAD_SUBSCRIPTIONS;
