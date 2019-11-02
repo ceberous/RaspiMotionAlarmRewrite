@@ -150,6 +150,9 @@ function load_custom_event_list() {
 
 		// Native Node.js Script Message Passing
 		// ============================================================
+		events.on( "server_ready" , ()=> {
+			node_publish({ channel: "log" , "message": "SERVER READY" });
+		});
 		events.on( "message_generic" , ( options ) => {
 			Publishing.new_item({
 				type: "typ" ,

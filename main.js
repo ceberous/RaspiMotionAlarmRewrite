@@ -38,36 +38,9 @@ const LIVE_HTML_PAGE = `<html><img alt="" id="liveimage" src=""/> <script type="
 
 	console.log( "SERVER STARTING" );
 
-	// 0.) Setup Redis Manager
+	// 0.) Setup Redis Managers
 	const redis_manager = new RedisUtils( Personal.redis.database_number , Personal.redis.host , Personal.redis.port );
 	await redis_manager.init();
-	module.exports.redis_manager = redis_manager;
-	const redis_publishing_manager = await REDIS.createClient({
-		host: Personal.redis.host,
-		port: Personal.redis.port ,
-		db: Personal.redis.database_number ,
-		retry_strategy: function ( options ) {
-			if ( options.error && options.error.code === "ECONNREFUSED" ) {
-				// End reconnecting on a specific error and flush all commands with
-				// a individual error
-				return new Error( "The server refused the connection" );
-			}
-			if ( options.total_retry_time > 1000 * 60 * 60 ) {
-				// End reconnecting after a specific timeout and flush all commands
-				// with a individual error
-				return new Error( "Retry time exhausted" );
-			}
-			if ( options.attempt > 20 ) {
-				// End reconnecting with built in error
-				return undefined;
-			}
-			// reconnect after
-			return Math.min( options.attempt * 100 , 3000 );
-		}
-	});
-	module.exports.redis_publishing_manager = redis_publishing_manager;
-	// await redis_manager.keySet( 'TESTING' , "TESTING BLAH BLAH" );
-	// await GenericUtils.sleep( 1000 );
 
 	// 1.) Setup Synchronized Event Emitter
 	const events = new EventEmitter();
@@ -118,5 +91,6 @@ const LIVE_HTML_PAGE = `<html><img alt="" id="liveimage" src=""/> <script type="
 	});
 
 	console.log( "SERVER READY" );
+	events.emit( "server_ready" );
 
 })();
