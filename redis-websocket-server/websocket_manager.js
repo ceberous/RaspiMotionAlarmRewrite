@@ -63,6 +63,7 @@ function redis_publish( key , message_object ) {
 function ON_CONNECTION( socket , req ) {
 	socket.on( "message" , async ( message )=> {
 		try { message = JSON.parse( message ); }
+		catch( e ) { console.log( e ); return; }
 		console.log( message );
 		if ( message.type === "pong" ) {
 			console.log( "inside pong()" );
