@@ -15,7 +15,7 @@ eastern_tz = timezone( "US/Eastern" )
 
 from twilio.rest import Client
 
-redis = redis.Redis( host='localhost' , port=6379 , db=0 )
+redis = redis.Redis( host='localhost' , port=6379 , db=1 )
 
 # from websocket import create_connectio
 # import websocket
@@ -80,51 +80,50 @@ def ignore_extra_alert_call():
 def twilio_message( number , message ):
 	try:
 		if inside_message_time_window() == False:
-			send_web_socket_message( { "channel": "log" , "message": "Outside SMS Alert Time Window" } )
+			redis_publish( { "channel": "log" , "message": "Outside SMS Alert Time Window" } )
 			return;
 		message = TwilioClient.messages.create( number ,
 			body=message ,
 			from_=Personal[ 'twilio' ][ 'fromSMSNumber' ] ,
 		)
 		print( "sent sms" )
-		send_web_socket_message( { "channel": "log" , "message": "Sent SMS to: " + str( number ) } )
+		redis_publish( { "channel": "log" , "message": "Sent SMS to: " + str( number ) } )
 
 	except Exception as e:
 		print ( e )
 		print ( "failed to send sms" )
-		send_web_socket_message( { "channel": "errors" , "message": "failed to send sms" } )
+		redis_publish( { "channel": "errors" , "message": "failed to send sms" } )
 
 # { "type": "python-script" , "channel": channel , "command": command , "message": message }
-def send_web_socket_message( options ):
+def redis_publish( options ):
 	try:
-		options.type = "python-script"
 		json_string = json.dumps( options )
 		print( json_string )
-		ws.send( json_string )
+		redis.publish( "python-script-controller" , json_string )
 	except Exception as e:
-		print( "Couldn't Send WebSocket Message" )
+		print( "Couldn't Publish Message to REDIS" )
 
 def broadcast_error( message ):
-	send_web_socket_message( { "channel": "errors" , "message": message } )
+	redis_publish( { "channel": "errors" , "message": message } )
 
 def broadcast_log( message ):
-	send_web_socket_message( { "channel": "events" , "message": message } )
+	redis_publish( { "channel": "events" , "message": message } )
 
 def broadcast_record( message ):
 	twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
 	#twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message ) # testing
-	send_web_socket_message( { "channel": "records" , "message": message } )
+	redis_publish( { "channel": "records" , "message": message } )
 
 def broadcast_extra_record( message ):
 	print( "Broadcasting Extra Event" )
-	send_web_socket_message( { "channel": "log" , "message": "Sending SMS to ExtraNumber === " + message } )
+	redis_publish( { "channel": "log" , "message": "Sending SMS to ExtraNumber === " + message } )
 	#twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
 	twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message )
 
 def broadcast_video_ready( wTodayDateString , wEventNumber ):
 	print( "Today Date String == " + wTodayDateString )
 	print( "Current Event Number == " + wEventNumber )
-	send_web_socket_message( { "channel": "command" , "command": "new-video" , "message": message } )
+	redis_publish( { "channel": "command" , "command": "new-video" , "message": message } )
 
 def make_folder( path ):
 	try:
@@ -142,7 +141,7 @@ def twilio_call( number ):
 	except Exception as e:
 		print( e )
 		print( "failed to make twilio call" )
-		send_web_socket_message( { "channel": "errors" , "message": "Failed to Make Twilio Call to: " + str( number ) } )
+		redis_publish( { "channel": "errors" , "message": "Failed to Make Twilio Call to: " + str( number ) } )
 
 
 def update_loaded_config( config ):
@@ -161,25 +160,25 @@ def update_loaded_config( config ):
 		if 'reset' in config[ 'clipping' ]:
 			if config[ 'clipping' ][ 'reset' ] == True or config[ 'clipping' ][ 'reset' ] == "true" or config[ 'clipping' ][ 'reset' ] == "True":
 				LOADED_CONFIG[ 'clipping' ] = DEFAULT_CLIPPING
-				send_web_socket_message( { "channel": "log" , "message": "LOADED_CONFIG == DEFAULT_CLIPPING" } )
+				redis_publish( { "channel": "log" , "message": "LOADED_CONFIG == DEFAULT_CLIPPING" } )
 
 			return
 		if 'x' in config[ 'clipping' ]:
 			if '1' in config[ 'clipping' ][ 'x' ]:
 				LOADED_CONFIG[ 'clipping' ][ 'x' ][ '1' ] = config[ 'clipping' ][ 'x' ][ '1' ]
-				send_web_socket_message( { "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'x' ][ '1' ] == " + str( config[ 'clipping' ][ 'x' ][ '1' ] ) } )
+				redis_publish( { "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'x' ][ '1' ] == " + str( config[ 'clipping' ][ 'x' ][ '1' ] ) } )
 
 			if '2' in config[ 'clipping' ][ 'x' ]:
 				LOADED_CONFIG[ 'clipping' ][ 'x' ][ '2' ] = config[ 'clipping' ][ 'x' ][ '2' ]
-				send_web_socket_message( { "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'x' ][ '2' ] == " + str( config[ 'clipping' ][ 'x' ][ '2' ] ) } )
+				redis_publish( { "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'x' ][ '2' ] == " + str( config[ 'clipping' ][ 'x' ][ '2' ] ) } )
 		if 'y' in config[ 'clipping' ]:
 			if '1' in config[ 'clipping' ][ 'y' ]:
 				LOADED_CONFIG[ 'clipping' ][ 'y' ][ '1' ] = config[ 'clipping' ][ 'y' ][ '1' ]
-				send_web_socket_message( { "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] == " + str( config[ 'clipping' ][ 'y' ][ '1' ] ) } )
+				redis_publish( { "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] == " + str( config[ 'clipping' ][ 'y' ][ '1' ] ) } )
 
 			if '2' in config[ 'clipping' ][ 'y' ]:
 				LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] = config[ 'clipping' ][ 'y' ][ '2' ]
-				send_web_socket_message( { "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] == " + str( config[ 'clipping' ][ 'y' ][ '2' ] ) } )
+				redis_publish( { "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] == " + str( config[ 'clipping' ][ 'y' ][ '2' ] ) } )
 
 ws = False
 def on_message( ws , message ):
@@ -196,12 +195,12 @@ def on_message( ws , message ):
 	except Exception as e:
 		print( e )
 		print( "Failed to Parse WebSocket Message JSON")
-		send_web_socket_message( { "channel": "errors" , "message": "Failed to Parse WebSocket Message JSON" } )
+		redis_publish( { "channel": "errors" , "message": "Failed to Parse WebSocket Message JSON" } )
 
 
 def on_close( ws ):
 	print( "### closed ###" )
-	send_web_socket_message( { "channel": "errors" , "message": "WebSocket Connection Closed" } )
+	redis_publish( { "channel": "errors" , "message": "WebSocket Connection Closed" } )
 
 
 try:
@@ -355,7 +354,7 @@ class TenvisVideo():
 				self.total_motion = 0
 				cv2.imwrite( frameThreshLiveImagePath , thresh )
 				cv2.imwrite( frameDeltaLiveImagePath , frameDelta )
-				send_web_socket_message( { "channel": "command" , "command": "publish_new_image_set" , "message": "Saving New Image Set" } )
+				redis_publish( { "channel": "command" , "command": "publish_new_image_set" , "message": "Saving New Image Set" } )
 
 				wNeedToAlert = False
 
