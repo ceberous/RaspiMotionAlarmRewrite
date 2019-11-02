@@ -31,8 +31,10 @@ function load_custom_event_list() {
 						list_key_prefix: "sleep.log"
 					}
 				};
+				console.log( options );
 				Publishing.new_item( options );
 				options.list_key_prefix = `sleep.node.${ options.channel }`;
+				console.log( options );
 				Publishing.new_item( options );
 			}
 			catch( error ) { console.log( error ); }
