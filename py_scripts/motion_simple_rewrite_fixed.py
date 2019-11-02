@@ -77,48 +77,51 @@ def ignore_extra_alert_call():
 def twilio_message( number , message ):
 	try:
 		if inside_message_time_window() == False:
-			send_web_socket_message( "log" , "Outside SMS Alert Time Window" )
+			send_web_socket_message( { "channel": "log" , "message": "Outside SMS Alert Time Window" } )
 			return;
 		message = TwilioClient.messages.create( number ,
 			body=message ,
 			from_=Personal[ 'twilio' ][ 'fromSMSNumber' ] ,
 		)
 		print( "sent sms" )
-		send_web_socket_message( "log" , "Sent SMS to: " + str( number ) )
+		send_web_socket_message( { "channel": "log" , "message": "Sent SMS to: " + str( number ) } )
+
 	except Exception as e:
 		print ( e )
 		print ( "failed to send sms" )
-		broadcast_error( "failed to send sms" )
+		send_web_socket_message( { "channel": "errors" , "message": "failed to send sms" } )
 
-def send_web_socket_message( channel , message ):
+# { "type": "python-script" , "channel": channel , "command": command , "message": message }
+def send_web_socket_message( options ):
 	try:
-		json_string = json.dumps( { "type": "python-script" , "channel": channel , "message": message } )
-		print ( json_string )
+		options.type = "python-script"
+		json_string = json.dumps( options )
+		print( json_string )
 		ws.send( json_string )
 	except Exception as e:
 		print( "Couldn't Send WebSocket Message" )
 
 def broadcast_error( message ):
-	send_web_socket_message( "errors" , message )
+	send_web_socket_message( { "channel": "errors" , "message": message } )
 
 def broadcast_log( message ):
-	send_web_socket_message( "events" , message )
+	send_web_socket_message( { "channel": "events" , "message": message } )
 
 def broadcast_record( message ):
 	twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
 	#twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message ) # testing
-	send_web_socket_message( "records" , message )
+	send_web_socket_message( { "channel": "records" , "message": message } )
 
 def broadcast_extra_record( message ):
 	print( "Broadcasting Extra Event" )
-	send_web_socket_message( "python-new-extra" , message )
+	send_web_socket_message( { "channel": "log" , "message": "Sending SMS to ExtraNumber === " + message } )
 	#twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
 	twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message )
 
 def broadcast_video_ready( wTodayDateString , wEventNumber ):
 	print( "Today Date String == " + wTodayDateString )
 	print( "Current Event Number == " + wEventNumber )
-	send_web_socket_message( "new-video" , wTodayDateString + "-" + wEventNumber )
+	send_web_socket_message( { "channel": "command" , "command": "new-video" , "message": message } )
 
 def make_folder( path ):
 	try:
@@ -136,7 +139,7 @@ def twilio_call( number ):
 	except Exception as e:
 		print( e )
 		print( "failed to make twilio call" )
-		send_web_socket_message( "errors" , "Failed to Make Twilio Call to: " + str( number ) )
+		send_web_socket_message( { "channel": "errors" , "message": "Failed to Make Twilio Call to: " + str( number ) } )
 
 
 def update_loaded_config( config ):
@@ -155,23 +158,25 @@ def update_loaded_config( config ):
 		if 'reset' in config[ 'clipping' ]:
 			if config[ 'clipping' ][ 'reset' ] == True or config[ 'clipping' ][ 'reset' ] == "true" or config[ 'clipping' ][ 'reset' ] == "True":
 				LOADED_CONFIG[ 'clipping' ] = DEFAULT_CLIPPING
-			send_web_socket_message( "log" , "LOADED_CONFIG == DEFAULT_CLIPPING" )
+			send_web_socket_message( { "channel": "log" , "LOADED_CONFIG == DEFAULT_CLIPPING" } )
+
 			return
 		if 'x' in config[ 'clipping' ]:
 			if '1' in config[ 'clipping' ][ 'x' ]:
 				LOADED_CONFIG[ 'clipping' ][ 'x' ][ '1' ] = config[ 'clipping' ][ 'x' ][ '1' ]
-				send_web_socket_message( "log" , "LOADED_CONFIG[  ][ 'x' ][ '1' ] == " + str( config[ 'clipping' ][ 'x' ][ '1' ] ) )
+				send_web_socket_message( "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'x' ][ '1' ] == " + str( config[ 'clipping' ][ 'x' ][ '1' ] ) )
+
 			if '2' in config[ 'clipping' ][ 'x' ]:
 				LOADED_CONFIG[ 'clipping' ][ 'x' ][ '2' ] = config[ 'clipping' ][ 'x' ][ '2' ]
-				send_web_socket_message( "log" , "LOADED_CONFIG[  ][ 'x' ][ '2' ] == " + str( config[ 'clipping' ][ 'x' ][ '2' ] ) )
+				send_web_socket_message( "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'x' ][ '2' ] == " + str( config[ 'clipping' ][ 'x' ][ '2' ] ) )
 		if 'y' in config[ 'clipping' ]:
 			if '1' in config[ 'clipping' ][ 'y' ]:
 				LOADED_CONFIG[ 'clipping' ][ 'y' ][ '1' ] = config[ 'clipping' ][ 'y' ][ '1' ]
-				send_web_socket_message( "log" , "LOADED_CONFIG[  ][ 'y' ][ '1' ] == " + str( config[ 'clipping' ][ 'y' ][ '1' ] ) )
+				send_web_socket_message( "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] == " + str( config[ 'clipping' ][ 'y' ][ '1' ] ) )
+
 			if '2' in config[ 'clipping' ][ 'y' ]:
 				LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] = config[ 'clipping' ][ 'y' ][ '2' ]
-				send_web_socket_message( "log" , "LOADED_CONFIG[  ][ 'y' ][ '2' ] == " + str( config[ 'clipping' ][ 'y' ][ '2' ] ) )
-
+				send_web_socket_message( "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] == " + str( config[ 'clipping' ][ 'y' ][ '2' ] ) )
 
 ws = False
 def on_message( ws , message ):
@@ -188,11 +193,13 @@ def on_message( ws , message ):
 	except Exception as e:
 		print( e )
 		print( "Failed to Parse WebSocket Message JSON")
-		send_web_socket_message( "errors" , "Failed to Parse WebSocket Message JSON" )
+		send_web_socket_message( { "channel": "errors" , "message": "Failed to Parse WebSocket Message JSON" } )
+
 
 def on_close( ws ):
 	print( "### closed ###" )
-	send_web_socket_message( "errors" , "WebSocket Connection Closed" )
+	send_web_socket_message( { "channel": "errors" , "message": "WebSocket Connection Closed" } )
+
 
 try:
 	#ws = create_connection( "ws://localhost:6161" )
@@ -345,7 +352,8 @@ class TenvisVideo():
 				self.total_motion = 0
 				cv2.imwrite( frameThreshLiveImagePath , thresh )
 				cv2.imwrite( frameDeltaLiveImagePath , frameDelta )
-				send_web_socket_message( "save-current-image-set" , "saving current image set" )
+				send_web_socket_message( { "channel": "command" , "command": "publish_new_image_set" , "message": "Saving New Image Set" } )
+
 				wNeedToAlert = False
 
 				# Condition 1.) Check Elapsed Time Between Last 2 Motion Events

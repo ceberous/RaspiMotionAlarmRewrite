@@ -23,44 +23,47 @@ function load_custom_event_list() {
 			}
 			catch( error ) { console.log( error ); }
 		});
-		events.on( "python-new-error" , ( options ) => {
-			if ( !options ) { return; }
-			Publishing.new_item({
-				type: "python-new-error" ,
-				message: options.message ,
-				list_key_prefix: "sleep.python.errors" ,
-			});
-		});
-		events.on( "python-new-event" , ( options ) => {
-			if ( !options ) { return; }
-			Publishing.new_item({
-				type: "python-new-event" ,
-				message: options.message ,
-				list_key_prefix: "sleep.python.events" ,
-			});
-		});
-		events.on( "python-new-record" , ( options ) => {
-			if ( !options ) { return; }
-			console.log( options );
-			Publishing.new_item({
-				type: "python-new-record" ,
-				message: options.message ,
-				list_key_prefix: "sleep.python.records" ,
-			});
-			Publishing.new_image_set();
-		});
-
 		// Scheduled Events
 		// ============================================================
 		events.on( "scheduled_start" , () => {
-			const cur_state = GenericUtils.getState();
-			if ( !cur_state.state ) { GenericUtils.startPYProcess(); }
-			else { GenericUtils.restartPYProcess(); }
+			try{
+				const cur_state = GenericUtils.getState();
+				let message;
+				if ( !cur_state.state ) { message = "Scheduled Start of Python Motion Script"; GenericUtils.startPYProcess(); }
+				else { message = "Scheduled Start of Python Motion Script: RESTARTING"; GenericUtils.restartPYProcess(); }
+				Publishing.new_item({
+					type: "node" ,
+					message: `${ GenericUtils.time() } === NODE === ${ message }` ,
+					list_key_prefix: "sleep.log" ,
+				});
+				let message;
+				if ( !cur_state.state ) { message = "Scheduled Start of Python Motion Script"; GenericUtils.startPYProcess(); }
+				else { message = "Scheduled Start of Python Motion Script: RESTARTING"; GenericUtils.restartPYProcess(); }
+				Publishing.new_item({
+					type: "node" ,
+					message: `${ GenericUtils.time() } === NODE === ${ message }` ,
+					list_key_prefix: "sleep.log" ,
+				});
+			}
+			catch( error ) {
+				console.log( error );
+				Publishing.new_item({
+					type: "node" ,
+					message: `${ GenericUtils.time() } === NODE === Scheduled Start of Python Motion Script FAILED` ,
+					list_key_prefix: "sleep.log" ,
+				});
+				Publishing.new_item({
+					type: "node" ,
+					message: `${ GenericUtils.time() } === NODE === Scheduled Start of Python Motion Script FAILED` ,
+					list_key_prefix: "sleep.node.errors" ,
+				});
+			}
 		});
 		events.on( "scheduled_stop" , () => {
 			const cur_state = GenericUtils.getState();
 			if ( !cur_state.state ) { GenericUtils.startPYProcess(); }
 			else { GenericUtils.restartrestartPYProcess(); }
+
 		});
 
 		// Command Control Events
@@ -70,9 +73,19 @@ function load_custom_event_list() {
 		events.on( "command_restart_pyprocess" , GenericUtils.restartPYProcess );
 		events.on( "publish_new_frame" , () => {
 			Publishing.new_frame();
+			Publishing.new_item({
+				type: "node" ,
+				message: `${ GenericUtils.time() } === NODE === New Frame Saved` ,
+				list_key_prefix: "sleep.log" ,
+			});
 		});
 		events.on( "publish_new_image_set" , () => {
 			Publishing.new_image_set();
+			Publishing.new_item({
+				type: "node" ,
+				message: `${ GenericUtils.time() } === NODE === New Image Set Saved` ,
+			list_key_prefix: "sleep.log" ,
+			});
 		});
 		events.on( "twilio-call" , ( options ) => {
 			console.log( "call()" );
@@ -80,6 +93,11 @@ function load_custom_event_list() {
 			GenericUtils.makeTwilioPythonCall({
 				command: "call" ,
 				number: options.number ,
+			});
+			Publishing.new_item({
+				type: "node" ,
+				message: `${ GenericUtils.time() } === NODE === New Frame Saved` ,
+				list_key_prefix: "sleep.log" ,
 			});
 		});
 		events.on( "twilio-message" , ( options ) => {
