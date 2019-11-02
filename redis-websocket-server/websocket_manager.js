@@ -40,10 +40,8 @@ function redis_get_lrange( key , start , end ) {
 				resolve( results );
 				return;
 			});
-			resolve();
-			return;
 		}
-		catch( error ) { console.log( error ); reject( error ); return; }
+		catch( error ) { console.log( error ); resolve( error ); return; }
 	});
 }
 
@@ -56,7 +54,7 @@ function redis_publish( key , message_object ) {
 				return;
 			});
 		}
-		catch( error ) { console.log( error ); reject( error ); return; }
+		catch( error ) { console.log( error ); resolve( error ); return; }
 	});
 }
 
@@ -73,7 +71,7 @@ function ON_CONNECTION( socket , req ) {
 				try {
 					if ( !message.command ) { resolve(); return; }
 					if ( message.command === "redis_get_lrange" ) {
-						if ( !messsage.key ) { break; }
+						if ( !messsage.key ) { resolve(); return; }
 						message.starting_position = message.starting_position || 0;
 						message.ending_position = message.ending_position || -1;
 						const result = await get_redis_lrange( message.key , message.starting_position , message );
@@ -89,19 +87,19 @@ function ON_CONNECTION( socket , req ) {
 
 					}
 					else if ( message.command === "call" ) {
-						if ( !messsage.number ) { break; }
+						if ( !messsage.number ) { resolve(); return; }
 						await redi_publish( "ionic-controller" , message );
 
 					}
 					else if ( message.command === "message" ) {
-						if ( !messsage.number ) { break; }
-						if ( !messsage.message ) { break; }
+						if ( !messsage.number ) { resolve(); return; }
+						if ( !messsage.message ) { resolve(); return; }
 						await redi_publish( "ionic-controller" , message );
 					}
 					resolve();
 					return;
 				}
-				catch( error ) { console.log( error ); reject( error ); return; }
+				catch( error ) { console.log( error ); resolve( error ); return; }
 			});
 		}
 		else if ( message.type === "redis_get_lrange" ) {
@@ -117,7 +115,7 @@ function ON_CONNECTION( socket , req ) {
 					return;
 
 				}
-				catch( error ) { console.log( error ); reject( error ); return; }
+				catch( error ) { console.log( error ); resolve( error ); return; }
 			});
 		}
 

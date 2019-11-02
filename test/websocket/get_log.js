@@ -56,8 +56,9 @@ ws.on( "open" , get_log );
 ws.on( "message" , ( data )=> {
 	if ( !data ) { return; }
 	data = JSON.parse( data );
+	console.log( data );
 	if ( !data ) { return; }
-	if ( data.message === "new_redis_lrange_items" ) {
+	if ( data.message === "new_logs" ) {
 		if ( data.channel === "log" ) {
 			data = data.data;
 			console.log( data.message );
