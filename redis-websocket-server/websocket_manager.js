@@ -106,7 +106,7 @@ function ON_CONNECTION( socket , req ) {
 			return new Promise( async function( resolve , reject ) {
 				try {
 					if ( !message.list_key ) { resolve(); return; }
-					if ( !messsge.channel ) { resolve(); return; }
+					if ( !message.channel ) { resolve(); return; }
 					const starting_position = message.starting_position || 0;
 					const ending_position = message.ending_position || 1;
 					const result = await get_redis_lrange( messsge.list_key , starting_position , ending_position );
