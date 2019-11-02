@@ -39,7 +39,8 @@ ws = False
 # [ y1:y2 , x1:x2 ]
 # frame = frame[ 0:250 , 0:500 ]
 DEFAULT_CLIPPING = { 'x': { '1': 0 , '2': 500 } , 'y': { '1': 0 , '2': 250 } }
-LOADED_CLIPPING = DEFAULT_CLIPPING
+DEFUALT_CONFIG = { 'frame_width': 500 , 'clipping': DEFAULT_CLIPPING , 'EMAIL_COOLOFF': 100 , 'MIN_MOTION_SECONDS': 1 , 'MOTION_EVENTS_ACCEPTABLE': 4 , 'MAX_TIME_ACCEPTABLE': 45 , 'MAX_TIME_ACCEPTABLE_STAGE_2': 90 }
+LOADED_CONFIG = DEFUALT_CONFIG
 # Personal[ 'camera' ][ 'clipping' ][ "y1" ]
 # Personal[ 'camera' ][ 'clipping' ][ "y2" ]
 # Personal[ 'camera' ][ 'clipping' ][ "x1" ]
@@ -137,27 +138,40 @@ def twilio_call( number ):
 		print( "failed to make twilio call" )
 		send_web_socket_message( "errors" , "Failed to Make Twilio Call to: " + str( number ) )
 
-def update_loaded_clipping( options ):
-	print( options )
-	if 'reset' in options:
-		if options[ 'reset' ] == True or options[ 'reset' ] == "true" or options[ 'reset' ] == "True":
-			LOADED_CLIPPING = DEFAULT_CLIPPING
-		send_web_socket_message( "log" , "LOADED_CLIPPING == DEFAULT_CLIPPING" )
-		return
-	if 'x' in options:
-		if '1' in options[ 'x' ]:
-			LOADED_CLIPPING[ 'x' ][ '1' ] = options[ 'x' ][ '1' ]
-			send_web_socket_message( "log" , "LOADED_CLIPPING[ 'x' ][ '1' ] == " + str( options[ 'x' ][ '1' ] ) )
-		if '2' in options[ 'x' ]:
-			LOADED_CLIPPING[ 'x' ][ '2' ] = options[ 'x' ][ '2' ]
-			send_web_socket_message( "log" , "LOADED_CLIPPING[ 'x' ][ '2' ] == " + str( options[ 'x' ][ '2' ] ) )
-	if 'y' in options:
-		if '1' in options[ 'y' ]:
-			LOADED_CLIPPING[ 'y' ][ '1' ] = options[ 'y' ][ '1' ]
-			send_web_socket_message( "log" , "LOADED_CLIPPING[ 'y' ][ '1' ] == " + str( options[ 'y' ][ '1' ] ) )
-		if '2' in options[ 'y' ]:
-			LOADED_CLIPPING[ 'y' ][ '2' ] = options[ 'y' ][ '2' ]
-			send_web_socket_message( "log" , "LOADED_CLIPPING[ 'y' ][ '2' ] == " + str( options[ 'y' ][ '2' ] ) )
+def update_loaded_clipping( clipping ):
+
+def update_config( config ):
+	if 'EMAIL_COOLOFF' in config:
+		LOADED_CONFIG[ 'EMAIL_COOLOFF' ] = config[ 'EMAIL_COOLOFF' ]
+	if 'MIN_MOTION_SECONDS' in config:
+		LOADED_CONFIG[ 'MIN_MOTION_SECONDS' ] = config[ 'MIN_MOTION_SECONDS' ]
+	if 'MOTION_EVENTS_ACCEPTABLE' in config:
+		LOADED_CONFIG[ 'MOTION_EVENTS_ACCEPTABLE' ] = config[ 'MOTION_EVENTS_ACCEPTABLE' ]
+	if 'MAX_TIME_ACCEPTABLE' in config:
+		LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE' ] = config[ 'MAX_TIME_ACCEPTABLE' ]
+	if 'MAX_TIME_ACCEPTABLE_STAGE_2' in config:
+		LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] = config[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ]
+	if 'clipping' in config:
+		print( config[ 'clipping' ] )
+		if 'reset' in config[ 'clipping' ]:
+			if config[ 'clipping' ][ 'reset' ] == True or config[ 'clipping' ][ 'reset' ] == "true" or config[ 'clipping' ][ 'reset' ] == "True":
+				LOADED_CONFIG[ 'clipping' ] = DEFAULT_CLIPPING
+			send_web_socket_message( "log" , "LOADED_CONFIG == DEFAULT_CLIPPING" )
+			return
+		if 'x' in config[ 'clipping' ]:
+			if '1' in config[ 'clipping' ][ 'x' ]:
+				LOADED_CONFIG[ 'clipping' ][ 'x' ][ '1' ] = config[ 'clipping' ][ 'x' ][ '1' ]
+				send_web_socket_message( "log" , "LOADED_CONFIG[  ][ 'x' ][ '1' ] == " + str( config[ 'clipping' ][ 'x' ][ '1' ] ) )
+			if '2' in config[ 'clipping' ][ 'x' ]:
+				LOADED_CONFIG[ 'clipping' ][ 'x' ][ '2' ] = config[ 'clipping' ][ 'x' ][ '2' ]
+				send_web_socket_message( "log" , "LOADED_CONFIG[  ][ 'x' ][ '2' ] == " + str( config[ 'clipping' ][ 'x' ][ '2' ] ) )
+		if 'y' in config[ 'clipping' ]:
+			if '1' in config[ 'clipping' ][ 'y' ]:
+				LOADED_CONFIG[ 'clipping' ][ 'y' ][ '1' ] = config[ 'clipping' ][ 'y' ][ '1' ]
+				send_web_socket_message( "log" , "LOADED_CONFIG[  ][ 'y' ][ '1' ] == " + str( config[ 'clipping' ][ 'y' ][ '1' ] ) )
+			if '2' in config[ 'clipping' ][ 'y' ]:
+				LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] = config[ 'clipping' ][ 'y' ][ '2' ]
+				send_web_socket_message( "log" , "LOADED_CONFIG[  ][ 'y' ][ '2' ] == " + str( config[ 'clipping' ][ 'y' ][ '2' ] ) )
 
 
 ws = False
@@ -167,7 +181,10 @@ def on_message( ws , message ):
 		message = json.loads( message )
 		if 'type' in message:
 			if message[ 'type' ] == 'python-script-command':
-				update_loaded_clipping( options )
+				if 'command' in message:
+					elif message[ 'command' ] == 'update-config':
+						if 'config' in message:
+							update_loaded_config( options[ 'config' ] )
 
 	except Exception as e:
 		print( e )
@@ -219,31 +236,15 @@ class TenvisVideo():
 		self.video_index = 0
 		self.last_email_time = None
 
-		self.EMAIL_COOLOFF = 100
-		#self.EMAIL_COOLOFF = 30
+		if 'opencv' in Personal:
+			update_loaded_config( Personal[ 'opencv' ] )
 
-		#self.MIN_MOTION_FRAMES = 4
-		self.MIN_MOTION_FRAMES = 2
-
-		try:
-			self.MIN_MOTION_SECONDS = int( sys.argv[1] )
-			self.MOTION_EVENTS_ACCEPTABLE = int( sys.argv[2] )
-			self.MAX_TIME_ACCEPTABLE = int( sys.argv[3] )
-			self.MAX_TIME_ACCEPTABLE_STAGE_2 = int( sys.argv[4] )
-		except:
-			self.MIN_MOTION_SECONDS = 1
-			self.MOTION_EVENTS_ACCEPTABLE = 4
-			self.MAX_TIME_ACCEPTABLE = 45
-			self.MAX_TIME_ACCEPTABLE_STAGE_2 = 90
-		print ( "MIN_MOTION_SECONDS === " + str( self.MIN_MOTION_SECONDS ) )
-		print ( "MOTION_EVENTS_ACCEPTABLE === " + str( self.MOTION_EVENTS_ACCEPTABLE ) )
-		print ( "MAX_TIME_ACCEPTABLE === " + str( self.MAX_TIME_ACCEPTABLE ) )
-		print ( "MAX_TIME_ACCEPTABLE_STAGE_2 === " + str( self.MAX_TIME_ACCEPTABLE_STAGE_2 ) )
+		print ( "MIN_MOTION_SECONDS === " + str( LOADED_CONFIG[ 'MIN_MOTION_SECONDS' ] ) )
+		print ( "MOTION_EVENTS_ACCEPTABLE === " + str( LOADED_CONFIG[ 'MOTION_EVENTS_ACCEPTABLE' ] ) )
+		print ( "MAX_TIME_ACCEPTABLE === " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE' ] ) )
+		print ( "MAX_TIME_ACCEPTABLE_STAGE_2 === " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) )
 
 		# Start
-		if 'opencv' in Personal:
-			if 'clipping' in Personal[ 'opencv' ]:
-				update_loaded_clipping( Personal[ 'opencv'][ 'clipping' ] )
 		self.w_Capture = cv2.VideoCapture( 0 )
 		self.motionTracking()
 
@@ -273,22 +274,6 @@ class TenvisVideo():
 				break
 
 			frame = imutils.resize( frame , width = 500 )
-
-
-			# Need to Add Check from
-			# Personal[ 'camera' ][ 'clipping' ][ "y1" ]
-			# Personal[ 'camera' ][ 'clipping' ][ "y2" ]
-			# Personal[ 'camera' ][ 'clipping' ][ "x1" ]
-			# Personal[ 'camera' ][ 'clipping' ][ "x2" ]
-
-			# And then Check from WebSocket to Adjust 'otf'
-
-			#temp adjustment for rando corners
-			# (0,0) = TOP LEFT
-			# X = LEFT TO RIGHT
-			# Y = TOP TO BOTTOM
-			# [ y1:y2 , x1:x2 ]
-			#frame = frame[ 0:250 , 0:500 ]
 			frame = frame[ LOADED_CLIPPING[ 'y' ][ '1' ]:LOADED_CLIPPING[ 'y' ][ '2' ] , LOADED_CLIPPING[ 'x' ][ '1' ]:LOADED_CLIPPING[ 'x' ][ '2' ] ]
 
 			# https://stackoverflow.com/questions/39622281/capture-one-frame-from-a-video-file-after-every-10-seconds
@@ -299,7 +284,7 @@ class TenvisVideo():
 				wNow = datetime.now( eastern_tz )
 				self.nowString = wNow.strftime( "%Y-%m-%d %H:%M:%S" )
 				self.elapsedTimeFromLastEmail = int( ( wNow - self.last_email_time ).total_seconds() )
-				if self.elapsedTimeFromLastEmail < self.EMAIL_COOLOFF:
+				if self.elapsedTimeFromLastEmail < LOADED_CONFIG[ 'EMAIL_COOLOFF' ] :
 					#print "sleeping"
 					pass
 				else:
@@ -335,7 +320,7 @@ class TenvisVideo():
 				motionCounter += 1
 
 			# If Movement Is Greater than Threshold , create motion record
-			if motionCounter >= self.MIN_MOTION_FRAMES:
+			if motionCounter >= LOADED_CONFIG[ 'MIN_MOTION_FRAMES' ]:
 				wNow = datetime.now( eastern_tz )
 				self.nowString = wNow.strftime( "%Y-%m-%d %H:%M:%S" )
 				broadcast_log( "Motion Counter: " + str( motionCounter ) + " > MIN_MOTION_FRAMES" )
@@ -344,7 +329,7 @@ class TenvisVideo():
 				# Check if this is "fresh" in a series of new motion records
 				if len( self.EVENT_POOL ) > 1:
 					wElapsedTime_x = int( ( self.EVENT_POOL[ -1 ] - self.EVENT_POOL[ -2 ] ).total_seconds() )
-					if wElapsedTime_x > ( self.MAX_TIME_ACCEPTABLE_STAGE_2 * 2 ):
+					if wElapsedTime_x > ( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] * 2 ):
 						broadcast_log( "Not Fresh , Resetting to 1st Event === " + str( wElapsedTime_x ) )
 						self.EVENT_POOL = []
 						self.total_motion = 0
@@ -356,8 +341,8 @@ class TenvisVideo():
 				self.total_motion += 1
 
 			# Once Total Motion Events Reach Threshold , create alert if timing conditions are met
-			if self.total_motion >= self.MOTION_EVENTS_ACCEPTABLE:
-				broadcast_log( "Total Motion: " + str( self.total_motion ) + ">= " + str( self.MOTION_EVENTS_ACCEPTABLE ) + " Motion Events Acceptable" )
+			if self.total_motion >= LOADED_CONFIG[ 'MOTION_EVENTS_ACCEPTABLE' ]:
+				broadcast_log( "Total Motion: " + str( self.total_motion ) + ">= " + str( LOADED_CONFIG[ 'MOTION_EVENTS_ACCEPTABLE' ] ) + " Motion Events Acceptable" )
 				self.total_motion = 0
 				cv2.imwrite( frameThreshLiveImagePath , thresh )
 				cv2.imwrite( frameDeltaLiveImagePath , frameDelta )
@@ -366,14 +351,14 @@ class TenvisVideo():
 
 				# Condition 1.) Check Elapsed Time Between Last 2 Motion Events
 				wElapsedTime_1 = int( ( self.EVENT_POOL[ -1 ] - self.EVENT_POOL[ 0 ] ).total_seconds() )
-				if wElapsedTime_1 <= self.MAX_TIME_ACCEPTABLE:
-					broadcast_log( "( Stage-1-Check ) === PASSED === Elapsed Time Between Previous 2 Events: " + str( wElapsedTime_1 ) + " <= " + str( self.MAX_TIME_ACCEPTABLE ) + " Maximum Time Acceptable" )
+				if wElapsedTime_1 <= LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE' ]:
+					broadcast_log( "( Stage-1-Check ) === PASSED === Elapsed Time Between Previous 2 Events: " + str( wElapsedTime_1 ) + " <= " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE' ] ) + " Maximum Time Acceptable" )
 					wNeedToAlert = True
 
 				# Condition 2.) Check if there are multiple events in a greater window
 				elif len( self.EVENT_POOL ) >= 3:
 					wElapsedTime_2 = int( ( self.EVENT_POOL[ -1 ] - self.EVENT_POOL[ -3 ] ).total_seconds() )
-					if wElapsedTime_2 <= self.MAX_TIME_ACCEPTABLE_STAGE_2:
+					if wElapsedTime_2 <= LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ]:
 						broadcast_log( "( Stage-2-Check ) === PASSED === Elapsed Time Between the First and Last Event in the Pool === " + str( wElapsedTime_2 ) + " which is >= " + str( sel.MAX_TIME_ACCEPTABLE_STAGE_2 ) + " seconds" )
 						wNeedToAlert = True
 					else:

@@ -79,4 +79,17 @@ ssh -tt -o IdentitiesOnly=yes -o UserKnownHostsFile=/dev/null -o StrictHostKeyCh
 ==============================================================================================================================
 
 
+==============================================================================================================================
+==============================================================================================================================
+5.) Create Utility Script on Raspberry Pi for Viewing Latest Frame PNG in Terminal
+
+sudo nano /usr/local/bin/frameLatest
+
+#!/bin/bash
+convert /home/pi/WORKSPACE/RaspiMotionAlarmRewrite/client/frame.jpeg /home/pi/WORKSPACE/RaspiMotionAlarmRewrite/client frame.png
+tiv /home/pi/WORKSPACE/RaspiMotionAlarmRewrite/client/frame.png
+
+==============================================================================================================================
+==============================================================================================================================
+
 
