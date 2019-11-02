@@ -39,7 +39,7 @@ ws = False
 # [ y1:y2 , x1:x2 ]
 # frame = frame[ 0:250 , 0:500 ]
 DEFAULT_CLIPPING = { 'x': { '1': 0 , '2': 500 } , 'y': { '1': 0 , '2': 250 } }
-DEFUALT_CONFIG = { 'frame_width': 500 , 'clipping': DEFAULT_CLIPPING , 'EMAIL_COOLOFF': 100 , 'MIN_MOTION_SECONDS': 1 , 'MOTION_EVENTS_ACCEPTABLE': 4 , 'MAX_TIME_ACCEPTABLE': 45 , 'MAX_TIME_ACCEPTABLE_STAGE_2': 90 }
+DEFUALT_CONFIG = { 'frame_width': 500 , 'clipping': DEFAULT_CLIPPING , 'EMAIL_COOLOFF': 100 , 'MIN_MOTION_FRAMES':  , 'MIN_MOTION_SECONDS': 1 , 'MOTION_EVENTS_ACCEPTABLE': 4 , 'MAX_TIME_ACCEPTABLE': 45 , 'MAX_TIME_ACCEPTABLE_STAGE_2': 90 }
 LOADED_CONFIG = DEFUALT_CONFIG
 # Personal[ 'camera' ][ 'clipping' ][ "y1" ]
 # Personal[ 'camera' ][ 'clipping' ][ "y2" ]
@@ -283,7 +283,7 @@ class TenvisVideo():
 				wNow = datetime.now( eastern_tz )
 				self.nowString = wNow.strftime( "%Y-%m-%d %H:%M:%S" )
 				self.elapsedTimeFromLastEmail = int( ( wNow - self.last_email_time ).total_seconds() )
-				if self.elapsedTimeFromLastEmail < LOADED_CONFIG[ 'EMAIL_COOLOFF' ] :
+				if self.elapsedTimeFromLastEmail < LOADED_CONFIG[ 'EMAIL_COOLOFF' ]:
 					#print "sleeping"
 					pass
 				else:
