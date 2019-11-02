@@ -204,6 +204,7 @@ try:
 except Exception as e:
 	print( e )
 	print( "Failed to connect to REDIS" )
+	sys.exit( 0 )
 
 def signal_handler( signal , frame ):
 	message_string = "motion_simple_rewrite_fixed.py closed , Signal = " + str( signal )
