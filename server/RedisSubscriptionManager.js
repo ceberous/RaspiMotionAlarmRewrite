@@ -1,7 +1,7 @@
 function IONIC_CONTROLLER( options ) {
 	try {
 		console.log( "Inside IONIC_CONTROLLER()" );
-		events.emit( "command" , JSON.parse( options ) );
+		require( "../main.js" ).events.emit( "command" , JSON.parse( options ) );
 	}
 	catch( error ) { console.log( error ); }
 
@@ -10,7 +10,7 @@ function IONIC_CONTROLLER( options ) {
 function PYTHON_SCRIPT_CONTROLLER( options ) {
 	try {
 		console.log( "Inside PYTHON_SCRIPT_CONTROLLER()" );
-		events.emit( "python-script" , JSON.parse( options ) );
+		require( "../main.js" ).events.emit( "python-script" , JSON.parse( options ) );
 	}
 	catch( error ) { console.log( error ); }
 
@@ -19,7 +19,6 @@ function PYTHON_SCRIPT_CONTROLLER( options ) {
 function LOAD_SUBSCRIPTIONS() {
 	return new Promise( function( resolve , reject ) {
 		try {
-			const events = require( "../main.js" ).events;
 			const redis_manager = require( "../main.js" ).redis_manager;
 			redis_manager.redis.on( "message" , function ( channel , message ) {
 				//console.log( "sub channel " + channel + ": " + message );
