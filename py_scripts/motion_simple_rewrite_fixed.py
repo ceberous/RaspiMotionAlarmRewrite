@@ -153,17 +153,17 @@ def update_loaded_clipping( options ):
 		send_web_socket_message( "log" , "LOADED_CLIPPING == DEFAULT_CLIPPING" )
 		return
 	if 'x' in options:
-		if '1': in options[ 'x' ]:
+		if '1' in options[ 'x' ]:
 			LOADED_CLIPPING[ 'x' ][ '1' ] = options[ 'x' ][ '1' ]
 			send_web_socket_message( "log" , "LOADED_CLIPPING[ 'x' ][ '1' ] == " + str( options[ 'x' ][ '1' ] ) )
-		if '2': in options[ 'x' ]:
+		if '2' in options[ 'x' ]:
 			LOADED_CLIPPING[ 'x' ][ '2' ] = options[ 'x' ][ '2' ]
 			send_web_socket_message( "log" , "LOADED_CLIPPING[ 'x' ][ '2' ] == " + str( options[ 'x' ][ '2' ] ) )
 	if 'y' in options:
-		if '1': in options[ 'y' ]:
+		if '1' in options[ 'y' ]:
 			LOADED_CLIPPING[ 'y' ][ '1' ] = options[ 'y' ][ '1' ]
 			send_web_socket_message( "log" , "LOADED_CLIPPING[ 'y' ][ '1' ] == " + str( options[ 'y' ][ '1' ] ) )
-		if '2': in options[ 'y' ]:
+		if '2' in options[ 'y' ]:
 			LOADED_CLIPPING[ 'y' ][ '2' ] = options[ 'y' ][ '2' ]
 			send_web_socket_message( "log" , "LOADED_CLIPPING[ 'y' ][ '2' ] == " + str( options[ 'y' ][ '2' ] ) )
 
