@@ -35,7 +35,7 @@ function pluralize( noun , suffix = "s" ) {
 function redis_get_lrange( key , start , end ) {
 	return new Promise( function( resolve , reject ) {
 		try {
-			redis_manager.redis.lrange( key , ( error , results )=> {
+			redis_manager.redis.lrange( key , start , end , ( error , results )=> {
 				console.log( results );
 				resolve( results );
 				return;
