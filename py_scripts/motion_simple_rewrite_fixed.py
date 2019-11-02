@@ -46,10 +46,7 @@ ws = False
 # Y = TOP TO BOTTOM
 # [ y1:y2 , x1:x2 ]
 # frame = frame[ 0:250 , 0:500 ]
-DEFAULT_CLIPPING = {
-	'x': { '1': 0 , '2': 500 } ,
-	'y': { '1': 0 , '2': 250 }
-}
+DEFAULT_CLIPPING = { 'x': { '1': 0 , '2': 500 } , 'y': { '1': 0 , '2': 250 } }
 LOADED_CLIPPING = DEFAULT_CLIPPING
 # Personal[ 'camera' ][ 'clipping' ][ "y1" ]
 # Personal[ 'camera' ][ 'clipping' ][ "y2" ]
