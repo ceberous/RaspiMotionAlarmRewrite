@@ -198,7 +198,7 @@ def redis_on_message( message ):
 		print( "Failed To Parse Redis Message" )
 
 try:
-	redis_manager = redis.Redis( host='localhost' , port=6379 , db=1 )
+	redis_manager = redis.Redis( host='localhost' , port=10089 , db=1 )
 	redis_subscriber = redis_manager.pubsub()
 	redis_subscriber.subscribe( **{ 'python-script-update' : redis_on_message } )
 except Exception as e:
