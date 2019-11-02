@@ -161,7 +161,26 @@ function ON_CONNECTION( socket , req ) {
 				catch( error ) { console.log( error ); reject( error ); return; }
 			});
 		}
+		else if ( message.type === "get_redis_lrange" ) {
+			return new Promise( async function( resolve , reject ) {
+				try {
+					const count = message.count || 1;
+					redis_manager.redis.lrange( message.list_key , 0 , count , ( error , results )=> {
+						console.log( results );
+						socket.send(JSON.stringify({
+							message: "new_redis_lrange_items" ,
+							data: results
+						}));
+						resolve( results );
+						return;
+					});
+				}
+				catch( error ) { console.log( error ); reject( error ); return; }
+			});
+		}
+
 	});
+
 }
 module.exports.on_connection = ON_CONNECTION;
 
