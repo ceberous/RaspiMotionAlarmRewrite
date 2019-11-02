@@ -92,4 +92,22 @@ tiv /home/pi/WORKSPACE/RaspiMotionAlarmRewrite/client/frame.png
 ==============================================================================================================================
 ==============================================================================================================================
 
+============================================================================================================================================================================================================================================================
+6.) Create Service on Raspberry PI for Keeping motion.py Running During Time Window
 
+sudo nano /lib/systemd/system/motion-script.service
+
+[Unit]
+Description=Keeps motion.py Script Running During Time Window
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python /home/pi/WORKSPACE/RaspiMotionAlarmRewrite/py_script/motion_simple_rewrite_fixed.py
+ExecStop=/usr/bin/pkill python
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+============================================================================================================================================================================================================================================================
