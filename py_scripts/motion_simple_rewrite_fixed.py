@@ -158,7 +158,7 @@ def update_loaded_config( config ):
 		if 'reset' in config[ 'clipping' ]:
 			if config[ 'clipping' ][ 'reset' ] == True or config[ 'clipping' ][ 'reset' ] == "true" or config[ 'clipping' ][ 'reset' ] == "True":
 				LOADED_CONFIG[ 'clipping' ] = DEFAULT_CLIPPING
-			send_web_socket_message( { "channel": "log" , "LOADED_CONFIG == DEFAULT_CLIPPING" } )
+				send_web_socket_message( { "channel": "log" , "message": "LOADED_CONFIG == DEFAULT_CLIPPING" } )
 
 			return
 		if 'x' in config[ 'clipping' ]:
