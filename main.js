@@ -4,7 +4,7 @@ const ip = require( "ip" );
 const fs = require( "fs" );
 const EventEmitter = require( "events" );
 const WebSocket = require( "ws" );
-	const REDIS = require( "redis" );
+const REDIS = require( "redis" );
 
 //const Unilink1 = require( "unilink1" );
 const RedisUtils = require( "redis-manager-utils" );
@@ -51,7 +51,7 @@ const LIVE_HTML_PAGE = `<html><img alt="" id="liveimage" src=""/> <script type="
 	// 3.) Load Redis Subscriptions
 	await require( "./server/RedisSubscriptionManager.js" ).load_subscriptions();
 
-	// 2.) Write 'Current DHCP IP Address to Static HTML File'
+	// 2.) Write 'Current' DHCP IP Address to Static HTML File
 	fs.writeFileSync( path.join( __dirname , "client" , "views" , "live.html" ) , LIVE_HTML_PAGE );
 
 	// 3.) Start Express Server With WebSocket Server Attachment
@@ -65,7 +65,7 @@ const LIVE_HTML_PAGE = `<html><img alt="" id="liveimage" src=""/> <script type="
 	websocket_server.on( "connection" ,  WebSocketManager.on_connection );
 
 	// 4.) Load Schedule Manager
-	const schedules = require( "./server/ScheduleManager.js" ).load_schedules();
+	// const schedules = require( "./server/ScheduleManager.js" ).load_schedules();
 
 	process.on( "unhandledRejection" , ( reason , p )=> {
 		events.emit( "error_unhandled_rejection" , {
