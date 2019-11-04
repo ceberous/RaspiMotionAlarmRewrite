@@ -6,6 +6,7 @@ import signal
 import imutils
 import json
 import redis
+import base64
 
 from datetime import datetime , timedelta , time
 from time import localtime, strftime , sleep
