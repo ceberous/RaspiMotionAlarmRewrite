@@ -29,7 +29,8 @@ function INITIALIZE() {
 					const hours = String( now.getHours() ).padStart( 2 , '0' );
 					const minutes = String( now.getMinutes() ).padStart( 2 , '0' );
 					const seconds = String( now.getSeconds() ).padStart( 2 , '0' );
-					const list_key = `sleep.python.${ options.channel }.${ yyyy }.${ mm }.${ dd }`;
+					const time_key_suffix = `${ yyyy }.${ mm }.${ dd }`;
+					const list_key = `sleep.python.${ options.channel }.${ time_key_suffix }`;
 					const time_stamp_string = `${ yyyy }.${ mm }.${ dd } @@ ${ hours }:${ minutes }:${ seconds }`;
 					let Custom_JSON_Serialized_Item_Object = JSON.stringify({
 						...options ,
@@ -45,7 +46,7 @@ function INITIALIZE() {
 					const encrypted = encrypt( Custom_JSON_Serialized_Item_Object );
 					console.log( encrypted );
 					await redis_manager.listLPUSH( list_key , encrypted );
-					await redis_manager.list_key( "sleep.log" , encrypted );
+					await redis_manager.listLPUSH( `sleep.log.${ time_key_suffix }` , encrypted );
 				}
 				catch( error ) { console.log( error ); }
 			}
@@ -58,7 +59,8 @@ function INITIALIZE() {
 				const hours = String( now.getHours() ).padStart( 2 , '0' );
 				const minutes = String( now.getMinutes() ).padStart( 2 , '0' );
 				const seconds = String( now.getSeconds() ).padStart( 2 , '0' );
-				const list_key = `sleep.images.${ options.channel }.${ yyyy }.${ mm }.${ dd }`;
+				const time_key_suffix = `${ yyyy }.${ mm }.${ dd }`;
+				const list_key = `sleep.images.${ options.channel }.${ time_key_suffix }`;
 				const time_stamp_string = `${ yyyy }.${ mm }.${ dd } @@ ${ hours }:${ minutes }:${ seconds }`;
 				const Custom_JSON_Object = JSON.stringify({
 					...options ,
@@ -72,6 +74,10 @@ function INITIALIZE() {
 				const encrypted = encrypt( Custom_JSON_Object );
 				console.log( encrypted );
 				await redis_manager.listLPUSH( list_key , encrypted );
+				let log_options = options;
+				delete log_options.image_b64;
+				const encrypted_log_options = encrypt( log_options );
+				await redis_manager.listLPUSH( `sleep.log.${ time_key_suffix }` , encrypted_log_options );
 			}
 
 			redis_manager.redis.on( "message" , function ( channel , message ) {
