@@ -5,7 +5,7 @@ const http = require( "http" );
 const WebSocket = require( "ws" );
 const RedisUtils = require( "redis-manager-utils" );
 
-const PythonScriptSubscriber = require( "./python_script_subscriber.js.js" );
+const PythonScriptSubscriber = require( "./python_script_subscriber.js" );
 
 process.on( "unhandledRejection" , function( reason , p ) {
 	console.error( reason, "Unhandled Rejection at Promise" , p );
