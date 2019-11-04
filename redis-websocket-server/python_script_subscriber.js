@@ -29,7 +29,7 @@ function INITIALIZE() {
 					const hours = String( now.getHours() ).padStart( 2 , '0' );
 					const minutes = String( now.getMinutes() ).padStart( 2 , '0' );
 					const seconds = String( now.getSeconds() ).padStart( 2 , '0' );
-					const list_key = `${ options.list_key_prefix }.${ yyyy }.${ mm }.${ dd }`;
+					const list_key = `sleep.python.${ options.channel }.${ yyyy }.${ mm }.${ dd }`;
 					const time_stamp_string = `${ yyyy }.${ mm }.${ dd } @@ ${ hours }:${ minutes }:${ seconds }`;
 					let Custom_JSON_Serialized_Item_Object = JSON.stringify({
 						...options ,
@@ -58,7 +58,7 @@ function INITIALIZE() {
 				const hours = String( now.getHours() ).padStart( 2 , '0' );
 				const minutes = String( now.getMinutes() ).padStart( 2 , '0' );
 				const seconds = String( now.getSeconds() ).padStart( 2 , '0' );
-				const list_key = `sleep.${ options.channel }.${ yyyy }.${ mm }.${ dd }`;
+				const list_key = `sleep.images.${ options.channel }.${ yyyy }.${ mm }.${ dd }`;
 				const time_stamp_string = `${ yyyy }.${ mm }.${ dd } @@ ${ hours }:${ minutes }:${ seconds }`;
 				const Custom_JSON_Object = JSON.stringify({
 					...options ,
@@ -83,9 +83,6 @@ function INITIALIZE() {
 						console.log( message );
 						if ( message.channel ) {
 							switch ( message.channel ) {
-								case "log":
-									publish_log( message );
-									break;
 								case "images.frames":
 									publish_image( message );
 									break;
@@ -96,6 +93,7 @@ function INITIALIZE() {
 									publish_image( message );
 									break;
 								default:
+									publish_log( message );
 									break;
 							}
 						}

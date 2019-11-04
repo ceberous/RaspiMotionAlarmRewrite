@@ -383,13 +383,13 @@ class TenvisVideo():
 				delta_retval , delta_buffer = cv2.imencode( '.jpg' , frameDelta )
 				delta_base64 = base64.b64encode( delta_buffer )
 				redis_manager.publish( "python-script-controller" , json.dumps({
-					"channel": "images.frames" , "message": "new frame" , "image_b64": frame_base64
+					"channel": "frames" , "message": "new frame" , "image_b64": frame_base64
 				}))
 				redis_manager.publish( "python-script-controller" , json.dumps({
-					"channel": "images.thresholds" , "message": "new threshold" , "image_b64": thresh_base64
+					"channel": "thresholds" , "message": "new threshold" , "image_b64": thresh_base64
 				}))
 				redis_manager.publish( "python-script-controller" , json.dumps({
-					"channel": "images.deltas" , "message": "new delta" , "image_b64": delta_base64
+					"channel": "deltas" , "message": "new delta" , "image_b64": delta_base64
 				}))
 				#redis_publish( { "channel": "command" , "command": "publish_new_image_set" , "message": "Saving New Image Set" } )
 
