@@ -3,7 +3,7 @@ function INITIALIZE() {
 		try {
 			const Personal = require( "./main.js" ).personal;
 			const RedisUtils = require( "redis-manager-utils" );
-
+			const util = require( "util" );
 			const tweetnacl = require( "tweetnacl" );
 			tweetnacl.util = require( "tweetnacl-util" );
 			tweetnacl.sealedbox = require( "tweetnacl-sealedbox-js" );
