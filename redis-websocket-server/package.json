@@ -18,6 +18,9 @@
     "path": "^0.12.7",
     "process": "^0.11.10",
     "redis-manager-utils": "^1.1.8",
+    "tweetnacl": "^1.0.1",
+    "tweetnacl-sealedbox-js": "^1.2.0",
+    "tweetnacl-util": "^0.15.0",
     "ws": "^7.1.2"
   }
 }

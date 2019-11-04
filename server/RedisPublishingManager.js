@@ -94,7 +94,7 @@ function publish_new_item( options ) {
 			const redis_manager = new RedisUtils( Personal.redis.database_number , Personal.redis.host , Personal.redis.port  );
 			await redis_manager.init();
 
-			const now = new Date();
+			const now = new Date( new Date().toLocaleString( "en-US" , { timeZone: "America/New_York" } ) );
 			const dd = String( now.getDate()).padStart( 2 , '0' );
 			const mm = String( now.getMonth() + 1 ).padStart( 2 , '0' );
 			const yyyy = now.getFullYear();
