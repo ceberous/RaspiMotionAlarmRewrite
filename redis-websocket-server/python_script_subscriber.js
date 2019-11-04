@@ -1,6 +1,6 @@
 
 function INITIALIZE() {
-	return new Promise( function( resolve , reject ) {
+	return new Promise( async function( resolve , reject ) {
 		try {
 			const Personal = require( "./main.js" ).personal;
 			const RedisUtils = require( "redis-manager-utils" );
