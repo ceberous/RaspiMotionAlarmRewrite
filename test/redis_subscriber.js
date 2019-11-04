@@ -44,7 +44,7 @@ function save_new_frame( message ) {
 
 	// Subscriber
 
-	await redis_manager.keySet( 'TESTING.1' , "blah blah blah" );
+	// await redis_manager.keySet( 'TESTING.1' , "blah blah blah" );
 
 	// redis_manager.redis.on( "subscribe", function ( channel , count ) {
 	// 	redis_manager.redis.publish( "testing channel" , "I am sending my last message.");
@@ -53,50 +53,51 @@ function save_new_frame( message ) {
 	redis_manager.redis.on( "message" , function ( channel , message ) {
 		//console.log( "sub channel " + channel + ": " + message );
 		console.log( "new message from: " + channel );
-		switch( channel ) {
-			case "new-image-frame":
-				// Add Image to DOM ?
-				//
-				save_new_frame( message );
-				break;
-			case "new-image-threshold":
-				// Add Image to DOM ?
-				//
-				break;
-			case "new-image-delta":
-				// Add Image to DOM ?
-				//
-				break;
-			case "python-new-error":
-				console.log( decrypt( Personal.libsodium.private_key , message ) );
-				break;
-			case "python-new-event":
-				console.log( decrypt( Personal.libsodium.private_key , message ) );
-				break;
-			case "python-new-record":
-				console.log( decrypt( Personal.libsodium.private_key , message ) );
-				break;
-			case "message-generic":
-				console.log( decrypt( Personal.libsodium.private_key , message ) );
-				break;
-			case "message-error":
-				console.log( decrypt( Personal.libsodium.private_key , message ) );
-				break;
-			default:
-				console.log( channel );
-				break;
+		console.log( message );
+		// switch( channel ) {
+		// 	case "new-image-frame":
+		// 		// Add Image to DOM ?
+		// 		//
+		// 		save_new_frame( message );
+		// 		break;
+		// 	case "new-image-threshold":
+		// 		// Add Image to DOM ?
+		// 		//
+		// 		break;
+		// 	case "new-image-delta":
+		// 		// Add Image to DOM ?
+		// 		//
+		// 		break;
+		// 	case "python-new-error":
+		// 		console.log( decrypt( Personal.libsodium.private_key , message ) );
+		// 		break;
+		// 	case "python-new-event":
+		// 		console.log( decrypt( Personal.libsodium.private_key , message ) );
+		// 		break;
+		// 	case "python-new-record":
+		// 		console.log( decrypt( Personal.libsodium.private_key , message ) );
+		// 		break;
+		// 	case "message-generic":
+		// 		console.log( decrypt( Personal.libsodium.private_key , message ) );
+		// 		break;
+		// 	case "message-error":
+		// 		console.log( decrypt( Personal.libsodium.private_key , message ) );
+		// 		break;
+		// 	default:
+		// 		console.log( channel );
+		// 		break;
 		}
-	});
+	);
 
-	redis_manager.redis.subscribe( "new-image-frame" );
-	redis_manager.redis.subscribe( "new-image-threshold" );
-	redis_manager.redis.subscribe( "new-image-delta" );
+	redis_manager.redis.subscribe( "python-script-controller" );
+	// redis_manager.redis.subscribe( "new-image-threshold" );
+	// redis_manager.redis.subscribe( "new-image-delta" );
 
-	redis_manager.redis.subscribe( "python-new-error" );
-	redis_manager.redis.subscribe( "python-new-event" );
-	redis_manager.redis.subscribe( "python-new-record" );
+	// redis_manager.redis.subscribe( "python-new-error" );
+	// redis_manager.redis.subscribe( "python-new-event" );
+	// redis_manager.redis.subscribe( "python-new-record" );
 
-	redis_manager.redis.subscribe( "message-error" );
-	redis_manager.redis.subscribe( "message-generic" );
+	// redis_manager.redis.subscribe( "message-error" );
+	// redis_manager.redis.subscribe( "message-generic" );
 
 })();

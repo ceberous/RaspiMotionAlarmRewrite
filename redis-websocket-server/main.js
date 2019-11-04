@@ -5,6 +5,8 @@ const http = require( "http" );
 const WebSocket = require( "ws" );
 const RedisUtils = require( "redis-manager-utils" );
 
+const PythonScriptSubscriber = require( "./python_script_subscriber.js.js" );
+
 process.on( "unhandledRejection" , function( reason , p ) {
 	console.error( reason, "Unhandled Rejection at Promise" , p );
 	console.trace();
@@ -24,21 +26,25 @@ process.on( "uncaughtException" , function( err ) {
 	const Personal = require( PersonalFilePath );
 	module.exports.personal = Personal;
 
-	console.log( "Starting" );
-	const redis_manager = new RedisUtils( Personal.redis.database_number , Personal.redis.host , Personal.redis.port  );
-	await redis_manager.init();
-	module.exports.redis_manager = redis_manager;
+	// console.log( "Starting" );
+	// const redis_manager = new RedisUtils( Personal.redis.database_number , Personal.redis.host , Personal.redis.port  );
+	// await redis_manager.init();
+	// module.exports.redis_manager = redis_manager;
 
-	redis_manager.redis.subscribe( "new-image-frame" );
-	redis_manager.redis.subscribe( "new-image-threshold" );
-	redis_manager.redis.subscribe( "new-image-delta" );
+	// redis_manager.redis.subscribe( "new-image-frame" );
+	// redis_manager.redis.subscribe( "new-image-threshold" );
+	// redis_manager.redis.subscribe( "new-image-delta" );
 
-	redis_manager.redis.subscribe( "python-new-error" );
-	redis_manager.redis.subscribe( "python-new-event" );
-	redis_manager.redis.subscribe( "python-new-record" );
+	// redis_manager.redis.subscribe( "python-new-error" );
+	// redis_manager.redis.subscribe( "python-new-event" );
+	// redis_manager.redis.subscribe( "python-new-record" );
 
-	redis_manager.redis.subscribe( "message-error" );
-	redis_manager.redis.subscribe( "message-generic" );
+	// redis_manager.redis.subscribe( "message-error" );
+	// redis_manager.redis.subscribe( "message-generic" );
+
+	const python_script_subscriber = await PythonScriptSubscriber.init();
+	python_script_subscriber.redis.subscribe( "python-script-controller" );
+
 
 	const express_app = require( "./express_app.js" );
 	const server = http.createServer( express_app );

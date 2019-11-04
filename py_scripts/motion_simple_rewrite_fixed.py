@@ -108,6 +108,18 @@ def redis_publish( options ):
 	except Exception as e:
 		print( "Couldn't Publish Message to REDIS" )
 
+frameLiveImagePath = os.path.abspath( os.path.join( framePathBase , "frame.jpeg" ) )
+frameDeltaLiveImagePath = os.path.abspath( os.path.join( framePathBase , "frameDelta.jpeg" ) )
+frameThreshLiveImagePath
+def redis_publish_image_set( options ):
+	try:
+		with open( frameLiveImagePath , "rb" ) as f:
+			data = f.read()
+			print data.encode("base64")
+	except Exception as e:
+		print( "Couldn't Publish Image Set to REDIS" )
+		redis_publish({ "channel": "errors" , "message": "Couldn't Publish Image Set to REDIS" })
+
 def broadcast_error( message ):
 	redis_publish( { "channel": "errors" , "message": message } )
 
@@ -199,6 +211,7 @@ def redis_on_message( message ):
 
 try:
 	redis_manager = redis.Redis( host='localhost' , port=10089 , db=1 )
+	print( redis_manager )
 	redis_subscriber = redis_manager.pubsub()
 	redis_subscriber.subscribe( **{ 'python-script-update' : redis_on_message } )
 except Exception as e:
@@ -346,7 +359,22 @@ class TenvisVideo():
 				self.total_motion = 0
 				cv2.imwrite( frameThreshLiveImagePath , thresh )
 				cv2.imwrite( frameDeltaLiveImagePath , frameDelta )
-				redis_publish( { "channel": "command" , "command": "publish_new_image_set" , "message": "Saving New Image Set" } )
+				frame_retval , frame_buffer = cv2.imencode( '.jpg' , frame )
+				frame_base64 = base64.b64encode( frame_buffer )
+				thresh_retval , thresh_buffer = cv2.imencode( '.jpg' , thresh )
+				thresh_base64 = base64.b64encode( thresh_buffer )
+				delta_retval , delta_buffer = cv2.imencode( '.jpg' , frameDelta )
+				delta_base64 = base64.b64encode( delta_buffer )
+				redis_manager.publish( "python-script-controller" , json.dumps({
+					"channel": "new_frame": data64: frame_base64
+				}))
+				redis_manager.publish( "python-script-controller" , json.dumps({
+					"channel": "new_threshold": data64: thresh_base64
+				}))
+				redis_manager.publish( "python-script-controller" , json.dumps({
+					"channel": "new_delta": data64: delta_base64
+				}))
+				#redis_publish( { "channel": "command" , "command": "publish_new_image_set" , "message": "Saving New Image Set" } )
 
 				wNeedToAlert = False
 
