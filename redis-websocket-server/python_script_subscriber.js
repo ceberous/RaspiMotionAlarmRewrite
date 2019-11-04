@@ -40,7 +40,7 @@ function INITIALIZE() {
 				catch( error ) { console.log( error ); }
 			}
 
-			function publish_image( options ) {
+			async function publish_image( options ) {
 				const now = new Date( new Date().toLocaleString( "en-US" , { timeZone: "America/New_York" } ) );
 				const dd = String( now.getDate()).padStart( 2 , '0' );
 				const mm = String( now.getMonth() + 1 ).padStart( 2 , '0' );
