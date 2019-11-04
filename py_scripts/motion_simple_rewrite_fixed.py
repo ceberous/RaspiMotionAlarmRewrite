@@ -323,22 +323,21 @@ class TenvisVideo():
 			thresh = cv2.threshold( frameDelta , delta_thresh , 255 , cv2.THRESH_BINARY )[ 1 ]
 			thresh = cv2.dilate( thresh , None , iterations=2 )
 
-			frame_retval , frame_buffer = cv2.imencode( '.jpg' , frame )
-			frame_base64 = base64.b64encode( frame_buffer )
-			thresh_retval , thresh_buffer = cv2.imencode( '.jpg' , thresh )
-			thresh_base64 = base64.b64encode( thresh_buffer )
-			delta_retval , delta_buffer = cv2.imencode( '.jpg' , frameDelta )
-			delta_base64 = base64.b64encode( delta_buffer )
-			redis_manager.publish( "python-script-controller" , json.dumps({
-				"channel": "new_frame" , "data64": frame_base64
-			}))
-			redis_manager.publish( "python-script-controller" , json.dumps({
-				"channel": "new_threshold" , "data64": thresh_base64
-			}))
-			redis_manager.publish( "python-script-controller" , json.dumps({
-				"channel": "new_delta" , "data64": delta_base64
-			}))
-
+			# frame_retval , frame_buffer = cv2.imencode( '.jpg' , frame )
+			# frame_base64 = base64.b64encode( frame_buffer )
+			# thresh_retval , thresh_buffer = cv2.imencode( '.jpg' , thresh )
+			# thresh_base64 = base64.b64encode( thresh_buffer )
+			# delta_retval , delta_buffer = cv2.imencode( '.jpg' , frameDelta )
+			# delta_base64 = base64.b64encode( delta_buffer )
+			# redis_manager.publish( "python-script-controller" , json.dumps({
+			# 	"channel": "new_frame" , "data64": frame_base64
+			# }))
+			# redis_manager.publish( "python-script-controller" , json.dumps({
+			# 	"channel": "new_threshold" , "data64": thresh_base64
+			# }))
+			# redis_manager.publish( "python-script-controller" , json.dumps({
+			# 	"channel": "new_delta" , "data64": delta_base64
+			# }))
 
 			# Search for Movment
 			( cnts , _ ) = cv2.findContours( thresh.copy() , cv2.RETR_EXTERNAL , cv2.CHAIN_APPROX_SIMPLE )
@@ -384,13 +383,13 @@ class TenvisVideo():
 				delta_retval , delta_buffer = cv2.imencode( '.jpg' , frameDelta )
 				delta_base64 = base64.b64encode( delta_buffer )
 				redis_manager.publish( "python-script-controller" , json.dumps({
-					"channel": "new_frame" , "data64": frame_base64
+					"channel": "images.frames" , "message": "new frame" , "image_b64": frame_base64
 				}))
 				redis_manager.publish( "python-script-controller" , json.dumps({
-					"channel": "new_threshold" , "data64": thresh_base64
+					"channel": "images.thresholds" , "message": "new threshold" , "image_b64": thresh_base64
 				}))
 				redis_manager.publish( "python-script-controller" , json.dumps({
-					"channel": "new_delta" , "data64": delta_base64
+					"channel": "images.deltas" , "message": "new delta" , "image_b64": delta_base64
 				}))
 				#redis_publish( { "channel": "command" , "command": "publish_new_image_set" , "message": "Saving New Image Set" } )
 
