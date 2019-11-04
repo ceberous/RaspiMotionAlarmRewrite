@@ -96,6 +96,7 @@ tiv /home/pi/WORKSPACE/RaspiMotionAlarmRewrite/client/frame.png
 ==============================================================================================================================
 6.) Create a Utility Script on Raspberry PI that systemctl can Run Without BS Shell Problems
     This also is where the Time-Window Check Happens , so it will restart if necessary on reboot
+
 #!/bin/bash
 
 currenttime=$(date +%H:%M)
@@ -117,7 +118,7 @@ fi
     Probably a lot of this indirction and re-indirction ontop of the first indirction is not necessary.
     The script needs to be run as pi , or at least thats where the Personal File is storred , and python script looks up the "home" folder
     of current user to get Personal File
-    Also, I couln't get Node Server sitting on Raspberry to 'catch the published redis stuff from python script. IDK
+    Also, I couldn't get Node Server sitting on Raspberry to 'catch the published redis stuff from python script. IDK
 
 sudo nano /etc/systemd/system/motion-script.service
 
@@ -143,8 +144,8 @@ WantedBy=multi-user.target
 sudo crontab -e
 
 0 16   *   *   *    /sbin/shutdown -r
-30 22 * * * systemctl restart motion-script.service
-0 10 * * * systemctl stop motion-script.service
+31 22 * * * systemctl restart motion-script.service
+01 10 * * * systemctl stop motion-script.service
 @reboot systemctl restart motion-script.service
 
 ==============================================================================================================================

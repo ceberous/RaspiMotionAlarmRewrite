@@ -3,7 +3,6 @@ function INITIALIZE() {
 		try {
 			const Personal = require( "./main.js" ).personal;
 			const RedisUtils = require( "redis-manager-utils" );
-			const Publishing = require( "../server/RedisPublishingManager.js" );
 
 			const tweetnacl = require( "tweetnacl" );
 			tweetnacl.util = require( "tweetnacl-util" );
@@ -21,21 +20,32 @@ function INITIALIZE() {
 				return encrypted;
 			}
 
-			function publish_log( options ) {
+			async function publish_log( options ) {
 				try {
-					const global_log_options = {
+					const now = new Date( new Date().toLocaleString( "en-US" , { timeZone: "America/New_York" } ) );
+					const dd = String( now.getDate()).padStart( 2 , '0' );
+					const mm = String( now.getMonth() + 1 ).padStart( 2 , '0' );
+					const yyyy = now.getFullYear();
+					const hours = String( now.getHours() ).padStart( 2 , '0' );
+					const minutes = String( now.getMinutes() ).padStart( 2 , '0' );
+					const seconds = String( now.getSeconds() ).padStart( 2 , '0' );
+					const list_key = `${ options.list_key_prefix }.${ yyyy }.${ mm }.${ dd }`;
+					const time_stamp_string = `${ yyyy }.${ mm }.${ dd } @@ ${ hours }:${ minutes }:${ seconds }`;
+					let Custom_JSON_Serialized_Item_Object = JSON.stringify({
 						...options ,
 						...{
-							type: "python" ,
-							message: `PYTHON === ${ options.message }` ,
-							list_key_prefix: "sleep.log"
+							timestamp: now ,
+							list_key: list_key ,
+							time_stamp_string: time_stamp_string ,
+							message: `${ time_stamp_string } === PYTHON === ${ options.message }`
 						}
-					};
-					console.log( global_log_options );
-					Publishing.new_item( global_log_options );
-					let python_log_options = { ...global_log_options };
-					python_log_options.list_key_prefix = `sleep.python.${ options.channel }`;
-					Publishing.new_item( python_log_options );
+					});
+					console.log( "publish_new_item() === "  + list_key );
+					console.log( Custom_JSON_Serialized_Item_Object );
+					const encrypted = encrypt( Custom_JSON_Serialized_Item_Object );
+					console.log( encrypted );
+					await redis_manager.listLPUSH( list_key , encrypted );
+					await redis_manager.list_key( "sleep.log" , encrypted );
 				}
 				catch( error ) { console.log( error ); }
 			}
