@@ -76,23 +76,23 @@ function ON_CONNECTION( socket , req ) {
 						socket.send( JSON.stringify( { message: `new_${ pluralize( message.channel ) }` , data: result } ) );
 					}
 					else if ( message.command === "frame" ) {
-						await redi_publish( "ionic-controller" , {
+						await redis_publish( "ionic-controller" , {
 							command: "frame" ,
 						});
 						await sleep( 1000 );
 						const result = await redis_get_lrange( `sleep.images.frames.${ get_eastern_time_key_suffix() }` , 0 , 0 );
-						socket.send( JSON.stringify( { message: "new_frames" , data: result } ) );
+						socket.send( JSON.stringify( { message: "new_frame" , data: result } ) );
 
 					}
 					else if ( message.command === "call" ) {
 						if ( !messsage.number ) { resolve(); return; }
-						await redi_publish( "ionic-controller" , message );
+						await redis_publish( "ionic-controller" , message );
 
 					}
 					else if ( message.command === "message" ) {
 						if ( !messsage.number ) { resolve(); return; }
 						if ( !messsage.message ) { resolve(); return; }
-						await redi_publish( "ionic-controller" , message );
+						await redis_publish( "ionic-controller" , message );
 					}
 					resolve();
 					return;

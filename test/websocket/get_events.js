@@ -41,11 +41,15 @@ function get_events() {
 	// So count = 31 , really means get 30 events
 	// -1 = Get ALL in Redis List
 	const count = -1;
+
 	ws.send( JSON.stringify({
-		"type": "get_events" ,
-		"count": count ,
-		"list_key": key
+		"type": "redis_get_lrange" ,
+		"starting_position": 0 ,
+		"ending_position": count ,
+		"list_key": key ,
+		"channel": "events"
 	}));
+
 }
 
 const ws = new WebSocket( "ws://127.0.0.1:10080" );
