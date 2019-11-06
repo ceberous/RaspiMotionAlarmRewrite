@@ -84,29 +84,29 @@ function INITIALIZE() {
 			redis_manager.redis.on( "message" , function ( channel , message ) {
 					//console.log( "sub channel " + channel + ": " + message );
 					console.log( "new message from: " + channel );
-					if ( channel !== "python-script-controller" ) { return; }
-					try {
-						message = JSON.parse( message );
-						console.log( message );
-						if ( message.channel ) {
-							switch ( message.channel ) {
-								case "images.frames":
-									publish_image( message );
-									break;
-								case "images.thresholds":
-									publish_image( message );
-									break;
-								case "images.deltas":
-									publish_image( message );
-									break;
-								default:
-									publish_log( message );
-									break;
-							}
-						}
+					// if ( channel !== "python-script-controller" ) { return; }
+					// try {
+					// 	message = JSON.parse( message );
+					// 	console.log( message );
+					// 	if ( message.channel ) {
+					// 		switch ( message.channel ) {
+					// 			case "images.frames":
+					// 				publish_image( message );
+					// 				break;
+					// 			case "images.thresholds":
+					// 				publish_image( message );
+					// 				break;
+					// 			case "images.deltas":
+					// 				publish_image( message );
+					// 				break;
+					// 			default:
+					// 				publish_log( message );
+					// 				break;
+					// 		}
+					// 	}
 
-					}
-					catch( error ) { console.log( error ); }
+					// }
+					// catch( error ) { console.log( error ); }
 				}
 			);
 			resolve( redis_manager );
