@@ -44,7 +44,7 @@ function publish_new_frame() {
 		try {
 
 			await custom_publish_image_b64({
-				channel: "frames" ,
+				channel: "frame" ,
 				image_path: FramePath ,
 				list_key_prefix: "sleep.images.frames"
 			});
@@ -117,7 +117,7 @@ function publish_new_item( options ) {
 			console.log( Custom_JSON_Serialized_Item_Object );
 			const encrypted = encrypt( Custom_JSON_Serialized_Item_Object );
 			console.log( encrypted );
-			await redis_manager.redis.publish( options.type , encrypted );
+			await redis_manager.redis.publish( `new_${ options.channel }` , encrypted );
 			await redis_manager.listLPUSH( list_key , encrypted );
 			resolve();
 			return;
