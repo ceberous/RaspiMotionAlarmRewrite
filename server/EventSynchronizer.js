@@ -44,10 +44,10 @@ function load_custom_event_list() {
 		function command_wrapper( command , options ) {
 			switch( command ) {
 				case "publish_new_image_set":
-					PublisherManager.new_image_set();
+					Publishing.new_image_set();
 					break;
 				case "publish_new_frame":
-					PublishingManager.new_frame();
+					Publishing.new_frame();
 					break;
 				case "start_pyprocess":
 					GenericUtils.startPYProcess();
