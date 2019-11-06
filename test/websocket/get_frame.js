@@ -45,7 +45,8 @@ function get_latest_frame() {
 	ws.send( JSON.stringify({
 		"type": "ionic-controller" ,
 		"command": "frame" ,
-		"key": key
+		"key": key ,
+		"message": "please send latest frame to ionic-controller"
 	}));
 }
 
@@ -66,13 +67,14 @@ ws.on( "message" , ( data )=> {
 				let decrypted = decrypt( Personal.libsodium.private_key , data[ i ] );
 				decrypted = JSON.parse( decrypted );
 				if ( decrypted.image_b64.length < 3 ) { continue; }
+				console.log( decrypted );
 				decrypted_messages.push( decrypted );
 			}
 			catch ( error ) { console.log( error ); }
 		}
 		for ( let i = 0; i < decrypted_messages.length; ++i ) {
-			console.log( `${ decrypted_messages[ i ].timestamp_string } === ${ decrypted_messages[ i ].list_key } === Image String Length === ${ decrypted_messages[ i ].image_b64.length.toString() }` );
-			const file_safe_time_string = decrypted_messages[ i ].timestamp_string.replace( /\./g , "-" );
+			console.log( `${ decrypted_messages[ i ].time_stamp_string } === ${ decrypted_messages[ i ].list_key } === Image String Length === ${ decrypted_messages[ i ].image_b64.length.toString() }` );
+			const file_safe_time_string = decrypted_messages[ i ].time_stamp_string.replace( /\./g , "-" );
 			const frame_path = path.join( FramePathBase , `latest-frame === ${ file_safe_time_string }.jpeg` );
 			fs.writeFileSync( frame_path , decrypted_messages[ i ].image_b64 , "base64" );
 			execSync( `open "${ frame_path }"` );
