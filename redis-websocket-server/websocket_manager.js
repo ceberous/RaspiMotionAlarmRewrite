@@ -77,7 +77,7 @@ function ON_CONNECTION( socket , req ) {
 					}
 					else if ( message.command === "frame" ) {
 						await redis_publish( "ionic-controller" , {
-							command: "frame" ,
+							command: "publish_new_frame" ,
 						});
 						await sleep( 1000 );
 						const result = await redis_get_lrange( `sleep.images.frames.${ get_eastern_time_key_suffix() }` , 0 , 0 );
