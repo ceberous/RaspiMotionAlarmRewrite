@@ -383,14 +383,17 @@ class TenvisVideo():
 				delta_retval , delta_buffer = cv2.imencode( '.jpg' , frameDelta )
 				delta_base64 = base64.b64encode( delta_buffer )
 				redis_manager.publish( "python-script-controller" , json.dumps({
-					"channel": "frames" , "message": "new frame" , "image_b64": frame_base64
+					"command": "publish_new_image_set" , "message": "new image set ready"
 				}))
-				redis_manager.publish( "python-script-controller" , json.dumps({
-					"channel": "thresholds" , "message": "new threshold" , "image_b64": thresh_base64
-				}))
-				redis_manager.publish( "python-script-controller" , json.dumps({
-					"channel": "deltas" , "message": "new delta" , "image_b64": delta_base64
-				}))
+				# redis_manager.publish( "python-script-controller" , json.dumps({
+				# 	"channel": "frames" , "message": "new frame" , "image_b64": frame_base64
+				# }))
+				# redis_manager.publish( "python-script-controller" , json.dumps({
+				# 	"channel": "thresholds" , "message": "new threshold" , "image_b64": thresh_base64
+				# }))
+				# redis_manager.publish( "python-script-controller" , json.dumps({
+				# 	"channel": "deltas" , "message": "new delta" , "image_b64": delta_base64
+				# }))
 				#redis_publish( { "channel": "command" , "command": "publish_new_image_set" , "message": "Saving New Image Set" } )
 
 				wNeedToAlert = False

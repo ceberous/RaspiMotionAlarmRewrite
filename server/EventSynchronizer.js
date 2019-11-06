@@ -80,6 +80,7 @@ function load_custom_event_list() {
 		events.on( "python-script" , ( options ) => {
 			if ( !options ) { return; }
 			try{
+				console.log( options );
 				if ( options.command ) {
 					command_wrapper( options.command );
 				}
@@ -89,46 +90,6 @@ function load_custom_event_list() {
 				console.log( error );
 				options.channel = "error";
 				python_publish( options );
-			}
-		});
-		// Scheduled Events
-		// ============================================================
-		events.on( "scheduled_start" , () => {
-			try{
-				const cur_state = GenericUtils.getState();
-				let message;
-				if ( !cur_state.state ) { message = "Scheduled Start of Python Motion Script"; GenericUtils.startPYProcess(); }
-				else { message = "Scheduled Start of Python Motion Script: RESTARTING"; GenericUtils.restartPYProcess(); }
-				node_publish({
-					channel: "log" ,
-					message: message ,
-				});
-			}
-			catch( error ) {
-				console.log( error );
-				node_publish({
-					channel: "errors" ,
-					message: "Scheduled Start of Python Motion Script FAILED" ,
-				});
-			}
-		});
-		events.on( "scheduled_stop" , () => {
-			try{
-				const cur_state = GenericUtils.getState();
-				let message;
-				if ( !cur_state.state ) { message = "Scheduled Start of Python Motion Script"; GenericUtils.startPYProcess(); }
-				else { message = "Scheduled Start of Python Motion Script: Scheduled Stop"; GenericUtils.restartPYProcess(); }
-				node_publish({
-					channel: "log" ,
-					message: message ,
-				});
-			}
-			catch( error ) {
-				console.log( error );
-				node_publish({
-					channel: "errors" ,
-					message: "Scheduled Start of Python Motion Script FAILED" ,
-				});
 			}
 		});
 

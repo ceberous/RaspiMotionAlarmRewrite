@@ -23,7 +23,7 @@ function INITIALIZE() {
 			async function publish_log( options ) {
 				try {
 					const now = new Date( new Date().toLocaleString( "en-US" , { timeZone: "America/New_York" } ) );
-					const dd = String( now.getDate()).padStart( 2 , '0' );
+					const dd = String( now.getDate() ).padStart( 2 , '0' );
 					const mm = String( now.getMonth() + 1 ).padStart( 2 , '0' );
 					const yyyy = now.getFullYear();
 					const hours = String( now.getHours() ).padStart( 2 , '0' );
@@ -72,7 +72,8 @@ function INITIALIZE() {
 					}
 				});
 				const encrypted = encrypt( Custom_JSON_Object );
-				console.log( encrypted );
+				// console.log( encrypted );
+				console.log( list_key );
 				await redis_manager.listLPUSH( list_key , encrypted );
 				let log_options = options;
 				delete log_options.image_b64;
