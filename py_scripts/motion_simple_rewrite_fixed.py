@@ -76,7 +76,7 @@ def redis_get_key_suffix():
 
 def redis_publish( options ):
 	try:
-		options[ 'list_key_prefix' ] = "sleep.raspi.python" + options[ 'channel' ]
+		options[ 'list_key_prefix' ] = "sleep.raspi.python." + options[ 'channel' ]
 		json_string = json.dumps( options )
 		print( json_string )
 		redis_manager.publish( "python-script-controller" , json_string )
