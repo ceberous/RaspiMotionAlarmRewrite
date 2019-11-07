@@ -17,7 +17,7 @@ function load_custom_event_list() {
 				};
 				console.log( global_log_options );
 				Publishing.new_item( global_log_options );
-				Publishing.new_item( python_log_options );
+				Publishing.new_item( options );
 			}
 			catch( error ) { console.log( error ); }
 		}
