@@ -254,6 +254,7 @@ class TenvisVideo():
 		ws.close()
 
 	def simulate_motion( self ):
+		self.total_motion = LOADED_CONFIG[ 'MOTION_EVENTS_ACCEPTABLE' ] + 1
 		self.EVENT_POOL = []
 		now = datetime.now( eastern_tz )
 		for i in range( 10 ):
