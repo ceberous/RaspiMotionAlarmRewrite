@@ -377,10 +377,10 @@ class TenvisVideo():
 				elif len( self.EVENT_POOL ) >= 3:
 					wElapsedTime_2 = int( ( self.EVENT_POOL[ -1 ] - self.EVENT_POOL[ -3 ] ).total_seconds() )
 					if wElapsedTime_2 <= LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ]:
-						broadcast_log( "( Stage-2-Check ) === PASSED === Elapsed Time Between the First and Last Event in the Pool === " + str( wElapsedTime_2 ) + " which is >= " + str( sel.MAX_TIME_ACCEPTABLE_STAGE_2 ) + " seconds" )
+						broadcast_log( "( Stage-2-Check ) === PASSED === Elapsed Time Between the First and Last Event in the Pool === " + str( wElapsedTime_2 ) + " which is >= " + str( self.MAX_TIME_ACCEPTABLE_STAGE_2 ) + " seconds" )
 						wNeedToAlert = True
 					else:
-						broadcast_log( "( Stage-2-Check ) === FAILED === Elapsed Time Between the First and Last Event in the Pool === " + str( wElapsedTime_2 ) + " which is <= " + str( sel.MAX_TIME_ACCEPTABLE_STAGE_2 ) + " seconds" )
+						broadcast_log( "( Stage-2-Check ) === FAILED === Elapsed Time Between the First and Last Event in the Pool === " + str( wElapsedTime_2 ) + " which is <= " + str( self.MAX_TIME_ACCEPTABLE_STAGE_2 ) + " seconds" )
 
 				if wNeedToAlert == True:
 					#print "ALERT !!!!"
