@@ -315,7 +315,7 @@ class TenvisVideo():
 			cv2.accumulateWeighted( gray , avg , 0.5 )
 			frameDelta = cv2.absdiff( gray , cv2.convertScaleAbs(avg) )
 
-			frameThreshold = cv2.frameThreshold( frameDelta , delta_thresh , 255 , cv2.THRESH_BINARY )[ 1 ]
+			frameThreshold = cv2.threshold( frameDelta , delta_thresh , 255 , cv2.THRESH_BINARY )[ 1 ]
 			frameThreshold = cv2.dilate( frameThreshold , None , iterations=2 )
 
 			# Search for Movment
