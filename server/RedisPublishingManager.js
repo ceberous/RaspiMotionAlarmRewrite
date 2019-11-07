@@ -45,6 +45,7 @@ function publish_new_frame() {
 
 			await custom_publish_image_b64({
 				channel: "frame" ,
+				message: "Added New Frame" ,
 				image_path: FramePath ,
 				list_key_prefix: "sleep.images.frames"
 			});
@@ -63,18 +64,21 @@ function publish_new_image_set() {
 
 			await custom_publish_image_b64({
 				channel: "frames" ,
+				message: "Added New Frame" ,
 				image_path: FramePath ,
 				list_key_prefix: "sleep.images.frames"
 			});
 
 			await custom_publish_image_b64({
 				channel: "deltas" ,
+				message: "Added New Delta" ,
 				image_path: FrameDeltaPath ,
 				list_key_prefix: "sleep.images.deltas"
 			});
 
 			await custom_publish_image_b64({
 				channel: "thresholds" ,
+				message: "Added New Threshold" ,
 				image_path: FrameThresholdPath ,
 				list_key_prefix: "sleep.images.thresholds"
 			});

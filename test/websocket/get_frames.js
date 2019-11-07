@@ -39,7 +39,6 @@ function get_eastern_time_key_suffix() {
 	return key_suffix;
 }
 
-
 function get_frames() {
 	const key = "sleep.images.frames." + get_eastern_time_key_suffix();
 	// Its Really An Array Based Counting Scheme
@@ -47,9 +46,11 @@ function get_frames() {
 	// -1 = Get ALL in Redis List
 	const count = -1;
 	ws.send( JSON.stringify({
-		"type": "get_frames" ,
-		"count": count ,
-		"list_key": key
+		"type": "redis_get_lrange" ,
+		"starting_position": 0 ,
+		"ending_position": count ,
+		"list_key": key ,
+		"channel": "log"
 	}));
 }
 
@@ -74,8 +75,10 @@ ws.on( "message" , ( data )=> {
 		catch ( error ) { console.log( error ); }
 	}
 	for ( let i = 0; i < decrypted_messages.length; ++i ) {
-		console.log( `${ decrypted_messages[ i ].timestamp_string } === ${ decrypted_messages[ i ].list_key } === Image String Length === ${ decrypted_messages[ i ].image_b64.length.toString() }` );
-		const file_safe_time_string = decrypted_messages[ i ].timestamp_string.replace( /\./g , "-" );
+		if ( !decrypted_messages[ i ] ) { return; }
+		if ( !decrypted_messages[ i ].image_b64 ) { return; }
+		console.log( `${ decrypted_messages[ i ].time_stamp_string } === ${ decrypted_messages[ i ].list_key } === Image String Length === ${ decrypted_messages[ i ].image_b64.length.toString() }` );
+		const file_safe_time_string = decrypted_messages[ i ].time_stamp_string.replace( /\./g , "-" );
 		const frame_path = path.join( FramePathBase , `frame-${ String( i ).padStart( 2 , "0" ) } === ${ file_safe_time_string }.jpeg` );
 		fs.writeFileSync( frame_path , decrypted_messages[ i ].image_b64 , "base64" );
 	}

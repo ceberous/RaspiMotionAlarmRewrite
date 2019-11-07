@@ -41,107 +41,6 @@ ws = False
 DEFAULT_CLIPPING = { 'x': { '1': 0 , '2': 500 } , 'y': { '1': 0 , '2': 250 } }
 DEFUALT_CONFIG = { 'frame_width': 500 , 'clipping': DEFAULT_CLIPPING , 'EMAIL_COOLOFF': 100 , 'MIN_MOTION_FRAMES': 2 , 'MIN_MOTION_SECONDS': 1 , 'MOTION_EVENTS_ACCEPTABLE': 4 , 'MAX_TIME_ACCEPTABLE': 45 , 'MAX_TIME_ACCEPTABLE_STAGE_2': 90 }
 LOADED_CONFIG = DEFUALT_CONFIG
-# Personal[ 'camera' ][ 'clipping' ][ "y1" ]
-# Personal[ 'camera' ][ 'clipping' ][ "y2" ]
-# Personal[ 'camera' ][ 'clipping' ][ "x1" ]
-# Personal[ 'camera' ][ 'clipping' ][ "x2" ]
-
-
-def inside_message_time_window():
-	result = True
-	# window_hours = [ 22 , 23 , 24 , 0 , 1 , 2 ]
-	# now = datetime.now( eastern_tz )
-	# if now.hour in window_hours:
-	#   if now.hour == 22:
-	#       if now.minute >= 30:
-	#           result = True
-	#       else:
-	#           result = False
-	#   elif now.hour == 2:
-	#       if now.minute <= 30:
-	#           result = True
-	#       else:
-	#           result = False
-	#   else:
-	#       result = True
-	return result
-
-def ignore_extra_alert_call():
-	result = False
-	# ignore_hours = [ 22 , 23 , 24 , 0 , 1 ]
-	# now = datetime.now( eastern_tz )
-	# if now.hour in window_hours:
-	#   result = True
-	return result
-
-def twilio_message( number , message ):
-	try:
-		if inside_message_time_window() == False:
-			redis_publish( { "channel": "log" , "message": "Outside SMS Alert Time Window" } )
-			return;
-		message = TwilioClient.messages.create( number ,
-			body=message ,
-			from_=Personal[ 'twilio' ][ 'fromSMSNumber' ] ,
-		)
-		print( "sent sms" )
-		redis_publish( { "channel": "log" , "message": "Sent SMS to: " + str( number ) } )
-
-	except Exception as e:
-		print ( e )
-		print ( "failed to send sms" )
-		redis_publish( { "channel": "errors" , "message": "failed to send sms" } )
-
-# { "type": "python-script" , "channel": channel , "command": command , "message": message }
-def get_redis_key_suffix():
-	now = datetime.now( eastern_tz )
-	return now.strftime( "%Y.%m.%d" )
-
-def redis_publish( options ):
-	try:
-		json_string = json.dumps( options )
-		print( json_string )
-		redis_manager.publish( "python-script-controller" , json_string )
-		# key_suffix = get_redis_key_suffix()
-		# global_log_key = "redis.sleep.log." + key_suffix
-		# channel_key = "redis.sleep." + options.channel + "." + key_suffix
-		# redis_manager.lpush( global_log_key , json_string )
-		# redis_manager.lpush( global_log_key , json_string )
-	except Exception as e:
-		print( "Couldn't Publish Message to REDIS" )
-
-frameLiveImagePath = os.path.abspath( os.path.join( framePathBase , "frame.jpeg" ) )
-frameDeltaLiveImagePath = os.path.abspath( os.path.join( framePathBase , "frameDelta.jpeg" ) )
-frameThreshLiveImagePath
-def redis_publish_image_set( options ):
-	try:
-		with open( frameLiveImagePath , "rb" ) as f:
-			data = f.read()
-			print data.encode("base64")
-	except Exception as e:
-		print( "Couldn't Publish Image Set to REDIS" )
-		redis_publish({ "channel": "errors" , "message": "Couldn't Publish Image Set to REDIS" })
-
-def broadcast_error( message ):
-	redis_publish( { "channel": "errors" , "message": message } )
-
-def broadcast_log( message ):
-	redis_publish( { "channel": "events" , "message": message } )
-
-def broadcast_record( message ):
-	twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
-	#twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message ) # testing
-	redis_publish( { "channel": "records" , "message": message } )
-
-def broadcast_extra_record( message ):
-	print( "Broadcasting Extra Event" )
-	redis_publish( { "channel": "log" , "message": "Sending SMS to ExtraNumber === " + message } )
-	#twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
-	twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message )
-
-def broadcast_video_ready( wTodayDateString , wEventNumber ):
-	print( "Today Date String == " + wTodayDateString )
-	print( "Current Event Number == " + wEventNumber )
-	redis_publish( { "channel": "command" , "command": "new-video" , "message": message } )
 
 def make_folder( path ):
 	try:
@@ -153,14 +52,41 @@ def make_folder( path ):
 		#if exception.errno != errno.EEXIST:
 			#raise
 
-def twilio_call( number ):
-	try:
-		new_call = TwilioClient.calls.create( url=Personal[ 'twilio' ][ 'twilio_response_server_url' ] , to=Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , from_=Personal[ 'twilio' ][ 'fromSMSNumber' ] , method="POST" )
-	except Exception as e:
-		print( e )
-		print( "failed to make twilio call" )
-		redis_publish( { "channel": "errors" , "message": "Failed to Make Twilio Call to: " + str( number ) } )
+def inside_message_time_window():
+	# window_hours = [ 22 , 23 , 24 , 0 , 1 , 2 ]
+	result = False
+	now = datetime.now( eastern_tz )
+	if now.hour > 22 or now.hour < 3:
+		result = True
+	return result
 
+def inside_extra_alert_time_window():
+	# ignore_hours = [ 22 , 23 , 24 , 0 , 1 ]
+	result = False
+	now = datetime.now( eastern_tz )
+	if now.hour > 1 and now.hour < 22:
+		result = True
+	return result
+
+
+# { "type": "python-script" , "channel": channel , "command": command , "message": message }
+def redis_get_key_suffix():
+	now = datetime.now( eastern_tz )
+	return now.strftime( "%Y.%m.%d" )
+
+def redis_publish( options ):
+	try:
+		options[ 'list_key_prefix' ] = "sleep.raspi.python" + options[ 'channel' ]
+		json_string = json.dumps( options )
+		print( json_string )
+		redis_manager.publish( "python-script-controller" , json_string )
+		# key_suffix = redis_get_key_suffix()
+		# global_log_key = "redis.sleep.log." + key_suffix
+		# channel_key = "redis.sleep." + options.channel + "." + key_suffix
+		# redis_manager.lpush( global_log_key , json_string )
+		# redis_manager.lpush( global_log_key , json_string )
+	except Exception as e:
+		print( "Couldn't Publish Message to REDIS" )
 
 def update_loaded_config( config ):
 	if 'EMAIL_COOLOFF' in config:
@@ -197,6 +123,22 @@ def update_loaded_config( config ):
 				LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] = config[ 'clipping' ][ 'y' ][ '2' ]
 				redis_publish( { "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] == " + str( config[ 'clipping' ][ 'y' ][ '2' ] ) } )
 
+def redis_publish_image_set( frame , frameThreshold , frameDelta ):
+	frame_retval , frame_buffer = cv2.imencode( '.jpg' , frame )
+	frame_base64 = base64.b64encode( frame_buffer )
+	thresh_retval , thresh_buffer = cv2.imencode( '.jpg' , frameThreshold )
+	thresh_base64 = base64.b64encode( thresh_buffer )
+	delta_retval , delta_buffer = cv2.imencode( '.jpg' , frameDelta )
+	delta_base64 = base64.b64encode( delta_buffer )
+	redis_manager.publish( "python-script-controller" , json.dumps({
+		"channel": "new_frame" , "data64": frame_base64
+	}))
+	redis_manager.publish( "python-script-controller" , json.dumps({
+		"channel": "new_threshold" , "data64": thresh_base64
+	}))
+	redis_manager.publish( "python-script-controller" , json.dumps({
+		"channel": "new_delta" , "data64": delta_base64
+	}))
 
 def redis_on_message( message ):
 	try:
@@ -209,6 +151,49 @@ def redis_on_message( message ):
 	except Exception as e:
 		pring( e )
 		print( "Failed To Parse Redis Message" )
+
+def twilio_message( number , message ):
+	try:
+		if inside_message_time_window() == False:
+			redis_publish( { "channel": "log" , "message": "Outside SMS Alert Time Window" } )
+			return;
+		message = TwilioClient.messages.create( number ,
+			body=message ,
+			from_=Personal[ 'twilio' ][ 'fromSMSNumber' ] ,
+		)
+		print( "sent sms" )
+		redis_publish( { "channel": "log" , "message": "Sent SMS to: " + str( number ) } )
+
+	except Exception as e:
+		print ( e )
+		print ( "failed to send sms" )
+		redis_publish( { "channel": "errors" , "message": "failed to send sms" } )
+
+def twilio_call( number ):
+	try:
+		new_call = TwilioClient.calls.create( url=Personal[ 'twilio' ][ 'twilio_response_server_url' ] , to=Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , from_=Personal[ 'twilio' ][ 'fromSMSNumber' ] , method="POST" )
+	except Exception as e:
+		print( e )
+		print( "failed to make twilio call" )
+		redis_publish( { "channel": "errors" , "message": "Failed to Make Twilio Call to: " + str( number ) } )
+
+def broadcast_error( message ):
+	redis_publish( { "channel": "errors" , "message": message } )
+
+def broadcast_log( message ):
+	redis_publish( { "channel": "events" , "message": message } )
+
+def broadcast_record( message ):
+	#twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
+	#twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message ) # testing
+	redis_publish( { "channel": "records" , "message": message } )
+
+def broadcast_extra_record( message ):
+	print( "Broadcasting Extra Event" )
+	redis_publish( { "channel": "log" , "message": "Sending SMS to ExtraNumber === " + message } )
+	#twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
+	twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message )
+
 
 try:
 	redis_manager = redis.Redis( host='localhost' , port=10089 , db=1 )
@@ -237,7 +222,7 @@ class TenvisVideo():
 
 	def __init__( self ):
 
-		broadcast_log( "python --> motionSave.py --> init()" )
+		broadcast_log( "python --> motion_simple_rewrite_fixed.py --> init()" )
 
 		self.write_thread = None
 
@@ -268,6 +253,13 @@ class TenvisVideo():
 		broadcast_log( "motion_simple_rewrite_fixed.py --> cleanup()" )
 		ws.close()
 
+	def simulate_motion( self ):
+		self.EVENT_POOL = []
+		now = datetime.now( eastern_tz )
+		for i in range( 10 ):
+			simulated = now + timedelta( seconds=( i * 30 ) )
+			self.EVENT_POOL.append( simulated )
+
 	def motionTracking( self ):
 
 		avg = None
@@ -277,6 +269,8 @@ class TenvisVideo():
 		delta_thresh = 5
 
 		motionCounter = 0
+
+		self.simulate_motion()
 
 		while( self.w_Capture.isOpened() ):
 
@@ -304,6 +298,7 @@ class TenvisVideo():
 				else:
 					broadcast_log( "done sleeping" )
 					self.last_email_time = None
+					self.simulate_motion()
 				continue
 
 			gray = cv2.cvtColor( frame , cv2.COLOR_BGR2GRAY )
@@ -320,27 +315,11 @@ class TenvisVideo():
 			cv2.accumulateWeighted( gray , avg , 0.5 )
 			frameDelta = cv2.absdiff( gray , cv2.convertScaleAbs(avg) )
 
-			thresh = cv2.threshold( frameDelta , delta_thresh , 255 , cv2.THRESH_BINARY )[ 1 ]
-			thresh = cv2.dilate( thresh , None , iterations=2 )
-
-			# frame_retval , frame_buffer = cv2.imencode( '.jpg' , frame )
-			# frame_base64 = base64.b64encode( frame_buffer )
-			# thresh_retval , thresh_buffer = cv2.imencode( '.jpg' , thresh )
-			# thresh_base64 = base64.b64encode( thresh_buffer )
-			# delta_retval , delta_buffer = cv2.imencode( '.jpg' , frameDelta )
-			# delta_base64 = base64.b64encode( delta_buffer )
-			# redis_manager.publish( "python-script-controller" , json.dumps({
-			# 	"channel": "new_frame" , "data64": frame_base64
-			# }))
-			# redis_manager.publish( "python-script-controller" , json.dumps({
-			# 	"channel": "new_threshold" , "data64": thresh_base64
-			# }))
-			# redis_manager.publish( "python-script-controller" , json.dumps({
-			# 	"channel": "new_delta" , "data64": delta_base64
-			# }))
+			frameThreshold = cv2.frameThreshold( frameDelta , delta_thresh , 255 , cv2.THRESH_BINARY )[ 1 ]
+			frameThreshold = cv2.dilate( frameThreshold , None , iterations=2 )
 
 			# Search for Movment
-			( cnts , _ ) = cv2.findContours( thresh.copy() , cv2.RETR_EXTERNAL , cv2.CHAIN_APPROX_SIMPLE )
+			( cnts , _ ) = cv2.findContours( frameThreshold.copy() , cv2.RETR_EXTERNAL , cv2.CHAIN_APPROX_SIMPLE )
 			for c in cnts:
 				if cv2.contourArea( c ) < min_area:
 					motionCounter = 0 # ???
@@ -349,7 +328,7 @@ class TenvisVideo():
 				# self.nowString = wNow.strftime( "%Y-%m-%d %H:%M:%S" )
 				motionCounter += 1
 
-			# If Movement Is Greater than Threshold , create motion record
+			# If Movement Is Greater than frameThreshold , create motion record
 			if motionCounter >= LOADED_CONFIG[ 'MIN_MOTION_FRAMES' ]:
 				wNow = datetime.now( eastern_tz )
 				self.nowString = wNow.strftime( "%Y-%m-%d %H:%M:%S" )
@@ -363,39 +342,28 @@ class TenvisVideo():
 						broadcast_log( "Not Fresh , Resetting to 1st Event === " + str( wElapsedTime_x ) )
 						self.EVENT_POOL = []
 						self.total_motion = 0
+						# continue ????
 
+				# Once We Get 10 Events that the Number of Motion Frames is > MIN_MOTION_FRAMES ,
+				# THEN , actually record it as a 'True' event
 				self.EVENT_POOL.append( wNow )
 				if len( self.EVENT_POOL ) > 10:
 					self.EVENT_POOL.pop( 0 )
 				motionCounter = 0
 				self.total_motion += 1
 
-			# Once Total Motion Events Reach Threshold , create alert if timing conditions are met
+			# Once Total Motion Events Reach frameThreshold , create alert if timing conditions are met
 			if self.total_motion >= LOADED_CONFIG[ 'MOTION_EVENTS_ACCEPTABLE' ]:
-				broadcast_log( "Total Motion: " + str( self.total_motion ) + ">= " + str( LOADED_CONFIG[ 'MOTION_EVENTS_ACCEPTABLE' ] ) + " Motion Events Acceptable" )
+				broadcast_log( "Total Motion: " + str( self.total_motion ) + " >= " + str( LOADED_CONFIG[ 'MOTION_EVENTS_ACCEPTABLE' ] ) + " Motion Events Acceptable" )
 				self.total_motion = 0
-				cv2.imwrite( frameThreshLiveImagePath , thresh )
+				cv2.imwrite( frameThreshLiveImagePath , frameThreshold )
 				cv2.imwrite( frameDeltaLiveImagePath , frameDelta )
-				frame_retval , frame_buffer = cv2.imencode( '.jpg' , frame )
-				frame_base64 = base64.b64encode( frame_buffer )
-				thresh_retval , thresh_buffer = cv2.imencode( '.jpg' , thresh )
-				thresh_base64 = base64.b64encode( thresh_buffer )
-				delta_retval , delta_buffer = cv2.imencode( '.jpg' , frameDelta )
-				delta_base64 = base64.b64encode( delta_buffer )
 				redis_manager.publish( "python-script-controller" , json.dumps({
 					"command": "publish_new_image_set" , "message": "new image set ready"
 				}))
-				# redis_manager.publish( "python-script-controller" , json.dumps({
-				# 	"channel": "frames" , "message": "new frame" , "image_b64": frame_base64
-				# }))
-				# redis_manager.publish( "python-script-controller" , json.dumps({
-				# 	"channel": "thresholds" , "message": "new threshold" , "image_b64": thresh_base64
-				# }))
-				# redis_manager.publish( "python-script-controller" , json.dumps({
-				# 	"channel": "deltas" , "message": "new delta" , "image_b64": delta_base64
-				# }))
-				#redis_publish( { "channel": "command" , "command": "publish_new_image_set" , "message": "Saving New Image Set" } )
+				# redis_publish_image_set( frame , frameThreshold , frameDelta )
 
+				# Evaluate Custom Timeing Conditions
 				wNeedToAlert = False
 
 				# Condition 1.) Check Elapsed Time Between Last 2 Motion Events
@@ -451,22 +419,25 @@ class TenvisVideo():
 							broadcast_log( "Calling ExtraEventNumber because Number of Records in 20 Minutes === " + str( num_records_in_20_minutes ) + " which is >= 3" )
 							self.ExtraAlertPool = [ datetime.now( eastern_tz ) - timedelta( minutes=59 ) ] * 8
 						if num_records_in_30_minutes >= 7:
-							self.ExtraAlertPool = [ datetime.now( eastern_tz ) - timedelta( minutes=59 ) ] * 8
+							#self.ExtraAlertPool = [ datetime.now( eastern_tz ) - timedelta( minutes=59 ) ] * 8
 							#voice_call_dad()
+							pass
 						if num_records_in_30_minutes >= 9:
-							self.ExtraAlertPool = [ datetime.now( eastern_tz ) - timedelta( minutes=59 ) ] * 8
+							#self.ExtraAlertPool = [ datetime.now( eastern_tz ) - timedelta( minutes=59 ) ] * 8
 							#voice_call_house()
+							pass
+
 					except Exception as e:
 						print( "failed to process extra events que" )
 						broadcast_error( "failed to process extra events que" )
 						broadcast_error( e )
 
 
-			# cv2.imwrite( frameThreshLiveImagePath , thresh )
+			# cv2.imwrite( frameThreshLiveImagePath , frameThreshold )
 			# cv2.imwrite( frameDeltaLiveImagePath , frameDelta )
 
 			#cv2.imshow( "frame" , frame )
-			#cv2.imshow( "Thresh" , thresh )
+			#cv2.imshow( "frameThreshold" , frameThreshold )
 			#cv2.imshow( "Frame Delta" , frameDelta )
 			#if cv2.waitKey( 1 ) & 0xFF == ord( "q" ):
 				#break

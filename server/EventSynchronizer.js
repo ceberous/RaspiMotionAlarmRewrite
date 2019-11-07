@@ -10,33 +10,30 @@ function load_custom_event_list() {
 				const global_log_options = {
 					...options ,
 					...{
-						type: "python" ,
+						platform: "python" ,
 						message: `PYTHON === ${ options.message }` ,
 						list_key_prefix: "sleep.log"
 					}
 				};
 				console.log( global_log_options );
 				Publishing.new_item( global_log_options );
-				let python_log_options = { ...global_log_options };
-				python_log_options.list_key_prefix = `sleep.python.${ options.channel }`;
 				Publishing.new_item( python_log_options );
 			}
 			catch( error ) { console.log( error ); }
 		}
+
 		function node_publish( options ) {
 			try {
 				const global_log_options = {
 					...options ,
 					...{
-						type: "node" ,
-						message: `NODE === ${ options.message }` ,
+						platform: "node" ,
+						message: `RASPI-NODE === ${ options.message }` ,
 						list_key_prefix: "sleep.log"
 					}
 				};
 				Publishing.new_item( global_log_options );
-				let node_log_options = { ...global_log_options };
-				node_log_options.list_key_prefix = `sleep.node.${ options.channel }`;
-				Publishing.new_item( node_log_options );
+				Publishing.new_item( options );
 			}
 			catch( error ) { console.log( error ); }
 		}
@@ -77,7 +74,7 @@ function load_custom_event_list() {
 
 		// Python Motion Script Events
 		// ============================================================
-		events.on( "python-script" , ( options ) => {
+		events.on( "python-script-controller" , ( options ) => {
 			if ( !options ) { return; }
 			try{
 				console.log( options );
@@ -95,19 +92,23 @@ function load_custom_event_list() {
 
 		// Command Control Events
 		// ============================================================
-		events.on( "command" , ( options )=> {
+		events.on( "ionic-controller" , ( options )=> {
 			try{
 				if ( options.command ) {
 					command_wrapper( options.command , options );
 				}
 				options.channel = "commands";
-				options.command = options.command;
+				options.type = "command_error" ,
+				options.message = `Running: ${ options.command } command`;
+				opotions.list_key_prefix = "sleep.raspi.node.log";
 				node_publish( options );
 			}
 			catch( error ) {
 				console.log( error );
 				options.channel = "errors";
+				options.type = "command_error" ,
 				options.message = `Could Not Run ${ options.command } command`;
+				opotions.list_key_prefix = "sleep.raspi.node.errors";
 				node_publish( options );
 			}
 		});
@@ -115,41 +116,48 @@ function load_custom_event_list() {
 		// Native Node.js Script Message Passing
 		// ============================================================
 		events.on( "server_ready" , ()=> {
-			node_publish({ channel: "log" , "message": "SERVER READY" });
+			node_publish({
+				channel: "log" ,
+				type: "process" ,
+				message: "SERVER READY" ,
+				list_key_prefix: "sleep.raspi.node.log"
+			});
 		});
-		events.on( "message_generic" , ( options ) => {
-			Publishing.new_item({
-				type: "typ" ,
-				message: options.message,
-				list_key_prefix: "sleep.node.messages.generic" ,
+		events.on( "log" , ( options ) => {
+			node_publish({
+				channel: "log" ,
+				type: "generic" ,
+				message: options.message ,
+				list_key_prefix: "sleep.raspi.node.log"
 			});
 		});
 
 		// Error Events
 		// ============================================================
 		events.on( "error_unhandled_rejection" , ( options ) => {
-			Publishing.new_item({
-				type: "message-error" ,
-				message: options.message,
-				list_key_prefix: "sleep.node.errors" ,
-			});
 			//GenericUtils.restartPYProcess();
+			node_publish({
+				channel: "errors" ,
+				type: "error_unhandled_rejection" ,
+				message: options.message ,
+				list_key_prefix: "sleep.raspi.node.errors"
+			});
 		});
 		events.on( "error_unhandled_rejection" , ( options ) => {
-			Publishing.new_item({
-				type: "message-error" ,
-				message: options.message,
-				list_key_prefix: "sleep.node.errors" ,
+			node_publish({
+				channel: "errors" ,
+				type: "error_unhandled_rejection" ,
+				message: options.message ,
+				list_key_prefix: "sleep.raspi.node.errors"
 			});
-			//GenericUtils.restartPYProcess();
 		});
 		events.on( "error_sigint" , ( options ) => {
-			Publishing.new_item({
-				type: "message-error" ,
+			node_publish({
+				channel: "errors" ,
+				type: "error_sigint" ,
 				message: options.message ,
-				list_key_prefix: "sleep.node.errors" ,
+				list_key_prefix: "sleep.raspi.node.errors"
 			});
-			//GenericUtils.stopPYProcess();
 		});
 
 		return;

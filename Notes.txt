@@ -120,6 +120,22 @@ fi
     of current user to get Personal File
     Also, I couldn't get Node Server sitting on Raspberry to 'catch the published redis stuff from python script. IDK
 
+    You Also Have to Copy the Personal File to /root/.config/personal/personal.json
+    If you use the ExecStart= without "su pi"
+    But the "su pi" wasn't working on reboot.
+    Or maybe it was , and the problem is just it needs this currated restart of pm2 , then the python script
+
+Nov 06 23:55:47 raspberrypi bash[389]: + python /home/pi/WORKSPACE/RaspiMotionAlarmRewrite/py_scripts/motion_simple_rewrite_fixed.py
+Nov 06 23:56:03 raspberrypi bash[389]: Redis<ConnectionPool<Connection<host=localhost,port=10089,db=1>>>
+Nov 06 23:56:03 raspberrypi bash[389]: Error 111 connecting to localhost:10089. Connection refused.
+Nov 06 23:56:03 raspberrypi bash[389]: Failed to connect to REDIS
+Nov 06 23:56:03 raspberrypi systemd[1]: motion-script.service: Service hold-off time over, scheduling restart.
+Nov 06 23:56:04 raspberrypi systemd[1]: Stopped Keeps motion.py Script Running During Time Window.
+Nov 06 23:56:04 raspberrypi systemd[1]: Started Keeps motion.py Script Running During Time Window.
+Nov 06 23:56:04 raspberrypi bash[1118]: SSH is enabled and the default password for the 'pi' user has not been changed.
+Nov 06 23:56:04 raspberrypi bash[1118]: This is a security risk - please login as the 'pi' use
+
+
 sudo nano /etc/systemd/system/motion-script.service
 
 [Unit]
@@ -127,12 +143,12 @@ Description=Keeps motion.py Script Running During Time Window
 
 [Service]
 Type=idle
-ExecStart=/bin/bash -l -c 'su pi -c "/usr/local/bin/startRaspiMotionPythonScript"'
+ExecStart=/bin/bash -l -c '/usr/local/bin/startRaspiMotionPythonScript'
+#ExecStart=/bin/bash -l -c 'su pi -c "/usr/local/bin/startRaspiMotionPythonScript"'
 Restart=always
 
 [Install]
 WantedBy=multi-user.target
-
 ==============================================================================================================================
 ==============================================================================================================================
 
@@ -144,12 +160,25 @@ WantedBy=multi-user.target
 sudo crontab -e
 
 0 16   *   *   *    /sbin/shutdown -r
-31 22 * * * systemctl restart motion-script.service
+31 22 * * * /usr/local/bin/restartMotionServerWithDelay
 01 10 * * * systemctl stop motion-script.service
-@reboot systemctl restart motion-script.service
+@reboot /usr/local/bin/restartMotionServerWithDelay
 
 ==============================================================================================================================
 ==============================================================================================================================
+
+
+9.) Restart Everything on Reboot With Startup Delay
+// Call This Script from the crontab and
+
+sudo nano /usr/local/bin/restartMotionServerWithDelay
+
+#!/bin/bash
+
+sleep 2m
+/bin/bash -l -c 'su pi -c "/home/pi/.nvm/versions/node/v8.9.4/bin/pm2 restart all"'
+sleep 30
+sudo systemctl restart motion-script
 
 
 

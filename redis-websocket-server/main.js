@@ -25,8 +25,8 @@ process.on( "uncaughtException" , function( err ) {
 	const Personal = require( PersonalFilePath );
 	module.exports.personal = Personal;
 
-	const python_script_subscriber = await PythonScriptSubscriber.init();
-	python_script_subscriber.redis.subscribe( "python-script-controller" );
+	// const python_script_subscriber = await PythonScriptSubscriber.init();
+	// python_script_subscriber.redis.subscribe( "python-script-controller" );
 
 	const express_app = require( "./express_app.js" );
 	const server = http.createServer( express_app );

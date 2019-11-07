@@ -9,13 +9,13 @@ function LOAD_SUBSCRIPTIONS() {
 				switch( channel ) {
 					case "ionic-controller":
 						try{
-							events.emit( "command" , JSON.parse( message ) );
+							events.emit( "ionic-controller" , JSON.parse( message ) );
 						}
 						catch( error ) { console.log( error ); }
 						break;
 					case "python-script-controller":
 						try{
-							events.emit( "python-script" , JSON.parse( message ) );
+							events.emit( "python-script-controller" , JSON.parse( message ) );
 						}
 						catch( error ) { console.log( error ); }
 						break;
