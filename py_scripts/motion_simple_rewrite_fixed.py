@@ -178,17 +178,21 @@ def twilio_call( number ):
 		redis_publish( { "channel": "errors" , "message": "Failed to Make Twilio Call to: " + str( number ) } )
 
 def broadcast_error( message ):
+	print( message )
 	redis_publish( { "channel": "errors" , "message": message } )
 
 def broadcast_log( message ):
+	print( message )
 	redis_publish( { "channel": "events" , "message": message } )
 
 def broadcast_record( message ):
+	print( message )
 	#twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
 	#twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message ) # testing
 	redis_publish( { "channel": "records" , "message": message } )
 
 def broadcast_extra_record( message ):
+	print( message )
 	print( "Broadcasting Extra Event" )
 	redis_publish( { "channel": "log" , "message": "Sending SMS to ExtraNumber === " + message } )
 	#twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
@@ -394,6 +398,7 @@ class TenvisVideo():
 					self.FRAME_EVENT_COUNT = 0
 					self.EVENT_TOTAL += 1
 
+					# In a Cycle of 8 last_email_time's , Count the Number of Times Per 10 minute Interval
 					try:
 						self.ExtraAlertPool.insert( 0 , self.last_email_time )
 						self.ExtraAlertPool.pop()
@@ -408,7 +413,10 @@ class TenvisVideo():
 								num_records_in_20_minutes = num_records_in_20_minutes + 1
 							if time_diff < 600:
 								num_records_in_10_minutes = num_records_in_10_minutes + 1
-
+						print( num_records_in_10_minutes )
+						print( num_records_in_20_minutes )
+						print( num_records_in_30_minutes )
+						print( self.ExtraAlertPool )
 						if num_records_in_10_minutes >= 2:
 							wS1 = wNowString + " @@ " + str( num_records_in_10_minutes ) + " Records in 10 Minutes"
 							broadcast_extra_record( wS1 )
@@ -427,7 +435,6 @@ class TenvisVideo():
 							#self.ExtraAlertPool = [ datetime.now( eastern_tz ) - timedelta( minutes=59 ) ] * 8
 							#voice_call_house()
 							pass
-
 					except Exception as e:
 						print( "failed to process extra events que" )
 						broadcast_error( "failed to process extra events que" )
