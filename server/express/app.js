@@ -57,7 +57,7 @@ app.get( "/turnoff" , function( req , res ) {
 app.post( "/python-script" , ( req, res ) => {
 	if ( !req.body ) { res.json( { result: false } ); }
 	events.emit( "python-script-controller" , req.body );
-	res.json( { result: false } );
+	res.json( { result: true } );
 });
 
 app.post( "/setargs/" , function( req , res ) {
