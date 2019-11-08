@@ -58,6 +58,7 @@ def inside_message_time_window():
 	now = datetime.now( eastern_tz )
 	if now.hour > 22 or now.hour < 3:
 		result = True
+	redis_publish( { "channel": "log" , "message": "Inside Extra Alert Time Window === " + str( result ) } )
 	return result
 
 def inside_extra_alert_time_window():
@@ -66,6 +67,7 @@ def inside_extra_alert_time_window():
 	now = datetime.now( eastern_tz )
 	if now.hour > 1 and now.hour < 22:
 		result = True
+	redis_publish( { "channel": "log" , "message": "Inside Extra Alert Time Window === " + str( result ) } )
 	return result
 
 
@@ -127,7 +129,7 @@ def update_loaded_config( config ):
 		if 'reset' in config[ 'clipping' ]:
 			if config[ 'clipping' ][ 'reset' ] == True or config[ 'clipping' ][ 'reset' ] == "true" or config[ 'clipping' ][ 'reset' ] == "True":
 				LOADED_CONFIG[ 'clipping' ] = DEFAULT_CLIPPING
-				redis_publish( { "channel": "log" , "message": "LOADED_CONFIG == DEFAULT_CLIPPING" } )
+				#redis_publish( { "channel": "log" , "message": "LOADED_CONFIG == DEFAULT_CLIPPING" } )
 			return
 		if 'x' in config[ 'clipping' ]:
 			if '1' in config[ 'clipping' ][ 'x' ]:
@@ -440,6 +442,8 @@ class TenvisVideo():
 					self.EVENT_TOTAL += 1
 
 					# In a Cycle of 8 last_email_time's , Count the Number of Times Per 10 minute Interval
+					if inside_extra_alert_time_window() == False:
+						continue
 					try:
 						self.ExtraAlertPool.insert( 0 , self.last_email_time )
 						self.ExtraAlertPool.pop()
@@ -457,7 +461,6 @@ class TenvisVideo():
 						print( num_records_in_10_minutes )
 						print( num_records_in_20_minutes )
 						print( num_records_in_30_minutes )
-						print( self.ExtraAlertPool )
 						if num_records_in_10_minutes >= 2:
 							wS1 = str( num_records_in_10_minutes ) + " Records in 10 Minutes"
 							broadcast_extra_record( wS1 )
