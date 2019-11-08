@@ -79,12 +79,27 @@ def redis_publish( options ):
 		options[ 'list_key_prefix' ] = "sleep.raspi.python." + options[ 'channel' ]
 		json_string = json.dumps( options )
 		print( json_string )
-		redis_manager.publish( "python-script-controller" , json_string )
-		# key_suffix = redis_get_key_suffix()
-		# global_log_key = "redis.sleep.log." + key_suffix
-		# channel_key = "redis.sleep." + options.channel + "." + key_suffix
-		# redis_manager.lpush( global_log_key , json_string )
-		# redis_manager.lpush( global_log_key , json_string )
+		count = 0
+		max_retries = 5
+	    while True: # https://stackoverflow.com/a/24773545
+	        try:
+				# key_suffix = redis_get_key_suffix()
+				# global_log_key = "redis.sleep.log." + key_suffix
+				# channel_key = "redis.sleep." + options.channel + "." + key_suffix
+				# redis_manager.lpush( global_log_key , json_string )
+				# redis_manager.lpush( global_log_key , json_string )
+	            redis_manager.publish( "python-script-controller" , json_string )
+	        except redis.ConnectionError:
+	            count += 1
+	            # re-raise the ConnectionError if we've exceeded max_retries
+	            if count > max_retries:
+	                raise
+
+	            backoff = count * 5
+	            print( 'Retrying in {} seconds'.format( backoff ) )
+	            time.sleep( backoff )
+	            redis_connect()
+
 	except Exception as e:
 		print( "Couldn't Publish Message to REDIS" )
 
@@ -199,15 +214,18 @@ def broadcast_extra_record( message ):
 	twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message )
 
 
-try:
-	redis_manager = redis.Redis( host='localhost' , port=10089 , db=1 )
-	print( redis_manager )
-	redis_subscriber = redis_manager.pubsub()
-	redis_subscriber.subscribe( **{ 'python-script-update' : redis_on_message } )
-except Exception as e:
-	print( e )
-	print( "Failed to connect to REDIS" )
-	sys.exit( 0 )
+
+def redis_connect():
+	try:
+		redis_manager = redis.Redis( host='localhost' , port=10089 , db=1 )
+		print( redis_manager )
+		redis_subscriber = redis_manager.pubsub()
+		redis_subscriber.subscribe( **{ 'python-script-update' : redis_on_message } )
+	except Exception as e:
+		print( e )
+		print( "Failed to connect to REDIS" )
+		sys.exit( 0 )
+
 
 def signal_handler( signal , frame ):
 	message_string = "motion_simple_rewrite_fixed.py closed , Signal = " + str( signal )
@@ -452,4 +470,5 @@ class TenvisVideo():
 
 		self.cleanup()
 
+redis_connect()
 TenvisVideo()
