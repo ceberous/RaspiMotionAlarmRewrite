@@ -98,7 +98,7 @@ def redis_publish( options ):
 	try:
 		options[ 'list_key_prefix' ] = "sleep.raspi.python." + options[ 'channel' ]
 		json_string = json.dumps( options )
-		print( json_string )
+		print( options.message )
 		# https://stackoverflow.com/a/24773545
 		max_retries = 5
 		for i in range( max_retries - 1 ):
@@ -412,7 +412,7 @@ class TenvisVideo():
 				wNeedToAlert = False
 
 				# Condition 1.) Check Elapsed Time Between Last 2 Motion Events
-				wElapsedTime_1 = int( ( self.EVENT_POOL[ -1 ] - self.EVENT_POOL[ 0 ] ).total_seconds() )
+				wElapsedTime_1 = int( ( self.EVENT_POOL[ -1 ] - self.EVENT_POOL[ -2 ] ).total_seconds() )
 				broadcast_log( "( Stage-1-Check ) === Elapsed Time Between Previous 2 Events === " + str( wElapsedTime_1 ) )
 				if wElapsedTime_1 <= LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE' ]:
 					broadcast_log( "( Stage-1-Check ) === PASSED" )
