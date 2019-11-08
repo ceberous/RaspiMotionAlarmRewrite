@@ -6,18 +6,14 @@ const cors = require( "cors" );
 const PORT = require( "../../main.js" ).port;
 const events = require( "../../main.js" ).events;
 
-const requestIp = require( "request-ip" );
+//const requestIp = require( "request-ip" );
 
 let app = express();
 app.use( express.static( path.join( __dirname , "client" ) ) );
 app.use( cors( { origin: "http://localhost:" + PORT.toString() } ) );
 // https://stackoverflow.com/questions/31967138/node-js-express-js-bodyparser-post-limit
 app.use( bodyParser.json() );
-app.use( requestIp.mw() );
-app.use(function(req, res) {
-    const ip = req.clientIp;
-    res.end(ip);
-});
+//app.use( requestIp.mw() );
 app.use( bodyParser.urlencoded( { extended: true } ) );
 
 const GenericUtils = require( "../../utils/generic.js" );
@@ -63,7 +59,7 @@ app.get( "/turnoff" , function( req , res ) {
 });
 
 app.post( "/python-script" , ( req , res ) => {
-	events.emit( "log" , { message: `EXPRESS === POST ${ req.clientIp }/python-script` } );
+	events.emit( "log" , { message: `EXPRESS === POST /python-script` } );
 	if ( !req.body ) { res.json( { result: false } ); }
 	events.emit( "python-script-controller" , req.body );
 	res.json( { result: true } );
