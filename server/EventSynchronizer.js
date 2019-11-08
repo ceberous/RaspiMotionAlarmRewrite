@@ -7,6 +7,7 @@ function load_custom_event_list() {
 
 		function python_publish( options ) {
 			try {
+				console.log( options.message );
 				const global_log_options = {
 					...options ,
 					...{
@@ -15,7 +16,7 @@ function load_custom_event_list() {
 						list_key_prefix: "sleep.log"
 					}
 				};
-				console.log( global_log_options );
+				//console.log( global_log_options );
 				Publishing.new_item( global_log_options );
 				Publishing.new_item( options );
 			}
@@ -24,6 +25,7 @@ function load_custom_event_list() {
 
 		function node_publish( options ) {
 			try {
+				console.log( options.message );
 				const global_log_options = {
 					...options ,
 					...{
@@ -77,7 +79,7 @@ function load_custom_event_list() {
 		events.on( "python-script-controller" , ( options ) => {
 			if ( !options ) { return; }
 			try{
-				console.log( options );
+				//console.log( options );
 				if ( options.command ) {
 					command_wrapper( options.command );
 				}
@@ -94,6 +96,7 @@ function load_custom_event_list() {
 		// ============================================================
 		events.on( "ionic-controller" , ( options )=> {
 			try{
+				console.log( options );
 				if ( options.command ) {
 					command_wrapper( options.command , options );
 				}
