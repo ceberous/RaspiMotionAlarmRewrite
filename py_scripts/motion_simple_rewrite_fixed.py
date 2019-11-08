@@ -73,8 +73,11 @@ def inside_extra_alert_time_window():
 
 def express_publish( options ):
 	options[ 'list_key_prefix' ] = "sleep.raspi.python." + options[ 'channel' ]
-	response = requests.post( 'http://localhost:6161/python-script' , data=options )
-	print( response.text )
+	try:
+		response = requests.post( 'http://localhost:6161/python-script' , data=options )
+		print( response.text )
+	except Exception as e:
+		print( e )
 
 # { "type": "python-script" , "channel": channel , "command": command , "message": message }
 def redis_get_key_suffix():

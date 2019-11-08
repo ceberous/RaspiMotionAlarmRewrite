@@ -1,5 +1,7 @@
 {
-  "name": "sleep-client",
-  "integrations": {},
-  "type": "react"
+  "name": "ionic-conference-app",
+  "type": "angular",
+  "integrations": {
+    "cordova": {}
+  }
 }

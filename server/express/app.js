@@ -14,6 +14,10 @@ app.use( cors( { origin: "http://localhost:" + PORT.toString() } ) );
 // https://stackoverflow.com/questions/31967138/node-js-express-js-bodyparser-post-limit
 app.use( bodyParser.json() );
 app.use( requestIp.mw() );
+app.use(function(req, res) {
+    const ip = req.clientIp;
+    res.end(ip);
+});
 app.use( bodyParser.urlencoded( { extended: true } ) );
 
 const GenericUtils = require( "../../utils/generic.js" );
