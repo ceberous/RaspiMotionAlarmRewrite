@@ -287,6 +287,7 @@ class TenvisVideo():
 	def simulate_motion( self ):
 		self.total_motion = LOADED_CONFIG[ 'MOTION_EVENTS_ACCEPTABLE' ] + 1
 		now = datetime.now( eastern_tz )
+		self.EVENT_POOL = []
 		self.EVENT_POOL = [
 			now + timedelta( minutes=10 ) ,
 			now + timedelta( minutes=9 ) ,
@@ -298,7 +299,8 @@ class TenvisVideo():
 			now + timedelta( seconds=60 ) ,
 			now + timedelta( seconds=40 ) ,
 			now + timedelta( seconds=30 ) ,
-			now + timedelta( seconds=3 )
+			now + timedelta( seconds=3 ) ,
+			now
 		]
 
 	def motionTracking( self ):
