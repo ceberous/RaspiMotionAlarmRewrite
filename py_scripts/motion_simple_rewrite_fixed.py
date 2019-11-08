@@ -75,6 +75,8 @@ def redis_get_key_suffix():
 	return now.strftime( "%Y.%m.%d" )
 
 def redis_publish( options ):
+	global redis_manager
+	global redis_subscriber
 	try:
 		options[ 'list_key_prefix' ] = "sleep.raspi.python." + options[ 'channel' ]
 		json_string = json.dumps( options )
@@ -101,7 +103,6 @@ def redis_publish( options ):
 				print( 'Retrying in {} seconds'.format( backoff ) )
 				sleep( backoff )
 				redis_connect()
-				print( redis_manager )
 
 	except Exception as e:
 		print( "Couldn't Publish Message to REDIS" )
@@ -219,6 +220,8 @@ def broadcast_extra_record( message ):
 
 
 def redis_connect():
+	global redis_manager
+	global redis_subscriber
 	try:
 		redis_manager = redis.Redis( host='localhost' , port=10089 , db=1 )
 		print( redis_manager )
