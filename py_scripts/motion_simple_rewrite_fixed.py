@@ -222,7 +222,6 @@ def broadcast_extra_record( message ):
 	twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message )
 
 
-
 def redis_connect():
 	global redis_manager
 	global redis_subscriber
@@ -290,7 +289,7 @@ class TenvisVideo():
 		self.EVENT_POOL = []
 		now = datetime.now( eastern_tz )
 		for i in range( 10 ):
-			simulated = now + timedelta( seconds=( ( i + 1 ) * 30 ) )
+			simulated = now + timedelta( seconds=( ( i + 1 ) * 70 ) )
 			self.EVENT_POOL.append( simulated )
 
 	def motionTracking( self ):
@@ -409,10 +408,10 @@ class TenvisVideo():
 				elif len( self.EVENT_POOL ) >= 3:
 					wElapsedTime_2 = int( ( self.EVENT_POOL[ -1 ] - self.EVENT_POOL[ -3 ] ).total_seconds() )
 					if wElapsedTime_2 <= LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ]:
-						broadcast_log( "( Stage-2-Check ) === PASSED === Elapsed Time Between the First and Last Event in the Pool === " + str( wElapsedTime_2 ) + " which is >= " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) + " seconds" )
+						broadcast_log( "( Stage-2-Check ) === PASSED === Elapsed Time Between the First and Last Event in the Pool === " + str( wElapsedTime_2 ) + " which is <= " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) + " seconds" )
 						wNeedToAlert = True
 					else:
-						broadcast_log( "( Stage-2-Check ) === FAILED === Elapsed Time Between the First and Last Event in the Pool === " + str( wElapsedTime_2 ) + " which is <= " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) + " seconds" )
+						broadcast_log( "( Stage-2-Check ) === FAILED === Elapsed Time Between the First and Last Event in the Pool === " + str( wElapsedTime_2 ) + " which is >= " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) + " seconds" )
 
 				if wNeedToAlert == True:
 					#print "ALERT !!!!"
