@@ -406,7 +406,7 @@ class TenvisVideo():
 
 				if wNeedToAlert == True:
 					#print "ALERT !!!!"
-					#wNowString = self.EVENT_POOL[ -1 ].strftime( "%Y-%m-%d %H:%M:%S" )
+					wNowString = self.EVENT_POOL[ -1 ].strftime( "%Y-%m-%d %H:%M:%S" )
 					#wTimeMsg = "Motion @@ " + wNowString
 					broadcast_record( "MOTION" )
 					self.last_email_time = self.EVENT_POOL[ -1 ]
@@ -436,7 +436,7 @@ class TenvisVideo():
 						print( num_records_in_30_minutes )
 						print( self.ExtraAlertPool )
 						if num_records_in_10_minutes >= 2:
-							wS1 = wNowString + " @@ " + str( num_records_in_10_minutes ) + " Records in 10 Minutes"
+							wS1 = str( num_records_in_10_minutes ) + " Records in 10 Minutes"
 							broadcast_extra_record( wS1 )
 							broadcast_log( "Messaging ExtraEventNumber because Number of Records in 10 Minutes === " + str( num_records_in_10_minutes ) + " which is >= 2" )
 						if num_records_in_20_minutes >= 3:
