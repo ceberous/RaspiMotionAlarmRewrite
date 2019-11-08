@@ -90,15 +90,16 @@ def redis_publish( options ):
 				# redis_manager.lpush( global_log_key , json_string )
 				# redis_manager.lpush( global_log_key , json_string )
 				redis_manager.publish( "python-script-controller" , json_string )
-			except redis.ConnectionError:
+			except Exception as e:
+				print( e )
 				count += 1
 				# re-raise the ConnectionError if we've exceeded max_retries
 				if count > max_retries:
-					raise
+					return False
 
 				backoff = count * 5
 				print( 'Retrying in {} seconds'.format( backoff ) )
-				time.sleep( backoff )
+				sleep( backoff )
 				redis_connect()
 
 	except Exception as e:
@@ -281,7 +282,7 @@ class TenvisVideo():
 		self.EVENT_POOL = []
 		now = datetime.now( eastern_tz )
 		for i in range( 10 ):
-			simulated = now + timedelta( seconds=( i * 30 ) )
+			simulated = now + timedelta( seconds=( ( i + 1 ) * 30 ) )
 			self.EVENT_POOL.append( simulated )
 
 	def motionTracking( self ):
