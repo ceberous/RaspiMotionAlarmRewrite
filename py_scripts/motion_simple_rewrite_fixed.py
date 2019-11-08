@@ -74,6 +74,22 @@ def redis_get_key_suffix():
 	now = datetime.now( eastern_tz )
 	return now.strftime( "%Y.%m.%d" )
 
+def try_publish( options ):
+	try:
+		# key_suffix = redis_get_key_suffix()
+		# global_log_key = "redis.sleep.log." + key_suffix
+		# channel_key = "redis.sleep." + options.channel + "." + key_suffix
+		# redis_manager.lpush( global_log_key , json_string )
+		# redis_manager.lpush( global_log_key , json_string )
+		redis_manager.publish( "python-script-controller" , json_string )
+	except Exception as e:
+		print( e )
+		count += 1
+		backoff = count * 5
+		print( 'Retrying in {} seconds'.format( backoff ) )
+		sleep( backoff )
+		redis_connect()
+
 def redis_publish( options ):
 	global redis_manager
 	global redis_subscriber
@@ -82,24 +98,16 @@ def redis_publish( options ):
 		json_string = json.dumps( options )
 		print( json_string )
 		# https://stackoverflow.com/a/24773545
-		count = 0
 		max_retries = 5
-		while count < max_retries:
+		for i in range( max_retries - 1 ):
 			try:
-				# key_suffix = redis_get_key_suffix()
-				# global_log_key = "redis.sleep.log." + key_suffix
-				# channel_key = "redis.sleep." + options.channel + "." + key_suffix
-				# redis_manager.lpush( global_log_key , json_string )
-				# redis_manager.lpush( global_log_key , json_string )
 				redis_manager.publish( "python-script-controller" , json_string )
-			except Exception as e:
-				print( e )
-				count += 1
-				backoff = count * 5
+				return True
+			except Exception as error:
+				backoff = i * 5
 				print( 'Retrying in {} seconds'.format( backoff ) )
 				sleep( backoff )
 				redis_connect()
-
 	except Exception as e:
 		print( "Couldn't Publish Message to REDIS" )
 
