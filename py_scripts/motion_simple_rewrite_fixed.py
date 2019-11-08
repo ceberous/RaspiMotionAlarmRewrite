@@ -97,7 +97,7 @@ def redis_publish( options ):
 				count += 1
 				# re-raise the ConnectionError if we've exceeded max_retries
 				if count > max_retries:
-					return False
+					raise
 
 				backoff = count * 5
 				print( 'Retrying in {} seconds'.format( backoff ) )
