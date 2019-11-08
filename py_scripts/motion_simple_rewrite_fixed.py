@@ -82,7 +82,7 @@ def redis_publish( options ):
 	global redis_subscriber
 	options[ 'list_key_prefix' ] = "sleep.raspi.python." + options[ 'channel' ]
 	json_string = json.dumps( options )
-	print( options.message )
+	print( options[ 'message' ] )
 	max_retries_outer = 5
 	for i in range( max_retries_outer - 1 ):
 		try:
