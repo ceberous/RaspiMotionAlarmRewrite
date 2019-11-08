@@ -84,7 +84,7 @@ def redis_publish( options ):
 		# https://stackoverflow.com/a/24773545
 		count = 0
 		max_retries = 5
-		while True:
+		while count < max_retries:
 			try:
 				# key_suffix = redis_get_key_suffix()
 				# global_log_key = "redis.sleep.log." + key_suffix
@@ -95,10 +95,6 @@ def redis_publish( options ):
 			except Exception as e:
 				print( e )
 				count += 1
-				# re-raise the ConnectionError if we've exceeded max_retries
-				if count > max_retries:
-					raise
-
 				backoff = count * 5
 				print( 'Retrying in {} seconds'.format( backoff ) )
 				sleep( backoff )
