@@ -30,7 +30,7 @@ function load_custom_event_list() {
 					...options ,
 					...{
 						platform: "node" ,
-						message: `RASPI-NODE === \t${ options.message }` ,
+						message: `RASPI-NODE   === ${ options.message }` ,
 						list_key_prefix: "sleep.log"
 					}
 				};
