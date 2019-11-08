@@ -4,7 +4,7 @@ from twilio.rest import Client
 personal_file_path = os.path.abspath( os.path.join( os.path.expanduser( "~" ) , ".config" , "personal" , "raspi_motion_alarm_rewrite.json" ) )
 print( personal_file_path )
 with open( personal_file_path , 'r' ) as f:
-        Personal = json.load( f )
+	Personal = json.load( f )
 print( Personal )
 
 TwilioClient = Client( Personal[ 'twilio' ][ 'twilio_sid' ] , Personal[ 'twilio' ][ 'twilio_auth_token' ] )

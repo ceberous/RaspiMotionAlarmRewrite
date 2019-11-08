@@ -5,6 +5,11 @@ https://github.com/Automattic/kue/issues/1091
 sudo sysctl -w net.core.somaxconn=1024
 sudo sysctl -p
 
+0.) Install Docker on Raspberry Pi for Testing
+curl -sSL https://get.docker.com | sh
+sudo docker pull arm64v8/debian
+https://github.com/mohaseeb/raspberrypi3-opencv-docker/tree/master/opencv_3/3.4.2
+
 ==============================================================================================================================
 ==============================================================================================================================
 1.) Create Service on Raspberry PI To Keep a Reverse Tunnel Open to the Remote REDIS Server
