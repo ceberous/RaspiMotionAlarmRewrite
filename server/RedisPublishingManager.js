@@ -28,7 +28,7 @@ function custom_publish_image_b64( options ) {
 		try {
 			const imageb64 = fs.readFileSync( options.image_path , "base64" );
 			if ( imageb64.length < 3 ) { resolve( "empty" ); return; }
-			console.log( imageb64 );
+			//console.log( imageb64 );
 			console.log( options.image_path );
 			options.image_b64 = imageb64;
 			await publish_new_item( options );
@@ -42,14 +42,12 @@ function custom_publish_image_b64( options ) {
 function publish_new_frame() {
 	return new Promise( async ( resolve , reject )=> {
 		try {
-
 			await custom_publish_image_b64({
 				channel: "frame" ,
 				message: "Added New Frame" ,
 				image_path: FramePath ,
 				list_key_prefix: "sleep.images.frames"
 			});
-
 			resolve();
 			return;
 		}
@@ -61,7 +59,6 @@ module.exports.new_frame = publish_new_frame;
 function publish_new_image_set() {
 	return new Promise( async ( resolve , reject )=> {
 		try {
-
 			await custom_publish_image_b64({
 				channel: "frames" ,
 				message: "Added New Frame" ,
@@ -82,7 +79,6 @@ function publish_new_image_set() {
 				image_path: FrameThresholdPath ,
 				list_key_prefix: "sleep.images.thresholds"
 			});
-
 			resolve();
 			return;
 		}
@@ -118,9 +114,9 @@ function publish_new_item( options ) {
 				}
 			});
 			console.log( "publish_new_item() === "  + list_key );
-			console.log( Custom_JSON_Serialized_Item_Object );
+			//console.log( Custom_JSON_Serialized_Item_Object );
 			const encrypted = encrypt( Custom_JSON_Serialized_Item_Object );
-			console.log( encrypted );
+			//console.log( encrypted );
 			await redis_manager.redis.publish( `new_${ options.channel }` , encrypted );
 			await redis_manager.listLPUSH( list_key , encrypted );
 			resolve();
