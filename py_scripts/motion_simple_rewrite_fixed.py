@@ -302,7 +302,7 @@ class TenvisVideo():
 
 		motionCounter = 0
 
-		self.simulate_motion()
+		#self.simulate_motion()
 
 		while( self.w_Capture.isOpened() ):
 
@@ -330,7 +330,7 @@ class TenvisVideo():
 				else:
 					broadcast_log( "done sleeping" )
 					self.last_email_time = None
-					self.simulate_motion()
+					#self.simulate_motion()
 				continue
 
 			gray = cv2.cvtColor( frame , cv2.COLOR_BGR2GRAY )
@@ -419,8 +419,8 @@ class TenvisVideo():
 				if wNeedToAlert == True:
 					#print "ALERT !!!!"
 					wNowString = self.EVENT_POOL[ -1 ].strftime( "%Y-%m-%d %H:%M:%S" )
-					#wTimeMsg = "Motion @@ " + wNowString
-					broadcast_record( "MOTION" )
+					wTimeMsg = "Motion @@ " + wNowString
+					broadcast_record( wTimeMsg )
 					self.last_email_time = self.EVENT_POOL[ -1 ]
 					self.EVENT_POOL = []
 
