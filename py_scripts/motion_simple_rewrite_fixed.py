@@ -76,42 +76,29 @@ def redis_get_key_suffix():
 	now = datetime.now( eastern_tz )
 	return now.strftime( "%Y.%m.%d" )
 
-def try_publish( options ):
-	try:
-		# key_suffix = redis_get_key_suffix()
-		# global_log_key = "redis.sleep.log." + key_suffix
-		# channel_key = "redis.sleep." + options.channel + "." + key_suffix
-		# redis_manager.lpush( global_log_key , json_string )
-		# redis_manager.lpush( global_log_key , json_string )
-		redis_manager.publish( "python-script-controller" , json_string )
-	except Exception as e:
-		print( e )
-		count += 1
-		backoff = count * 5
-		print( 'Retrying in {} seconds'.format( backoff ) )
-		sleep( backoff )
-		redis_connect()
 
 def redis_publish( options ):
 	global redis_manager
 	global redis_subscriber
-	try:
-		options[ 'list_key_prefix' ] = "sleep.raspi.python." + options[ 'channel' ]
-		json_string = json.dumps( options )
-		print( options.message )
-		# https://stackoverflow.com/a/24773545
-		max_retries = 5
-		for i in range( max_retries - 1 ):
-			try:
-				redis_manager.publish( "python-script-controller" , json_string )
-				return True
-			except Exception as error:
-				backoff = i * 5
-				print( 'Retrying in {} seconds'.format( backoff ) )
-				sleep( backoff )
-				redis_connect()
-	except Exception as e:
-		print( "Couldn't Publish Message to REDIS" )
+	options[ 'list_key_prefix' ] = "sleep.raspi.python." + options[ 'channel' ]
+	json_string = json.dumps( options )
+	print( options.message )
+	max_retries_outer = 5
+	for i in range( max_retries_outer - 1 ):
+		try:
+			# https://stackoverflow.com/a/24773545
+			max_retries_inner = 5
+			for j in range( max_retries_inner - 1 ):
+				try:
+					redis_manager.publish( "python-script-controller" , json_string )
+					return True
+				except Exception as error:
+					sleep( 3 )
+					redis_connect()
+		except Exception as e:
+			print( "Couldn't Publish Message to REDIS" )
+			sleep( 3 )
+			redis_connect()
 
 def update_loaded_config( config ):
 	if 'EMAIL_COOLOFF' in config:
@@ -415,7 +402,7 @@ class TenvisVideo():
 				wElapsedTime_1 = int( ( self.EVENT_POOL[ -2 ] - self.EVENT_POOL[ -1 ] ).total_seconds() )
 				broadcast_log( "( Stage-1-Check ) === Elapsed Time Between Previous 2 Events === " + str( wElapsedTime_1 ) )
 				if wElapsedTime_1 <= LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE' ]:
-					broadcast_log( "( Stage-1-Check ) === PASSED" )
+					broadcast_log( "( Stage-1-Check ) === PASSED <= " + LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE' ] )
 					wNeedToAlert = True
 
 				# Condition 2.) Check if there are multiple events in a greater window
@@ -424,7 +411,7 @@ class TenvisVideo():
 					wElapsedTime_2 = int( ( self.EVENT_POOL[ -3 ] - self.EVENT_POOL[ -1 ] ).total_seconds() )
 					broadcast_log( "( Stage-2-Check ) === Elapsed Time Between the First and Last Event in the Pool === " + str( wElapsedTime_2 ) )
 					if wElapsedTime_2 <= LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ]:
-						broadcast_log( "( Stage-2-Check ) === PASSED" )
+						broadcast_log( "( Stage-2-Check ) === PASSED <= " + LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] )
 						wNeedToAlert = True
 					else:
 						broadcast_log( "( Stage-2-Check ) === FAILED" )
