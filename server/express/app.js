@@ -55,6 +55,7 @@ app.get( "/turnoff" , function( req , res ) {
 });
 
 app.post( "/python-script" , ( req, res ) => {
+	events.emit( "log" , { message: "EXPRESS === POST /python-script" } );
 	if ( !req.body ) { res.json( { result: false } ); }
 	events.emit( "python-script-controller" , req.body );
 	res.json( { result: true } );
