@@ -101,6 +101,7 @@ def redis_publish( options ):
 				print( 'Retrying in {} seconds'.format( backoff ) )
 				sleep( backoff )
 				redis_connect()
+				print( redis_manager )
 
 	except Exception as e:
 		print( "Couldn't Publish Message to REDIS" )
