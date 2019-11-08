@@ -79,9 +79,10 @@ def redis_publish( options ):
 		options[ 'list_key_prefix' ] = "sleep.raspi.python." + options[ 'channel' ]
 		json_string = json.dumps( options )
 		print( json_string )
+		# https://stackoverflow.com/a/24773545
 		count = 0
 		max_retries = 5
-	    while True: # https://stackoverflow.com/a/24773545
+	    while True:
 	        try:
 				# key_suffix = redis_get_key_suffix()
 				# global_log_key = "redis.sleep.log." + key_suffix
