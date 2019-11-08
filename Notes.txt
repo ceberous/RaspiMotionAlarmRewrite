@@ -1,5 +1,8 @@
 https://www.thepolyglotdeveloper.com/2016/01/creating-a-real-time-chat-application-with-ionic-2-and-socket-io/
 
+https://github.com/shaqian/react-native-ssh-sftp
+https://stackoverflow.com/questions/44088058/proper-way-of-using-websockets-with-react-native#44088701
+
 0.) Fix REDIS Disonnection Error on Raspberry Pi
 https://github.com/Automattic/kue/issues/1091
 sudo sysctl -w net.core.somaxconn=1024
