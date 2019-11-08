@@ -82,24 +82,24 @@ def redis_publish( options ):
 		# https://stackoverflow.com/a/24773545
 		count = 0
 		max_retries = 5
-	    while True:
-	        try:
+		while True:
+			try:
 				# key_suffix = redis_get_key_suffix()
 				# global_log_key = "redis.sleep.log." + key_suffix
 				# channel_key = "redis.sleep." + options.channel + "." + key_suffix
 				# redis_manager.lpush( global_log_key , json_string )
 				# redis_manager.lpush( global_log_key , json_string )
-	            redis_manager.publish( "python-script-controller" , json_string )
-	        except redis.ConnectionError:
-	            count += 1
-	            # re-raise the ConnectionError if we've exceeded max_retries
-	            if count > max_retries:
-	                raise
+				redis_manager.publish( "python-script-controller" , json_string )
+			except redis.ConnectionError:
+				count += 1
+				# re-raise the ConnectionError if we've exceeded max_retries
+				if count > max_retries:
+					raise
 
-	            backoff = count * 5
-	            print( 'Retrying in {} seconds'.format( backoff ) )
-	            time.sleep( backoff )
-	            redis_connect()
+				backoff = count * 5
+				print( 'Retrying in {} seconds'.format( backoff ) )
+				time.sleep( backoff )
+				redis_connect()
 
 	except Exception as e:
 		print( "Couldn't Publish Message to REDIS" )
