@@ -12,7 +12,7 @@ function load_custom_event_list() {
 					...options ,
 					...{
 						platform: "python" ,
-						message: `RASPI-PYTHON === \t${ options.message }` ,
+						message: `RASPI-PYTHON === ${ options.message }` ,
 						list_key_prefix: "sleep.log"
 					}
 				};
