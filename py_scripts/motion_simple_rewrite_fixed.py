@@ -65,7 +65,7 @@ def inside_extra_alert_time_window():
 	# ignore_hours = [ 22 , 23 , 24 , 0 , 1 ]
 	result = False
 	now = datetime.now( eastern_tz )
-	if now.hour > 1 and now.hour < 22:
+	if now.hour > 1 and now.hour < 10:
 		result = True
 	redis_publish( { "channel": "log" , "message": "Inside Extra Alert Time Window === " + str( result ) } )
 	return result
@@ -190,21 +190,21 @@ def twilio_call( number ):
 		redis_publish( { "channel": "errors" , "message": "Failed to Make Twilio Call to: " + str( number ) } )
 
 def broadcast_error( message ):
-	print( message )
+	#print( message )
 	redis_publish( { "channel": "errors" , "message": message } )
 
 def broadcast_log( message ):
-	print( message )
+	#print( message )
 	redis_publish( { "channel": "events" , "message": message } )
 
 def broadcast_record( message ):
-	print( message )
-	#twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
+	#print( message )
+	twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
 	#twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message ) # testing
 	redis_publish( { "channel": "records" , "message": message } )
 
 def broadcast_extra_record( message ):
-	print( message )
+	#print( message )
 	print( "Broadcasting Extra Event" )
 	redis_publish( { "channel": "log" , "message": "Sending SMS to ExtraNumber === " + message } )
 	#twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
@@ -428,9 +428,9 @@ class TenvisVideo():
 					self.FRAME_EVENT_COUNT = 0
 					self.EVENT_TOTAL += 1
 
-					# In a Cycle of 8 last_email_time's , Count the Number of Times Per 10 minute Interval
 					if inside_extra_alert_time_window() == False:
 						continue
+					# In a Cycle of 8 last_email_time's , Count the Number of Times Per 10 minute Interval
 					try:
 						self.ExtraAlertPool.insert( 0 , self.last_email_time )
 						self.ExtraAlertPool.pop()
