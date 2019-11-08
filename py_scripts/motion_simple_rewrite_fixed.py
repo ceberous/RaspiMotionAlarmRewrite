@@ -288,7 +288,14 @@ class TenvisVideo():
 		self.total_motion = LOADED_CONFIG[ 'MOTION_EVENTS_ACCEPTABLE' ] + 1
 		self.EVENT_POOL = []
 		now = datetime.now( eastern_tz )
-		for i in range( 10 ):
+		self.EVENT_POOL.append( now + timedelta( minutes=10 ) )
+		self.EVENT_POOL.append( now + timedelta( minutes=9 ) )
+		self.EVENT_POOL.append( now + timedelta( minutes=8 ) )
+		self.EVENT_POOL.append( now + timedelta( minutes=7 ) )
+		self.EVENT_POOL.append( now + timedelta( minutes=6 ) )
+		self.EVENT_POOL.append( now + timedelta( minutes=5 ) )
+		self.EVENT_POOL.append( now + timedelta( minutes=4 ) )
+		for i in range( 3 ):
 			simulated = now + timedelta( seconds=( ( i + 1 ) * 2 ) )
 			self.EVENT_POOL.append( simulated )
 
