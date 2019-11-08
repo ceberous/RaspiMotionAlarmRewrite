@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+import requests
 import sys
 import os
 import signal
@@ -58,7 +59,7 @@ def inside_message_time_window():
 	now = datetime.now( eastern_tz )
 	if now.hour > 22 or now.hour < 3:
 		result = True
-	redis_publish( { "channel": "log" , "message": "Inside Alert Time Window === " + str( result ) } )
+	express_publish( { "channel": "log" , "message": "Inside Alert Time Window === " + str( result ) } )
 	return result
 
 def inside_extra_alert_time_window():
@@ -67,15 +68,18 @@ def inside_extra_alert_time_window():
 	now = datetime.now( eastern_tz )
 	if now.hour > 1 and now.hour < 10:
 		result = True
-	redis_publish( { "channel": "log" , "message": "Inside Extra Alert Time Window === " + str( result ) } )
+	express_publish( { "channel": "log" , "message": "Inside Extra Alert Time Window === " + str( result ) } )
 	return result
 
+def express_publish( options ):
+	options[ 'list_key_prefix' ] = "sleep.raspi.python." + options[ 'channel' ]
+	response = requests.post( 'http://localhost:6161/python-script' , data=options )
+	print( response.text )
 
 # { "type": "python-script" , "channel": channel , "command": command , "message": message }
 def redis_get_key_suffix():
 	now = datetime.now( eastern_tz )
 	return now.strftime( "%Y.%m.%d" )
-
 
 def redis_publish( options ):
 	global redis_manager
@@ -116,24 +120,24 @@ def update_loaded_config( config ):
 		if 'reset' in config[ 'clipping' ]:
 			if config[ 'clipping' ][ 'reset' ] == True or config[ 'clipping' ][ 'reset' ] == "true" or config[ 'clipping' ][ 'reset' ] == "True":
 				LOADED_CONFIG[ 'clipping' ] = DEFAULT_CLIPPING
-				#redis_publish( { "channel": "log" , "message": "LOADED_CONFIG == DEFAULT_CLIPPING" } )
+				#express_publish( { "channel": "log" , "message": "LOADED_CONFIG == DEFAULT_CLIPPING" } )
 			return
 		if 'x' in config[ 'clipping' ]:
 			if '1' in config[ 'clipping' ][ 'x' ]:
 				LOADED_CONFIG[ 'clipping' ][ 'x' ][ '1' ] = config[ 'clipping' ][ 'x' ][ '1' ]
-				redis_publish( { "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'x' ][ '1' ] == " + str( config[ 'clipping' ][ 'x' ][ '1' ] ) } )
+				express_publish( { "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'x' ][ '1' ] == " + str( config[ 'clipping' ][ 'x' ][ '1' ] ) } )
 
 			if '2' in config[ 'clipping' ][ 'x' ]:
 				LOADED_CONFIG[ 'clipping' ][ 'x' ][ '2' ] = config[ 'clipping' ][ 'x' ][ '2' ]
-				redis_publish( { "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'x' ][ '2' ] == " + str( config[ 'clipping' ][ 'x' ][ '2' ] ) } )
+				express_publish( { "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'x' ][ '2' ] == " + str( config[ 'clipping' ][ 'x' ][ '2' ] ) } )
 		if 'y' in config[ 'clipping' ]:
 			if '1' in config[ 'clipping' ][ 'y' ]:
 				LOADED_CONFIG[ 'clipping' ][ 'y' ][ '1' ] = config[ 'clipping' ][ 'y' ][ '1' ]
-				redis_publish( { "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] == " + str( config[ 'clipping' ][ 'y' ][ '1' ] ) } )
+				express_publish( { "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] == " + str( config[ 'clipping' ][ 'y' ][ '1' ] ) } )
 
 			if '2' in config[ 'clipping' ][ 'y' ]:
 				LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] = config[ 'clipping' ][ 'y' ][ '2' ]
-				redis_publish( { "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] == " + str( config[ 'clipping' ][ 'y' ][ '2' ] ) } )
+				express_publish( { "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] == " + str( config[ 'clipping' ][ 'y' ][ '2' ] ) } )
 
 def redis_publish_image_set( frame , frameThreshold , frameDelta ):
 	frame_retval , frame_buffer = cv2.imencode( '.jpg' , frame )
@@ -167,19 +171,19 @@ def redis_on_message( message ):
 def twilio_message( number , message ):
 	try:
 		if inside_message_time_window() == False:
-			redis_publish( { "channel": "log" , "message": "Outside SMS Alert Time Window" } )
+			express_publish( { "channel": "log" , "message": "Outside SMS Alert Time Window" } )
 			return;
 		message = TwilioClient.messages.create( number ,
 			body=message ,
 			from_=Personal[ 'twilio' ][ 'fromSMSNumber' ] ,
 		)
 		print( "sent sms" )
-		redis_publish( { "channel": "log" , "message": "Sent SMS to: " + str( number ) } )
+		express_publish( { "channel": "log" , "message": "Sent SMS to: " + str( number ) } )
 
 	except Exception as e:
 		print ( e )
 		print ( "failed to send sms" )
-		redis_publish( { "channel": "errors" , "message": "failed to send sms" } )
+		express_publish( { "channel": "errors" , "message": "failed to send sms" } )
 
 def twilio_call( number ):
 	try:
@@ -187,26 +191,26 @@ def twilio_call( number ):
 	except Exception as e:
 		print( e )
 		print( "failed to make twilio call" )
-		redis_publish( { "channel": "errors" , "message": "Failed to Make Twilio Call to: " + str( number ) } )
+		express_publish( { "channel": "errors" , "message": "Failed to Make Twilio Call to: " + str( number ) } )
 
 def broadcast_error( message ):
 	#print( message )
-	redis_publish( { "channel": "errors" , "message": message } )
+	express_publish( { "channel": "errors" , "message": message } )
 
 def broadcast_log( message ):
 	#print( message )
-	redis_publish( { "channel": "events" , "message": message } )
+	express_publish( { "channel": "events" , "message": message } )
 
 def broadcast_record( message ):
 	#print( message )
 	twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
 	#twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message ) # testing
-	redis_publish( { "channel": "records" , "message": message } )
+	express_publish( { "channel": "records" , "message": message } )
 
 def broadcast_extra_record( message ):
 	#print( message )
 	print( "Broadcasting Extra Event" )
-	redis_publish( { "channel": "log" , "message": "Sending SMS to ExtraNumber === " + message } )
+	express_publish( { "channel": "log" , "message": "Sending SMS to ExtraNumber === " + message } )
 	#twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
 	twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message )
 
@@ -263,7 +267,7 @@ class TenvisVideo():
 		print ( "MAX_TIME_ACCEPTABLE_STAGE_2 === " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) )
 
 		# Start
-		redis_publish( { "channel": "log" , "message": "Starting" } )
+		express_publish( { "channel": "log" , "message": "Starting" } )
 		self.w_Capture = cv2.VideoCapture( 0 )
 		self.motionTracking()
 
