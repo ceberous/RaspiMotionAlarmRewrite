@@ -289,7 +289,7 @@ class TenvisVideo():
 		self.EVENT_POOL = []
 		now = datetime.now( eastern_tz )
 		for i in range( 10 ):
-			simulated = now + timedelta( seconds=( ( i + 1 ) * 70 ) )
+			simulated = now + timedelta( seconds=( ( i + 1 ) * 2 ) )
 			self.EVENT_POOL.append( simulated )
 
 	def motionTracking( self ):
