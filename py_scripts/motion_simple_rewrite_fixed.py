@@ -407,18 +407,21 @@ class TenvisVideo():
 
 				# Condition 1.) Check Elapsed Time Between Last 2 Motion Events
 				wElapsedTime_1 = int( ( self.EVENT_POOL[ -1 ] - self.EVENT_POOL[ 0 ] ).total_seconds() )
+				broadcast_log( "( Stage-1-Check ) === Elapsed Time Between Previous 2 Events === " + str( wElapsedTime_1 ) )
 				if wElapsedTime_1 <= LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE' ]:
-					broadcast_log( "( Stage-1-Check ) === PASSED === Elapsed Time Between Previous 2 Events: " + str( wElapsedTime_1 ) + " <= " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE' ] ) + " Maximum Time Acceptable" )
+					broadcast_log( "( Stage-1-Check ) === PASSED" )
 					wNeedToAlert = True
 
 				# Condition 2.) Check if there are multiple events in a greater window
 				elif len( self.EVENT_POOL ) >= 3:
+					broadcast_log( "( Stage-1-Check ) === FAILED" )
 					wElapsedTime_2 = int( ( self.EVENT_POOL[ -1 ] - self.EVENT_POOL[ -3 ] ).total_seconds() )
+					broadcast_log( "( Stage-2-Check ) === Elapsed Time Between the First and Last Event in the Pool === " + str( wElapsedTime_2 ) )
 					if wElapsedTime_2 <= LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ]:
-						broadcast_log( "( Stage-2-Check ) === PASSED === Elapsed Time Between the First and Last Event in the Pool === " + str( wElapsedTime_2 ) + " which is <= " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) + " seconds" )
+						broadcast_log( "( Stage-2-Check ) === PASSED" )
 						wNeedToAlert = True
 					else:
-						broadcast_log( "( Stage-2-Check ) === FAILED === Elapsed Time Between the First and Last Event in the Pool === " + str( wElapsedTime_2 ) + " which is >= " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) + " seconds" )
+						broadcast_log( "( Stage-2-Check ) === FAILED" )
 
 				if wNeedToAlert == True:
 					#print "ALERT !!!!"
