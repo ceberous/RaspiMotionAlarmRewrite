@@ -74,6 +74,7 @@ def inside_extra_alert_time_window():
 def express_publish( options ):
 	options[ 'list_key_prefix' ] = "sleep.raspi.python." + options[ 'channel' ]
 	try:
+		print( options[ 'message' ] )
 		response = requests.post( 'http://localhost:6161/python-script' , data=options )
 		#print( response.text )
 	except Exception as e:
@@ -203,12 +204,10 @@ def broadcast_log( message ):
 	express_publish( { "channel": "events" , "message": message } )
 
 def broadcast_record( message ):
-	print( "Broadcasting Record" )
 	twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
 	express_publish( { "channel": "records" , "message": message } )
 
 def broadcast_extra_record( message ):
-	print( "Broadcasting Extra Record" )
 	twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message )
 	express_publish( { "channel": "log" , "message": "Sending SMS to ExtraNumber === " + message } )
 
