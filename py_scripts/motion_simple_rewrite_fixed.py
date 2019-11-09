@@ -75,11 +75,10 @@ def express_publish( options ):
 	options[ 'list_key_prefix' ] = "sleep.raspi.python." + options[ 'channel' ]
 	try:
 		response = requests.post( 'http://localhost:6161/python-script' , data=options )
-		print( response.text )
+		#print( response.text )
 	except Exception as e:
 		print( e )
 
-# { "type": "python-script" , "channel": channel , "command": command , "message": message }
 def redis_get_key_suffix():
 	now = datetime.now( eastern_tz )
 	return now.strftime( "%Y.%m.%d" )
@@ -205,17 +204,14 @@ def broadcast_log( message ):
 	express_publish( { "channel": "events" , "message": message } )
 
 def broadcast_record( message ):
-	#print( message )
-	#twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
-	#twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message ) # testing
+	print( "Broadcasting Record" )
+	twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
 	express_publish( { "channel": "records" , "message": message } )
 
 def broadcast_extra_record( message ):
-	#print( message )
-	print( "Broadcasting Extra Event" )
+	print( "Broadcasting Extra Record" )
+	twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message )
 	express_publish( { "channel": "log" , "message": "Sending SMS to ExtraNumber === " + message } )
-	#twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
-	#twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message )
 
 
 def redis_connect():
@@ -367,14 +363,14 @@ class TenvisVideo():
 			# If Movement Is Greater than frameThreshold , create motion record
 			if motionCounter >= LOADED_CONFIG[ 'MIN_MOTION_FRAMES' ]:
 				wNow = datetime.now( eastern_tz )
-				broadcast_log( "Motion Counter: " + str( motionCounter ) + " > MIN_MOTION_FRAMES" )
+				broadcast_log( "Motion Counter === " + str( motionCounter ) + " >= " + str( LOADED_CONFIG[ 'MIN_MOTION_FRAMES' ] ) + " Minimum Motion Frames" )
 				#print "setting new motion record"
 
 				# Check if this is "fresh" in a series of new motion records
 				if len( self.EVENT_POOL ) > 1:
 					wElapsedTime_x = int( ( self.EVENT_POOL[ -1 ] - self.EVENT_POOL[ -2 ] ).total_seconds() )
 					if wElapsedTime_x > ( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] * 2 ):
-						broadcast_log( "Not Fresh , Resetting to 1st Event === " + str( wElapsedTime_x ) )
+						broadcast_log( "Not Fresh , Elapsed Time Between Last 2 Events === " + str( wElapsedTime_x ) + " > " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) + " Max Time Acceptable - Stage 2" )
 						self.EVENT_POOL = []
 						self.total_motion = 0
 						# continue ????
@@ -389,7 +385,7 @@ class TenvisVideo():
 
 			# Once Total Motion Events Reach frameThreshold , create alert if timing conditions are met
 			if self.total_motion >= LOADED_CONFIG[ 'MOTION_EVENTS_ACCEPTABLE' ]:
-				broadcast_log( "Total Motion: " + str( self.total_motion ) + " >= " + str( LOADED_CONFIG[ 'MOTION_EVENTS_ACCEPTABLE' ] ) + " Motion Events Acceptable" )
+				broadcast_log( "Total Motion === " + str( self.total_motion ) + " >= " + str( LOADED_CONFIG[ 'MOTION_EVENTS_ACCEPTABLE' ] ) + " Motion Events Acceptable" )
 				self.total_motion = 0
 				cv2.imwrite( frameThreshLiveImagePath , frameThreshold )
 				cv2.imwrite( frameDeltaLiveImagePath , frameDelta )
@@ -398,28 +394,25 @@ class TenvisVideo():
 				express_publish({
 					"channel": "commands" , "command": "publish_new_image_set" , "message": "new image set ready" , "event_pool": json.dumps( EVENT_POOL_STRINGS ) , "extra_alert_pool": json.dumps( EXTRA_ALERT_POOL_STRINGS )
 				})
-				# redis_publish_image_set( frame , frameThreshold , frameDelta )
 
 				# Evaluate Custom Timeing Conditions
 				wNeedToAlert = False
 
 				# Condition 1.) Check Elapsed Time Between Last 2 Motion Events
 				wElapsedTime_1 = int( ( self.EVENT_POOL[ -1 ] - self.EVENT_POOL[ 0 ] ).total_seconds() )
-				broadcast_log( "( Stage-1-Check ) === Elapsed Time Between Previous 2 Events === " + str( wElapsedTime_1 ) )
 				if wElapsedTime_1 <= LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE' ]:
-					broadcast_log( "( Stage-1-Check ) === PASSED <= " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE' ] ) )
+					broadcast_log( "( Stage-1-Check ) === PASSED === Elapsed Time Between Previous 2 Events === " + str( wElapsedTime_1 ) + " <= " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE' ] ) )
 					wNeedToAlert = True
 
 				# Condition 2.) Check if there are multiple events in a greater window
 				elif len( self.EVENT_POOL ) >= 3:
-					broadcast_log( "( Stage-1-Check ) === FAILED" )
+					broadcast_log( "( Stage-1-Check ) === FAILED === Elapsed Time Between Previous 2 Events === " + str( wElapsedTime_1 ) + " > " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE' ] ) )
 					wElapsedTime_2 = int( ( self.EVENT_POOL[ -1 ] - self.EVENT_POOL[ -3 ] ).total_seconds() )
-					broadcast_log( "( Stage-2-Check ) === Elapsed Time Between the First and Last Event in the Pool === " + str( wElapsedTime_2 ) )
 					if wElapsedTime_2 <= LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ]:
-						broadcast_log( "( Stage-2-Check ) === PASSED <= " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) )
+						broadcast_log( "( Stage-2-Check ) === PASSED === Elapsed Time Between the First and Last Event in the Pool === " + str( wElapsedTime_2 ) + " <= " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) )
 						wNeedToAlert = True
 					else:
-						broadcast_log( "( Stage-2-Check ) === FAILED" )
+						broadcast_log( "( Stage-2-Check ) === FAILED === Elapsed Time Between the First and Last Event in the Pool === " + str( wElapsedTime_2 ) + " > " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) )
 
 				if wNeedToAlert == True:
 					#print "ALERT !!!!"
@@ -463,9 +456,8 @@ class TenvisVideo():
 							broadcast_extra_record( wS1 )
 							broadcast_log( "Messaging ExtraEventNumber because Number of Records in 10 Minutes === " + str( num_records_in_10_minutes ) + " which is >= 2" )
 						if num_records_in_20_minutes >= 3:
-							#if ignore_extra_alert_call() == False:
 							print( "3 or More Records in 20 Minutes , making Twilio Call To ExtraEventNumber" )
-							#twilio_call( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] )
+							twilio_call( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] )
 							broadcast_log( "Calling ExtraEventNumber because Number of Records in 20 Minutes === " + str( num_records_in_20_minutes ) + " which is >= 3" )
 							self.ExtraAlertPool = [ datetime.now( eastern_tz ) - timedelta( minutes=59 ) ] * 8
 						if num_records_in_30_minutes >= 7:
