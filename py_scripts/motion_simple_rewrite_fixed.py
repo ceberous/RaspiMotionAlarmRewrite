@@ -396,7 +396,7 @@ class TenvisVideo():
 				EVENT_POOL_STRINGS = map( lambda x: x.strftime( "%Y-%m-%d %H:%M:%S" ) , self.EVENT_POOL )
 				EXTRA_ALERT_POOL_STRINGS = map( lambda x: x.strftime( "%Y-%m-%d %H:%M:%S" ) , self.ExtraAlertPool )
 				express_publish({
-					"command": "publish_new_image_set" , "message": "new image set ready" , "event_pool": json.dumps( EVENT_POOL_STRINGS ) , "extra_alert_pool": json.dumps( EXTRA_ALERT_POOL_STRINGS )
+					"channel": "commands" , "command": "publish_new_image_set" , "message": "new image set ready" , "event_pool": json.dumps( EVENT_POOL_STRINGS ) , "extra_alert_pool": json.dumps( EXTRA_ALERT_POOL_STRINGS )
 				})
 				# redis_publish_image_set( frame , frameThreshold , frameDelta )
 
