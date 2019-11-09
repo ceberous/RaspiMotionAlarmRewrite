@@ -173,7 +173,6 @@ def redis_on_message( message ):
 def twilio_message( number , message ):
 	try:
 		if inside_message_time_window() == False:
-			express_publish( { "channel": "log" , "message": "Outside SMS Alert Time Window" } )
 			return;
 		message = TwilioClient.messages.create( number ,
 			body=message ,
@@ -401,18 +400,18 @@ class TenvisVideo():
 				# Condition 1.) Check Elapsed Time Between Last 2 Motion Events
 				wElapsedTime_1 = int( ( self.EVENT_POOL[ -1 ] - self.EVENT_POOL[ 0 ] ).total_seconds() )
 				if wElapsedTime_1 <= LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE' ]:
-					broadcast_log( "( Stage-1-Check ) === PASSED === Elapsed Time Between Previous 2 Events === " + str( wElapsedTime_1 ) + " <= " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE' ] ) )
+					broadcast_log( "( Stage-1-Check ) === PASSED === Elapsed Time Between Previous 2 Events === " + str( wElapsedTime_1 ) + " <= " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE' ] ) + " Max Time Acceptable" )
 					wNeedToAlert = True
 
 				# Condition 2.) Check if there are multiple events in a greater window
 				elif len( self.EVENT_POOL ) >= 3:
-					broadcast_log( "( Stage-1-Check ) === FAILED === Elapsed Time Between Previous 2 Events === " + str( wElapsedTime_1 ) + " > " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE' ] ) )
+					broadcast_log( "( Stage-1-Check ) === FAILED === Elapsed Time Between Previous 2 Events === " + str( wElapsedTime_1 ) + " > " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE' ] ) + " Max Time Acceptable" )
 					wElapsedTime_2 = int( ( self.EVENT_POOL[ -1 ] - self.EVENT_POOL[ -3 ] ).total_seconds() )
 					if wElapsedTime_2 <= LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ]:
-						broadcast_log( "( Stage-2-Check ) === PASSED === Elapsed Time Between the First and Last Event in the Pool === " + str( wElapsedTime_2 ) + " <= " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) )
+						broadcast_log( "( Stage-2-Check ) === PASSED === Elapsed Time Between the First and Last Event in the Pool === " + str( wElapsedTime_2 ) + " <= " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) + " Max Time Acceptable - Stage 2" )
 						wNeedToAlert = True
 					else:
-						broadcast_log( "( Stage-2-Check ) === FAILED === Elapsed Time Between the First and Last Event in the Pool === " + str( wElapsedTime_2 ) + " > " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) )
+						broadcast_log( "( Stage-2-Check ) === FAILED === Elapsed Time Between the First and Last Event in the Pool === " + str( wElapsedTime_2 ) + " > " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) + " Max Time Acceptable - Stage 2" )
 
 				if wNeedToAlert == True:
 					#print "ALERT !!!!"
