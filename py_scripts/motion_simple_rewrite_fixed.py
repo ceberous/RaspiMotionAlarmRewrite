@@ -444,17 +444,16 @@ class TenvisVideo():
 								num_records_in_20_minutes = num_records_in_20_minutes + 1
 							if time_diff < 600:
 								num_records_in_10_minutes = num_records_in_10_minutes + 1
-						print( num_records_in_10_minutes )
-						print( num_records_in_20_minutes )
-						print( num_records_in_30_minutes )
+						# print( num_records_in_10_minutes )
+						# print( num_records_in_20_minutes )
+						# print( num_records_in_30_minutes )
 						if num_records_in_10_minutes >= 2:
 							wS1 = str( num_records_in_10_minutes ) + " Records in 10 Minutes"
 							broadcast_extra_record( wS1 )
-							broadcast_log( "Messaging ExtraEventNumber because Number of Records in 10 Minutes === " + str( num_records_in_10_minutes ) + " which is >= 2" )
+							broadcast_log( "( Stage-3-Check ) === PASSED === Number of Records in 10 Minutes === ( " + str( num_records_in_10_minutes ) + " >= 2 ) === Max Records in 10 Minutes" )
 						if num_records_in_20_minutes >= 3:
-							print( "3 or More Records in 20 Minutes , making Twilio Call To ExtraEventNumber" )
 							twilio_call( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] )
-							broadcast_log( "Calling ExtraEventNumber because Number of Records in 20 Minutes === " + str( num_records_in_20_minutes ) + " which is >= 3" )
+							broadcast_log( "( Stage-4-Check ) === PASSED === Number of Records in 20 Minutes === ( " + str( num_records_in_20_minutes ) + " >= 3 ) === Max Records in 20 Minutes" )
 							self.ExtraAlertPool = [ datetime.now( eastern_tz ) - timedelta( minutes=59 ) ] * 8
 						if num_records_in_30_minutes >= 7:
 							#self.ExtraAlertPool = [ datetime.now( eastern_tz ) - timedelta( minutes=59 ) ] * 8
@@ -464,6 +463,7 @@ class TenvisVideo():
 							#self.ExtraAlertPool = [ datetime.now( eastern_tz ) - timedelta( minutes=59 ) ] * 8
 							#voice_call_house()
 							pass
+
 					except Exception as e:
 						print( "failed to process extra events que" )
 						broadcast_error( "failed to process extra events que" )
