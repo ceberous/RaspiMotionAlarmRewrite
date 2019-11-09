@@ -41,7 +41,7 @@ function get_log() {
 	// Its Really An Array Based Counting Scheme
 	// So count = 31 , really means get 30 events
 	// -1 = Get ALL in Redis List
-	const count = 31;
+	const count = -1;
 	ws.send( JSON.stringify({
 		"type": "redis_get_lrange" ,
 		"starting_position": 0 ,
@@ -58,9 +58,9 @@ ws.on( "message" , ( data )=> {
 	if ( !data ) { return; }
 	data = JSON.parse( data );
 	if ( !data ) { return; }
+	console.log( data.message );
 	if ( data.message === "new_logs" ) {
 		data = data.data;
-		console.log( data.message );
 		let decrypted_messages = [];
 		for ( let i = 0; i < data.length; ++i ) {
 			try {

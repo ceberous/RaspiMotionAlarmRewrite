@@ -206,7 +206,7 @@ def broadcast_log( message ):
 
 def broadcast_record( message ):
 	#print( message )
-	twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
+	#twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
 	#twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message ) # testing
 	express_publish( { "channel": "records" , "message": message } )
 
@@ -215,7 +215,7 @@ def broadcast_extra_record( message ):
 	print( "Broadcasting Extra Event" )
 	express_publish( { "channel": "log" , "message": "Sending SMS to ExtraNumber === " + message } )
 	#twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
-	twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message )
+	#twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message )
 
 
 def redis_connect():
@@ -285,17 +285,17 @@ class TenvisVideo():
 		now = datetime.now( eastern_tz )
 		self.EVENT_POOL = []
 		self.EVENT_POOL = [
-			now + timedelta( minutes=10 ) ,
-			now + timedelta( minutes=9 ) ,
-			now + timedelta( minutes=8 ) ,
-			now + timedelta( minutes=7 ) ,
-			now + timedelta( minutes=6 ) ,
-			now + timedelta( minutes=4 ) ,
-			now + timedelta( minutes=5 ) ,
-			now + timedelta( seconds=60 ) ,
-			now + timedelta( seconds=40 ) ,
-			now + timedelta( seconds=30 ) ,
-			now + timedelta( seconds=3 ) ,
+			now - timedelta( minutes=10 ) ,
+			now - timedelta( minutes=9 ) ,
+			now - timedelta( minutes=8 ) ,
+			now - timedelta( minutes=7 ) ,
+			now - timedelta( minutes=6 ) ,
+			now - timedelta( minutes=4 ) ,
+			now - timedelta( minutes=5 ) ,
+			now - timedelta( seconds=60 ) ,
+			now - timedelta( seconds=40 ) ,
+			now - timedelta( seconds=30 ) ,
+			now - timedelta( seconds=3 ) ,
 			now
 		]
 
@@ -309,7 +309,7 @@ class TenvisVideo():
 
 		motionCounter = 0
 
-		#self.simulate_motion()
+		self.simulate_motion()
 
 		while( self.w_Capture.isOpened() ):
 
@@ -329,7 +329,6 @@ class TenvisVideo():
 
 			if self.last_email_time is not None:
 				wNow = datetime.now( eastern_tz )
-				self.nowString = wNow.strftime( "%Y-%m-%d %H:%M:%S" )
 				self.elapsedTimeFromLastEmail = int( ( wNow - self.last_email_time ).total_seconds() )
 				if self.elapsedTimeFromLastEmail < LOADED_CONFIG[ 'EMAIL_COOLOFF' ]:
 					#print "sleeping"
@@ -337,7 +336,7 @@ class TenvisVideo():
 				else:
 					broadcast_log( "done sleeping" )
 					self.last_email_time = None
-					#self.simulate_motion()
+					self.simulate_motion()
 				continue
 
 			gray = cv2.cvtColor( frame , cv2.COLOR_BGR2GRAY )
@@ -363,14 +362,11 @@ class TenvisVideo():
 				if cv2.contourArea( c ) < min_area:
 					motionCounter = 0 # ???
 					continue
-				# wNow = datetime.now( eastern_tz )
-				# self.nowString = wNow.strftime( "%Y-%m-%d %H:%M:%S" )
 				motionCounter += 1
 
 			# If Movement Is Greater than frameThreshold , create motion record
 			if motionCounter >= LOADED_CONFIG[ 'MIN_MOTION_FRAMES' ]:
 				wNow = datetime.now( eastern_tz )
-				self.nowString = wNow.strftime( "%Y-%m-%d %H:%M:%S" )
 				broadcast_log( "Motion Counter: " + str( motionCounter ) + " > MIN_MOTION_FRAMES" )
 				#print "setting new motion record"
 
@@ -397,9 +393,11 @@ class TenvisVideo():
 				self.total_motion = 0
 				cv2.imwrite( frameThreshLiveImagePath , frameThreshold )
 				cv2.imwrite( frameDeltaLiveImagePath , frameDelta )
-				redis_manager.publish( "python-script-controller" , json.dumps({
-					"command": "publish_new_image_set" , "message": "new image set ready"
-				}))
+				EVENT_POOL_STRINGS = map( lambda x: x.strftime( "%Y-%m-%d %H:%M:%S" ) , self.EVENT_POOL )
+				EXTRA_ALERT_POOL_STRINGS = map( lambda x: x.strftime( "%Y-%m-%d %H:%M:%S" ) , self.ExtraAlertPool )
+				express_publish({
+					"command": "publish_new_image_set" , "message": "new image set ready" , "event_pool": json.dumps( EVENT_POOL_STRINGS ) , "extra_alert_pool": json.dumps( EXTRA_ALERT_POOL_STRINGS )
+				})
 				# redis_publish_image_set( frame , frameThreshold , frameDelta )
 
 				# Evaluate Custom Timeing Conditions
@@ -428,6 +426,11 @@ class TenvisVideo():
 					wNowString = self.EVENT_POOL[ -1 ].strftime( "%Y-%m-%d %H:%M:%S" )
 					wTimeMsg = "Motion @@ " + wNowString
 					broadcast_record( wTimeMsg )
+					EVENT_POOL_STRINGS = map( lambda x: x.strftime( "%Y-%m-%d %H:%M:%S" ) , self.EVENT_POOL )
+					EXTRA_ALERT_POOL_STRINGS = map( lambda x: x.strftime( "%Y-%m-%d %H:%M:%S" ) , self.ExtraAlertPool )
+					express_publish({
+						"channel": "event_pools" , "message": "Saving Instance of Event Pools" , "event_pool": json.dumps( EVENT_POOL_STRINGS ) , "extra_alert_pool": json.dumps( EXTRA_ALERT_POOL_STRINGS )
+					})
 					self.last_email_time = self.EVENT_POOL[ -1 ]
 					self.EVENT_POOL = []
 
@@ -462,7 +465,7 @@ class TenvisVideo():
 						if num_records_in_20_minutes >= 3:
 							#if ignore_extra_alert_call() == False:
 							print( "3 or More Records in 20 Minutes , making Twilio Call To ExtraEventNumber" )
-							twilio_call( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] )
+							#twilio_call( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] )
 							broadcast_log( "Calling ExtraEventNumber because Number of Records in 20 Minutes === " + str( num_records_in_20_minutes ) + " which is >= 3" )
 							self.ExtraAlertPool = [ datetime.now( eastern_tz ) - timedelta( minutes=59 ) ] * 8
 						if num_records_in_30_minutes >= 7:

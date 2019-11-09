@@ -44,7 +44,7 @@ function get_frames() {
 	// Its Really An Array Based Counting Scheme
 	// So count = 31 , really means get 30 frames
 	// -1 = Get ALL in Redis List
-	const count = 11;
+	const count = -1;
 	ws.send( JSON.stringify({
 		"type": "redis_get_lrange" ,
 		"starting_position": 0 ,
