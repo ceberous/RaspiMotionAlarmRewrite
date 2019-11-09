@@ -361,14 +361,14 @@ class TenvisVideo():
 			# If Movement Is Greater than frameThreshold , create motion record
 			if motionCounter >= LOADED_CONFIG[ 'MIN_MOTION_FRAMES' ]:
 				wNow = datetime.now( eastern_tz )
-				broadcast_log( "Motion Counter === " + str( motionCounter ) + " >= " + str( LOADED_CONFIG[ 'MIN_MOTION_FRAMES' ] ) + " Minimum Motion Frames" )
+				broadcast_log( "Motion Counter === ( " + str( motionCounter ) + " >= " + str( LOADED_CONFIG[ 'MIN_MOTION_FRAMES' ] ) + " ) Minimum Motion Frames" )
 				#print "setting new motion record"
 
 				# Check if this is "fresh" in a series of new motion records
 				if len( self.EVENT_POOL ) > 1:
 					wElapsedTime_x = int( ( self.EVENT_POOL[ -1 ] - self.EVENT_POOL[ -2 ] ).total_seconds() )
 					if wElapsedTime_x > ( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] * 2 ):
-						broadcast_log( "Not Fresh , Elapsed Time Between Last 2 Events === " + str( wElapsedTime_x ) + " > " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) + " Max Time Acceptable - Stage 2" )
+						broadcast_log( "Not Fresh , Elapsed Time Between Last 2 Events === ( " + str( wElapsedTime_x ) + " > " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) + " ) Max Time Acceptable - Stage 2" )
 						self.EVENT_POOL = []
 						self.total_motion = 0
 						# continue ????
@@ -383,7 +383,7 @@ class TenvisVideo():
 
 			# Once Total Motion Events Reach frameThreshold , create alert if timing conditions are met
 			if self.total_motion >= LOADED_CONFIG[ 'MOTION_EVENTS_ACCEPTABLE' ]:
-				broadcast_log( "Total Motion === " + str( self.total_motion ) + " >= " + str( LOADED_CONFIG[ 'MOTION_EVENTS_ACCEPTABLE' ] ) + " Motion Events Acceptable" )
+				broadcast_log( "Total Motion === ( " + str( self.total_motion ) + " >= " + str( LOADED_CONFIG[ 'MOTION_EVENTS_ACCEPTABLE' ] ) + " ) Motion Events Acceptable" )
 				self.total_motion = 0
 				cv2.imwrite( frameThreshLiveImagePath , frameThreshold )
 				cv2.imwrite( frameDeltaLiveImagePath , frameDelta )
@@ -399,7 +399,7 @@ class TenvisVideo():
 				# Condition 1.) Check Elapsed Time Between Last 2 Motion Events
 				wElapsedTime_1 = int( ( self.EVENT_POOL[ -1 ] - self.EVENT_POOL[ 0 ] ).total_seconds() )
 				if wElapsedTime_1 <= LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE' ]:
-					broadcast_log( "( Stage-1-Check ) === PASSED === Elapsed Time Between Previous 2 Events === " + str( wElapsedTime_1 ) + " <= " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE' ] ) + " Max Time Acceptable" )
+					broadcast_log( "( Stage-1-Check ) === PASSED === Elapsed Time Between Previous 2 Events === ( " + str( wElapsedTime_1 ) + " <= " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE' ] ) + " ) Max Time Acceptable" )
 					wNeedToAlert = True
 
 				# Condition 2.) Check if there are multiple events in a greater window
@@ -407,10 +407,10 @@ class TenvisVideo():
 					broadcast_log( "( Stage-1-Check ) === FAILED === Elapsed Time Between Previous 2 Events === " + str( wElapsedTime_1 ) + " > " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE' ] ) + " Max Time Acceptable" )
 					wElapsedTime_2 = int( ( self.EVENT_POOL[ -1 ] - self.EVENT_POOL[ -3 ] ).total_seconds() )
 					if wElapsedTime_2 <= LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ]:
-						broadcast_log( "( Stage-2-Check ) === PASSED === Elapsed Time Between the First and Last Event in the Pool === " + str( wElapsedTime_2 ) + " <= " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) + " Max Time Acceptable - Stage 2" )
+						broadcast_log( "( Stage-2-Check ) === PASSED === Elapsed Time Between the First and Last Event in the Pool === ( " + str( wElapsedTime_2 ) + " <= " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) + " ) Max Time Acceptable - Stage 2" )
 						wNeedToAlert = True
 					else:
-						broadcast_log( "( Stage-2-Check ) === FAILED === Elapsed Time Between the First and Last Event in the Pool === " + str( wElapsedTime_2 ) + " > " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) + " Max Time Acceptable - Stage 2" )
+						broadcast_log( "( Stage-2-Check ) === FAILED === Elapsed Time Between the First and Last Event in the Pool === ( " + str( wElapsedTime_2 ) + " > " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) + " ) Max Time Acceptable - Stage 2" )
 
 				if wNeedToAlert == True:
 					#print "ALERT !!!!"
