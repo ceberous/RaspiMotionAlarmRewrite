@@ -179,12 +179,10 @@ def twilio_message( number , message ):
 			body=message ,
 			from_=Personal[ 'twilio' ][ 'fromSMSNumber' ] ,
 		)
-		print( "sent sms" )
 		express_publish( { "channel": "log" , "message": "Sent SMS to: " + str( number ) } )
 
 	except Exception as e:
 		print ( e )
-		print ( "failed to send sms" )
 		express_publish( { "channel": "errors" , "message": "failed to send sms" } )
 
 def twilio_call( number ):
@@ -303,7 +301,7 @@ class TenvisVideo():
 
 		motionCounter = 0
 
-		self.simulate_motion()
+		#self.simulate_motion()
 
 		while( self.w_Capture.isOpened() ):
 
@@ -330,7 +328,7 @@ class TenvisVideo():
 				else:
 					broadcast_log( "done sleeping" )
 					self.last_email_time = None
-					self.simulate_motion()
+					#self.simulate_motion()
 				continue
 
 			gray = cv2.cvtColor( frame , cv2.COLOR_BGR2GRAY )
