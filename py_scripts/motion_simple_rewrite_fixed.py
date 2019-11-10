@@ -173,8 +173,6 @@ def redis_on_message( message ):
 
 def twilio_message( number , message ):
 	try:
-		if inside_message_time_window() == False:
-			return;
 		message = TwilioClient.messages.create( number ,
 			body=message ,
 			from_=Personal[ 'twilio' ][ 'fromSMSNumber' ] ,
@@ -202,7 +200,10 @@ def broadcast_log( message ):
 	express_publish( { "channel": "events" , "message": message } )
 
 def broadcast_record( message ):
-	twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
+	if inside_message_time_window() == True:
+		twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
+	else:
+		twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message )
 	express_publish( { "channel": "records" , "message": message } )
 
 def broadcast_extra_record( message ):
