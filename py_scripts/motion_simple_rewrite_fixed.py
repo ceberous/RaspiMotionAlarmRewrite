@@ -136,7 +136,7 @@ def update_loaded_config( config ):
 		if 'y' in config[ 'clipping' ]:
 			if '1' in config[ 'clipping' ][ 'y' ]:
 				LOADED_CONFIG[ 'clipping' ][ 'y' ][ '1' ] = config[ 'clipping' ][ 'y' ][ '1' ]
-				express_publish( { "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] == " + str( config[ 'clipping' ][ 'y' ][ '1' ] ) } )
+				express_publish( { "channel": "log" , "message": "LOADED_CONFIG[ 'clipping' ][ 'y' ][ '1' ] == " + str( config[ 'clipping' ][ 'y' ][ '1' ] ) } )
 
 			if '2' in config[ 'clipping' ][ 'y' ]:
 				LOADED_CONFIG[ 'clipping' ][ 'y' ][ '2' ] = config[ 'clipping' ][ 'y' ][ '2' ]

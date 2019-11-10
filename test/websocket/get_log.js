@@ -70,7 +70,7 @@ ws.on( "message" , ( data )=> {
 			}
 			catch ( error ) { console.log( error ); }
 		}
-		for ( let i = 0; i < decrypted_messages.length; ++i ) {
+		for ( let i = ( decrypted_messages.length - 1 ); i > 0; --i ) {
 			console.log( decrypted_messages[ i ].message );
 		}
 	}
