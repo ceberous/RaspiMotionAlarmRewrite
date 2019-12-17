@@ -58,10 +58,10 @@ function redis_publish( key , message_object ) {
 }
 
 function ON_CONNECTION( socket , req ) {
-	// EventEmitter.on( "broadcast" , ( options )=> {
-	// 	console.log( options );
-	// 	socket.send( JSON.stringify( { message: "new_broadcast" , data: options } ) );
-	// });
+	EventEmitter.on( "broadcast" , ( options )=> {
+		console.log( options );
+		socket.send( JSON.stringify( { message: "new_broadcast" , data: options } ) );
+	});
 	socket.on( "message" , async ( message )=> {
 		try { message = JSON.parse( message ); }
 		catch( e ) { console.log( e ); return; }
