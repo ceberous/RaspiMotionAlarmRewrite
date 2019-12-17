@@ -57,7 +57,7 @@ def inside_message_time_window():
 	# window_hours = [ 22 , 23 , 24 , 0 , 1 , 2 ]
 	result = False
 	now = datetime.now( eastern_tz )
-	if now.hour > 22 or now.hour < 3:
+	if now.hour > 21 or now.hour < 3:
 		result = True
 	express_publish( { "channel": "log" , "message": "Inside Alert Time Window === " + str( result ) } )
 	return result
@@ -203,7 +203,8 @@ def broadcast_record( message ):
 	if inside_message_time_window() == True:
 		twilio_message( Personal[ 'twilio' ][ 'toSMSNumber' ] , message )
 	else:
-		twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message )
+		if inside_extra_alert_time_window() == True:
+			twilio_message( Personal[ 'twilio' ][ 'toSMSExtraNumber' ] , message )
 	express_publish( { "channel": "records" , "message": message } )
 
 def broadcast_extra_record( message ):
@@ -360,14 +361,14 @@ class TenvisVideo():
 			# If Movement Is Greater than frameThreshold , create motion record
 			if motionCounter >= LOADED_CONFIG[ 'MIN_MOTION_FRAMES' ]:
 				wNow = datetime.now( eastern_tz )
-				broadcast_log( "Motion Counter === ( " + str( motionCounter ) + " >= " + str( LOADED_CONFIG[ 'MIN_MOTION_FRAMES' ] ) + " ) Minimum Motion Frames" )
+				broadcast_log( "Motion Counter === ( " + str( motionCounter ) + " >= " + str( LOADED_CONFIG[ 'MIN_MOTION_FRAMES' ] ) + " ) === Minimum Motion Frames" )
 				#print "setting new motion record"
 
 				# Check if this is "fresh" in a series of new motion records
 				if len( self.EVENT_POOL ) > 1:
 					wElapsedTime_x = int( ( self.EVENT_POOL[ -1 ] - self.EVENT_POOL[ -2 ] ).total_seconds() )
 					if wElapsedTime_x > ( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] * 2 ):
-						broadcast_log( "Not Fresh , Elapsed Time Between Last 2 Events === ( " + str( wElapsedTime_x ) + " > " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) + " ) Max Time Acceptable - Stage 2" )
+						broadcast_log( "Not Fresh , Elapsed Time Between Last 2 Events === ( " + str( wElapsedTime_x ) + " > " + str( LOADED_CONFIG[ 'MAX_TIME_ACCEPTABLE_STAGE_2' ] ) + " ) === Max Time Acceptable - Stage 2" )
 						self.EVENT_POOL = []
 						self.total_motion = 0
 						# continue ????

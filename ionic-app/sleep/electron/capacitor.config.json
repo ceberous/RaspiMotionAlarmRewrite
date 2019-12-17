@@ -1,0 +1,8 @@
+{
+  "appId": "com.sleep.app",
+  "appName": "App",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www",
+  "cordova": {}
+}

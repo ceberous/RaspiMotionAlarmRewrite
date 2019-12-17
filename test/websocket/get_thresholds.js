@@ -38,21 +38,24 @@ function get_eastern_time_key_suffix() {
 }
 
 
-function get_frames() {
+function get_thresholds() {
 	const key = "sleep.images.thresholds." + get_eastern_time_key_suffix();
 	// Its Really An Array Based Counting Scheme
 	// So count = 31 , really means get 30 frames
 	// -1 = Get ALL in Redis List
 	const count = -1;
 	ws.send( JSON.stringify({
-		"type": "get_thresholds" ,
-		"count": count ,
-		"list_key": key
+		"type": "redis_get_lrange" ,
+		"starting_position": 0 ,
+		"ending_position": count ,
+		"list_key": key ,
+		"channel": "thresholds"
 	}));
 }
 
 const ws = new WebSocket( "ws://127.0.0.1:10080" );
-ws.on( "open" , get_frames );
+ws.on( "open" , get_thresholds );
+
 
 ws.on( "message" , ( data )=> {
 	if ( !data ) { return; }
@@ -72,8 +75,10 @@ ws.on( "message" , ( data )=> {
 		catch ( error ) { console.log( error ); }
 	}
 	for ( let i = 0; i < decrypted_messages.length; ++i ) {
-		console.log( `${ decrypted_messages[ i ].timestamp_string } === ${ decrypted_messages[ i ].list_key } === Image String Length === ${ decrypted_messages[ i ].image_b64.length.toString() }` );
-		const file_safe_time_string = decrypted_messages[ i ].timestamp_string.replace( /\./g , "-" );
+		if ( !decrypted_messages[ i ] ) { return; }
+		if ( !decrypted_messages[ i ].image_b64 ) { return; }
+		console.log( `${ decrypted_messages[ i ].time_stamp_string } === ${ decrypted_messages[ i ].list_key } === Image String Length === ${ decrypted_messages[ i ].image_b64.length.toString() }` );
+		const file_safe_time_string = decrypted_messages[ i ].time_stamp_string.replace( /\./g , "-" );
 		const threshold_path = path.join( ThresholdPathBase , `threshold-${ String( i ).padStart( 2 , "0" ) } === ${ file_safe_time_string }.jpeg` );
 		fs.writeFileSync( threshold_path , decrypted_messages[ i ].image_b64 , "base64" );
 	}
