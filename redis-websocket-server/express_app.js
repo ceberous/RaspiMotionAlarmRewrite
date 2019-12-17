@@ -4,6 +4,7 @@ const fs = require( "fs" );
 const path = require( "path" );
 const bodyParser = require( "body-parser" );
 const helmet = require( "helmet" );
+// https://github.com/helmetjs/helmet/issues/57
 //const cors = require( "cors" );
 const PORT = require( "./main.js" ).port;
 const Personal = require( "./main.js" ).personal;
@@ -13,7 +14,7 @@ app.use( basicAuth({
 	users: Personal.websocket_server.http_auth.users ,
 	challenge: true
 }));
-app.use( helmet() );
+//app.use( helmet() );
 //app.use( express.static( path.join( __dirname , "client" ) ) );
 app.use( express.static( Personal.websocket_server.ionic_build_static_path ) );
 //app.use( cors( { origin: "http://localhost:" + PORT.toString() } ) );
