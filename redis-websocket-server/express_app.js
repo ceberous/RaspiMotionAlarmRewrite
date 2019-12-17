@@ -3,7 +3,7 @@ const basicAuth = require( "express-basic-auth" );
 const fs = require( "fs" );
 const path = require( "path" );
 const bodyParser = require( "body-parser" );
-const cors = require( "cors" );
+//const cors = require( "cors" );
 const PORT = 6262;
 
 let app = express();
@@ -14,7 +14,8 @@ app.use( basicAuth({
 	challenge: true
 }));
 //app.use( express.static( path.join( __dirname , "client" ) ) );
-app.use( cors( { origin: "http://localhost:" + PORT.toString() } ) );
+app.use( express.static( "/home/morphs/TRANSFER/www/www" ) );
+//app.use( cors( { origin: "http://localhost:" + PORT.toString() } ) );
 app.use( bodyParser.json() );
 app.use( bodyParser.urlencoded( { extended: true } ) );
 
