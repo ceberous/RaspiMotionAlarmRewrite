@@ -1,5 +1,7 @@
 {
   "name": "sleep",
-  "integrations": {},
+  "integrations": {
+    "capacitor": {}
+  },
   "type": "angular"
 }

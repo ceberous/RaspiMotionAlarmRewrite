@@ -3,7 +3,8 @@ const path = require( "path" );
 const ip = require( "ip" );
 const http = require( "http" );
 const WebSocket = require( "ws" );
-const RedisUtils = require( "redis-manager-utils" );
+//const RedisUtils = require( "redis-manager-utils" );
+const EventEmitter = require( "events" );
 
 const PythonScriptSubscriber = require( "./python_script_subscriber.js" );
 
@@ -16,14 +17,24 @@ process.on( "uncaughtException" , function( err ) {
 	console.trace();
 });
 
-( async ()=> {
+// TODO:
+// https://github.com/dkrutsko/express-bouncer
+// https://github.com/AdamPflug/express-brute
+// https://github.com/helmetjs/helmet
+// Encyrpt HTTP Auth Username and Password with Libsodium
 
-	const PORT = 6262;
-	const LOCAL_IP = ip.address();
+( async ()=> {
 
 	const PersonalFilePath = path.join( process.env.HOME , ".config" , "personal" , "raspi_motion_alarm_rewrite.json" );
 	const Personal = require( PersonalFilePath );
 	module.exports.personal = Personal;
+
+	const PORT = Personal.websocket_server.port || 6262;
+	module.exports.port = PORT;
+	const LOCAL_IP = ip.address();
+
+	const event_emitter = new EventEmitter();
+	module.exports.event_emitter = event_emitter;
 
 	// const python_script_subscriber = await PythonScriptSubscriber.init();
 	// python_script_subscriber.redis.subscribe( "python-script-controller" );

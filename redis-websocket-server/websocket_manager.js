@@ -2,6 +2,7 @@ const path = require( "path" );
 const PersonalFilePath = path.join( process.env.HOME , ".config" , "personal" , "raspi_motion_alarm_rewrite.json" );
 const Personal = require( PersonalFilePath );
 const RedisUtils = require( "redis-manager-utils" );
+const EventEmitter = require( "./main.js" ).event_emitter;
 let redis_manager;
 ( async ()=> {
 	redis_manager = new RedisUtils( Personal.redis.database_number , Personal.redis.host , Personal.redis.port );
@@ -57,6 +58,10 @@ function redis_publish( key , message_object ) {
 }
 
 function ON_CONNECTION( socket , req ) {
+	EventEmitter.on( "broadcast" , ( options )=> {
+		console.log( options );
+		socket.send( JSON.stringify( { message: "new_broadcast" , data: options } ) );
+	});
 	socket.on( "message" , async ( message )=> {
 		try { message = JSON.parse( message ); }
 		catch( e ) { console.log( e ); return; }
@@ -82,7 +87,6 @@ function ON_CONNECTION( socket , req ) {
 						await sleep( 1000 );
 						const result = await redis_get_lrange( `sleep.images.frames.${ get_eastern_time_key_suffix() }` , 0 , 0 );
 						socket.send( JSON.stringify( { message: "new_frame" , data: result } ) );
-
 					}
 					else if ( message.command === "call" ) {
 						if ( !messsage.number ) { resolve(); return; }

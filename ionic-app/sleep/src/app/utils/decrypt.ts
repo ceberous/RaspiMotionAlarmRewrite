@@ -6,8 +6,10 @@ import tweetnacl from 'tweetnacl'
 import tweetnacl_util from 'tweetnacl-util'
 import tweetnacl_sealedbox_js from 'tweetnacl-sealedbox-js'
 
-// Possible ???
+// TODO:
 // https://www.npmjs.com/package/ssh2
+// https://github.com/Stocard/node-ssh-forward
+// Bake ssh port forward into electron, android, and ios apps
 
 export class Decryptor {
     constructor() {}

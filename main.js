@@ -58,7 +58,7 @@ const LIVE_HTML_PAGE = `<html><img alt="" id="liveimage" src=""/> <script type="
 	const express_app = require( "./server/express/app.js" );
 	const server = require( "http" ).createServer( express_app );
 	const WebSocketManager = require( "./server/WebSocketManager.js" );
-	const websocket_server = new WebSocket.Server( { server  } );
+	const websocket_server = new WebSocket.Server( { server } );
 	server.listen( PORT , ()=> {
 		console.log( "\thttp://localhost:" + PORT.toString() );
 	});

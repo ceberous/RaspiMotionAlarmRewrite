@@ -1,6 +1,6 @@
 {
-  "appId": "com.sleep.app",
-  "appName": "App",
+  "appId": "io.ionic.starter",
+  "appName": "sleep",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "www",

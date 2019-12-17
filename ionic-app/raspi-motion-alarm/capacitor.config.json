@@ -1,7 +1,0 @@
-{
-  "appId": "raspi.motion.alarm",
-  "appName": "raspi-motion-alarm",
-  "bundledWebRuntime": false,
-  "npmClient": "npm",
-  "webDir": "www"
-}

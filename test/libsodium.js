@@ -77,10 +77,10 @@ process.on( "uncaughtException" , function( err ) {
 		});
 	}
 
-	//console.log( generateKeys() );
+	console.log( generateKeys() );
 
-	const encrypted_file_chunks = encrypt_file();
-	console.log( encrypted_file_chunks[ 0 ] );
+	// const encrypted_file_chunks = encrypt_file();
+	// console.log( encrypted_file_chunks[ 0 ] );
 
 	// console.log( file_test.length.toString() );
 	// const file_encrypted = encrypt( Personal.libsodium.public_key , file_test );
