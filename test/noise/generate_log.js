@@ -69,4 +69,5 @@ function add_to_redis( options ) {
 			message: `TEST-NOISE   === ${ Math.floor( new Date() / 1000 ) }`
 		});
 	}
+	process.exit( 1 );
 })();

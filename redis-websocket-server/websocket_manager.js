@@ -44,11 +44,15 @@ function pluralize( noun , suffix = "s" ) {
 function redis_get_lrange( key , start , end ) {
 	return new Promise( async ( resolve , reject )=> {
 		try {
-			const current_length = await redis_manager.listGetLength( key );
-			redis_manager.redis.lrange( key , start , current_length , ( error , results )=> {
-				resolve( { list_position: current_length , data: results } );
-				return;
+			console.log( "getting list current_length of: " + key );
+			redis_manager.redis.llen( key , ( error , current_length )=> {
+				console.log( current_length );
+				redis_manager.redis.lrange( key , start , current_length , ( error , results )=> {
+					resolve( { list_position: current_length , data: results } );
+					return;
+				});
 			});
+
 		}
 		catch( error ) { console.log( error ); resolve( error ); return; }
 	});
