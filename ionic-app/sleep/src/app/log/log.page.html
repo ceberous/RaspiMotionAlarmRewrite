@@ -1,12 +1,44 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-title>Log</ion-title>
+	<ion-buttons slot="start">
+	  <ion-menu-button></ion-menu-button>
+	</ion-buttons>
+	<ion-title>Log</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-
+	<ion-grid>
+		<ion-row class="ion-align-items-center">
+			<ion-col>
+				<ion-list>
+<!-- 				<ion-item-sliding *ngFor="let log_item of downloaded"
+				#slidingBooking
+				> -->
+					<ion-item-sliding *ngFor="let log_item of downloaded" >
+						<ion-item>
+							<p>{{ log_item.message }}</p>
+						</ion-item>
+					</ion-item-sliding>
+				</ion-list>
+			</ion-col>
+		</ion-row>
+		<ion-row class="ion-align-items-center">
+			<ion-col>
+			  <div>
+				1 of 3
+			  </div>
+			</ion-col>
+			<ion-col>
+			  <div>
+				2 of 3
+			  </div>
+			</ion-col>
+			<ion-col>
+			  <div>
+				3 of 3
+			  </div>
+			</ion-col>
+		</ion-row>
+	</ion-grid>
 </ion-content>

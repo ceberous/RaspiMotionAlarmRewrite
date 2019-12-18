@@ -71,6 +71,21 @@ function GET_EASTERN_TIME_KEY_SUFFIX() {
 }
 module.exports.get_eastern_time_key_suffix = GET_EASTERN_TIME_KEY_SUFFIX;
 
+function GET_TIME_KEY_SUFFIX( timezone="America/New_York" ) {
+	const now = new Date( new Date().toLocaleString( "en-US" , { timeZone: tiimezone } ) );
+	const now_hours = now.getHours();
+	const now_minutes = now.getMinutes();
+	const dd = String( now.getDate() ).padStart( 2 , '0' );
+	const mm = String( now.getMonth() + 1 ).padStart( 2 , '0' );
+	const yyyy = now.getFullYear();
+	const hours = String( now.getHours() ).padStart( 2 , '0' );
+	const minutes = String( now.getMinutes() ).padStart( 2 , '0' );
+	const seconds = String( now.getSeconds() ).padStart( 2 , '0' );
+	const key_suffix = `${ yyyy }.${ mm }.${ dd }`;
+	return key_suffix;
+}
+module.exports.get_time_key_suffix = GET_EASTERN_TIME_KEY_SUFFIX;
+
 function SET_ARGS( wArg1 , wArg2 , wArg3 , wArg4 ) {
 	arg1 = wArg1 || arg1;
 	arg2 = wArg2 || arg2;

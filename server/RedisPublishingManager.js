@@ -117,7 +117,7 @@ function publish_new_item( options ) {
 			//console.log( Custom_JSON_Serialized_Item_Object );
 			const encrypted = encrypt( Custom_JSON_Serialized_Item_Object );
 			//console.log( encrypted );
-			await redis_manager.redis.publish( `new_${ options.channel }` , encrypted );
+			await redis_manager.redis.publish( `new_info` , encrypted );
 			await redis_manager.listLPUSH( list_key , encrypted );
 			resolve();
 			return;

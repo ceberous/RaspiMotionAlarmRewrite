@@ -11,6 +11,9 @@ import tweetnacl_sealedbox_js from 'tweetnacl-sealedbox-js'
 // https://github.com/Stocard/node-ssh-forward
 // Bake ssh port forward into electron, android, and ios apps
 
+// TODO:
+// https://stackoverflow.com/questions/43468722/importing-functions-in-typescript#43469239
+
 export class Decryptor {
     constructor() {}
     public decryptBase64( encrypted_base64_string ): string {

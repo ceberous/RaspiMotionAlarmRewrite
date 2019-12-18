@@ -4,6 +4,7 @@ import { WebsocketService } from "../services/websocket.service";
 import { EasternTimeKeySuffix } from "../utils/get_time_key_suffix";
 import { Decryptor } from "../utils/decrypt";
 
+// Rename to get_previous_log()
 function get_log_command() {
 	const key = "sleep.log." + new EasternTimeKeySuffix().now();
 	// Its Really An Array Based Counting Scheme

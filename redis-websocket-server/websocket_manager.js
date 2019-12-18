@@ -7,6 +7,15 @@ let redis_manager;
 ( async ()=> {
 	redis_manager = new RedisUtils( Personal.redis.database_number , Personal.redis.host , Personal.redis.port );
 	await redis_manager.init();
+	redis_manager.redis.on( "message" , function ( channel , message ) {
+		//console.log( "sub channel " + channel + ": " + message );
+		console.log( "new message from: " + channel );
+		console.log( message );
+		if ( channel === "new_info" ) {
+			EventEmitter.emit( "broadcast" , message );
+		}
+	});
+	redis_manager.redis.subscribe( "new_info" );
 })();
 
 function sleep( ms ) { return new Promise( resolve => setTimeout( resolve , ms ) ); }
@@ -32,12 +41,12 @@ function pluralize( noun , suffix = "s" ) {
 	return noun + "s";
 }
 
-
 function redis_get_lrange( key , start , end ) {
 	return new Promise( function( resolve , reject ) {
 		try {
-			redis_manager.redis.lrange( key , start , end , ( error , results )=> {
-				resolve( results );
+			const current_length = await redis_manager.listGetLength( key );
+			redis_manager.redis.lrange( key , start , current_length , ( error , results )=> {
+				resolve( { list_position: current_length , data: results } );
 				return;
 			});
 		}
@@ -113,8 +122,7 @@ function ON_CONNECTION( socket , req ) {
 					const ending_position = message.ending_position || -1;
 					const result = await redis_get_lrange( message.list_key , starting_position , ending_position );
 					console.log( result );
-					console.log( "we are here" );
-					socket.send( JSON.stringify( { message: `new_${ pluralize( message.channel ) }` , data: result } ) );
+					socket.send( JSON.stringify( { message: `new_${ pluralize( message.channel ) }` , list_position: result.list_position , data: result.data } ) );
 					resolve( result );
 					return;
 

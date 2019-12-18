@@ -20,7 +20,6 @@ process.on( "uncaughtException" , function( err ) {
 // TODO:
 // https://github.com/dkrutsko/express-bouncer
 // https://github.com/AdamPflug/express-brute
-// https://github.com/helmetjs/helmet
 // Encyrpt HTTP Auth Username and Password with Libsodium
 
 ( async ()=> {
