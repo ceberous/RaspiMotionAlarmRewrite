@@ -37,41 +37,61 @@ export class LogService {
 	constructor( private ws: WebsocketService ) {
 		this.ws.subject.subscribe( ( message: any )=> {
 			console.log( message.message );
-			for ( let i = 0; i < message.data.length; ++i ) {
-				let decrypted = DecryptBase64String( message.data[ i ] );
-				console.log( decrypted );
-				switch( message.message ) {
-					case "new_info":
-						//switch( decrypted.channel ) {}
+			switch( message.message ) {
+				case "new_info":
+					let decrypted = DecryptBase64String( message.data );
+					this.logs.next( decrypted );
+					break;
+				case "new_logs":
+					for ( let i = 0; i < message.data.length; ++i ) {
+						let decrypted = DecryptBase64String( message.data[ i ] );
 						this.logs.next( decrypted );
-						break;
-					case "new_logs":
-						this.logs.next( decrypted );
-						break;
-					case "new_frames":
+					}
+					break;
+				case "new_frames":
+					for ( let i = 0; i < message.data.length; ++i ) {
+						let decrypted = DecryptBase64String( message.data[ i ] );
 						this.frames.next( decrypted );
-						break;
-					case "new_deltas":
+					}
+					break;
+				case "new_deltas":
+					for ( let i = 0; i < message.data.length; ++i ) {
+						let decrypted = DecryptBase64String( message.data[ i ] );
 						this.deltas.next( decrypted );
-						break;
-					case "new_thresholds":
+					}
+					break;
+				case "new_thresholds":
+					for ( let i = 0; i < message.data.length; ++i ) {
+						let decrypted = DecryptBase64String( message.data[ i ] );
 						this.thresholds.next( decrypted );
-						break;
-					case "new_events":
+					}
+					break;
+				case "new_events":
+					for ( let i = 0; i < message.data.length; ++i ) {
+						let decrypted = DecryptBase64String( message.data[ i ] );
 						this.events.next( decrypted );
-						break;
-					case "new_event_pools":
+					}
+					break;
+				case "new_event_pools":
+					for ( let i = 0; i < message.data.length; ++i ) {
+						let decrypted = DecryptBase64String( message.data[ i ] );
 						this.event_pools.next( decrypted );
-						break;
-					case "new_records":
+					}
+					break;
+				case "new_records":
+					for ( let i = 0; i < message.data.length; ++i ) {
+						let decrypted = DecryptBase64String( message.data[ i ] );
 						this.records.next( decrypted );
-						break;
-					case "new_errors":
+					}
+					break;
+				case "new_errors":
+					for ( let i = 0; i < message.data.length; ++i ) {
+						let decrypted = DecryptBase64String( message.data[ i ] );
 						this.errors.next( decrypted );
-						break;
-					default:
-						break;
-				}
+					}
+					break;
+				default:
+					break;
 			}
 		});
 		let log_command = get_todays_previous_log();

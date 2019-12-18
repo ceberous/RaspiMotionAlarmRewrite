@@ -6,6 +6,8 @@ const RedisUtils = require( "redis-manager-utils" );
 const PersonalFilePath = path.join( process.env.HOME , ".config" , "personal" , "raspi_motion_alarm_rewrite.json" );
 const Personal = require( PersonalFilePath );
 
+function sleep( ms ) { return new Promise( resolve => setTimeout( resolve , ms ) ); }
+
 const MainFilePath = process.mainModule.paths[ 0 ].split( "node_modules" )[ 0 ].slice( 0 , -1 );
 const FramePath = path.join( MainFilePath , "client" , "frame.jpeg" );
 const FrameDeltaPath = path.join( MainFilePath , "client" , "frameDelta.jpeg" );
@@ -69,6 +71,7 @@ function add_to_redis( options ) {
 			channel: "noise" ,
 			message: `TEST-NOISE   === ${ Math.floor( new Date() / 1000 ) }`
 		});
+		await sleep( 500 );
 	}
 	process.exit( 1 );
 })();

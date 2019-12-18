@@ -31,16 +31,14 @@ ws.on( "message" , ( data )=> {
 	console.log( data.message );
 	console.log( data.data );
 	data = data.data;
-	let decrypted_messages = [];
-	for ( let i = 0; i < data.length; ++i ) {
-		try {
-			let decrypted = decrypt( Personal.libsodium.private_key , data[ i ] );
-			decrypted = JSON.parse( decrypted );
-			decrypted_messages.push( decrypted );
+	if ( typeof data === "object" ) {
+		for ( let i = 0; i < data.length; ++i ) {
+			let decrypted = DecryptBase64String( data[ i ] );
+			console.log( decrypted );
 		}
-		catch ( error ) { console.log( error ); }
 	}
-	for ( let i = ( decrypted_messages.length - 1 ); i > 0; --i ) {
-		console.log( decrypted_messages[ i ].message );
+	else {
+		let decrypted = decrypt( Personal.libsodium.private_key , data );
+		console.log( decrypted );
 	}
 });
