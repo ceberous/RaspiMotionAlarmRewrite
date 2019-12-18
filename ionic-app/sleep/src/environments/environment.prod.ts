@@ -1,5 +1,6 @@
 export const environment = {
 	production: true ,
+	timezone: "America/New_York" ,
 	websocket: {
 		host: "localhost" ,
 		port: 6262

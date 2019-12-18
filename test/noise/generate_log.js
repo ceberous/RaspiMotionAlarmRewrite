@@ -66,6 +66,7 @@ function add_to_redis( options ) {
 		await add_to_redis({
 			list_key_prefix: "sleep.log" ,
 			platform: "noise" ,
+			channel: "noise" ,
 			message: `TEST-NOISE   === ${ Math.floor( new Date() / 1000 ) }`
 		});
 	}

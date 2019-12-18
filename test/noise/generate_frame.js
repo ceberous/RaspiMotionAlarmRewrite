@@ -67,6 +67,7 @@ const placeholder_image_b64_string = "iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0eN
 	await add_to_redis({
 		list_key_prefix: "sleep.images.frames" ,
 		platform: "noise" ,
+		channel: "noise" ,
 		image_b64: placeholder_image_b64_string ,
 		message: `TEST-NOISE   === New Frame Adddd @ ${ Math.floor( new Date() / 1000 ) }`
 	});
