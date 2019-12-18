@@ -46,6 +46,7 @@ function redis_get_lrange( key , start , end ) {
 		try {
 			console.log( "getting list current_length of: " + key );
 			redis_manager.redis.llen( key , ( error , current_length )=> {
+				console.log( error );
 				console.log( current_length );
 				redis_manager.redis.lrange( key , start , current_length , ( error , results )=> {
 					resolve( { list_position: current_length , data: results } );
