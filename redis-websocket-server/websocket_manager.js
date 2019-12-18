@@ -4,10 +4,13 @@ const Personal = require( PersonalFilePath );
 const RedisUtils = require( "redis-manager-utils" );
 const EventEmitter = require( "./main.js" ).event_emitter;
 let redis_manager;
+let redis_subscriber;
 ( async ()=> {
 	redis_manager = new RedisUtils( Personal.redis.database_number , Personal.redis.host , Personal.redis.port );
 	await redis_manager.init();
-	redis_manager.redis.on( "message" , ( channel , message )=> {
+	redis_subscriber = new RedisUtils( Personal.redis.database_number , Personal.redis.host , Personal.redis.port );
+	await redis_subscriber.init();
+	redis_subscriber.redis.on( "message" , ( channel , message )=> {
 		//console.log( "sub channel " + channel + ": " + message );
 		console.log( "new message from: " + channel );
 		console.log( message );
@@ -15,7 +18,7 @@ let redis_manager;
 			EventEmitter.emit( "new_info" , message );
 		}
 	});
-	redis_manager.redis.subscribe( "new_info" );
+	redis_subscriber.redis.subscribe( "new_info" );
 })();
 
 function sleep( ms ) { return new Promise( resolve => setTimeout( resolve , ms ) ); }
