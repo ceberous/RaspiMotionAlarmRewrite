@@ -16,8 +16,8 @@ export class LogPage implements OnInit {
   constructor( private log: LogService ) {
     log.downloaded.subscribe( message =>{
       message = JSON.parse( message );
-        console.log( message );
-        this.downloaded.push( message );
+      console.log( message );
+      this.downloaded.push( message );
     });
   }
 
