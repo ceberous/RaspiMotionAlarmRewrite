@@ -42,7 +42,7 @@ function pluralize( noun , suffix = "s" ) {
 }
 
 function redis_get_lrange( key , start , end ) {
-	return new Promise( function( resolve , reject ) {
+	return new Promise( async function( resolve , reject ) {
 		try {
 			const current_length = await redis_manager.listGetLength( key );
 			redis_manager.redis.lrange( key , start , current_length , ( error , results )=> {
