@@ -53,7 +53,7 @@ function add_to_redis( options ) {
 			const encrypted = encrypt( Custom_JSON_Serialized_Item_Object );
 			//console.log( encrypted );
 			await redis_manager.redis.publish( `new_info` , encrypted );
-			await redis_manager.listLPUSH( list_key , encrypted );
+			await redis_manager.listRPUSH( list_key , encrypted );
 			resolve();
 			return;
 		}

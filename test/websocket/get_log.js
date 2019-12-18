@@ -70,7 +70,11 @@ ws.on( "message" , ( data )=> {
 			}
 			catch ( error ) { console.log( error ); }
 		}
-		for ( let i = ( decrypted_messages.length - 1 ); i > 0; --i ) {
+		// POSSIBLE BREAK
+		// for ( let i = ( decrypted_messages.length - 1 ); i > 0; --i ) {
+		// 	console.log( decrypted_messages[ i ].message );
+		// }
+		for ( let i = decrypted_messages.length; ++i ) {
 			console.log( decrypted_messages[ i ].message );
 		}
 	}
