@@ -7,12 +7,12 @@ let redis_manager;
 ( async ()=> {
 	redis_manager = new RedisUtils( Personal.redis.database_number , Personal.redis.host , Personal.redis.port );
 	await redis_manager.init();
-	redis_manager.redis.on( "message" , function ( channel , message ) {
+	redis_manager.redis.on( "message" , ( channel , message )=> {
 		//console.log( "sub channel " + channel + ": " + message );
 		console.log( "new message from: " + channel );
 		console.log( message );
 		if ( channel === "new_info" ) {
-			EventEmitter.emit( "broadcast" , message );
+			EventEmitter.emit( "new_info" , message );
 		}
 	});
 	redis_manager.redis.subscribe( "new_info" );
@@ -42,7 +42,7 @@ function pluralize( noun , suffix = "s" ) {
 }
 
 function redis_get_lrange( key , start , end ) {
-	return new Promise( async function( resolve , reject ) {
+	return new Promise( async ( resolve , reject )=> {
 		try {
 			const current_length = await redis_manager.listGetLength( key );
 			redis_manager.redis.lrange( key , start , current_length , ( error , results )=> {
@@ -67,9 +67,9 @@ function redis_publish( key , message_object ) {
 }
 
 function ON_CONNECTION( socket , req ) {
-	EventEmitter.on( "broadcast" , ( options )=> {
-		console.log( options );
-		socket.send( JSON.stringify( { message: "new_broadcast" , data: options } ) );
+	EventEmitter.on( "new_info" , ( info )=> {
+		console.log( info );
+		socket.send( JSON.stringify( { message: "new_info" , data: info } ) );
 	});
 	socket.on( "message" , async ( message )=> {
 		try { message = JSON.parse( message ); }
@@ -79,7 +79,7 @@ function ON_CONNECTION( socket , req ) {
 			console.log( "inside pong()" );
 		}
 		else if ( message.type === "ionic-controller" ) {
-			return new Promise( async function( resolve , reject ) {
+			return new Promise( async ( resolve , reject )=> {
 				try {
 					if ( !message.command ) { resolve(); return; }
 					if ( message.command === "redis_get_lrange" ) {
@@ -114,14 +114,14 @@ function ON_CONNECTION( socket , req ) {
 			});
 		}
 		else if ( message.type === "redis_get_lrange" ) {
-			return new Promise( async function( resolve , reject ) {
+			return new Promise( async ( resolve , reject )=> {
 				try {
 					if ( !message.list_key ) { resolve(); return; }
 					if ( !message.channel ) { resolve(); return; }
 					const starting_position = message.starting_position || 0;
 					const ending_position = message.ending_position || -1;
 					const result = await redis_get_lrange( message.list_key , starting_position , ending_position );
-					console.log( result );
+					//console.log( result );
 					socket.send( JSON.stringify( { message: `new_${ pluralize( message.channel ) }` , list_position: result.list_position , data: result.data } ) );
 					resolve( result );
 					return;
