@@ -103,7 +103,7 @@ function load_custom_event_list() {
 				options.channel = "commands";
 				options.type = "command_error" ,
 				options.message = `Running: ${ options.command } command`;
-				opotions.list_key_prefix = "sleep.raspi.node.log";
+				options.list_key_prefix = "sleep.raspi.node.log";
 				node_publish( options );
 			}
 			catch( error ) {
@@ -111,7 +111,7 @@ function load_custom_event_list() {
 				options.channel = "errors";
 				options.type = "command_error" ,
 				options.message = `Could Not Run ${ options.command } command`;
-				opotions.list_key_prefix = "sleep.raspi.node.errors";
+				options.list_key_prefix = "sleep.raspi.node.errors";
 				node_publish( options );
 			}
 		});
