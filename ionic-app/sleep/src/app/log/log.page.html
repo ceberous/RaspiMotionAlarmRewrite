@@ -10,35 +10,30 @@
 <ion-content>
 	<ion-grid>
 		<ion-row class="ion-align-items-center">
-			<ion-col>
-				<ion-list>
-<!-- 				<ion-item-sliding *ngFor="let log_item of downloaded"
-				#slidingBooking
-				> -->
-					<ion-item-sliding *ngFor="let log_item of downloaded" >
-						<ion-item>
-							<p>{{ log_item.message }}</p>
-						</ion-item>
-					</ion-item-sliding>
-				</ion-list>
-			</ion-col>
-		</ion-row>
-		<ion-row class="ion-align-items-center">
-			<ion-col>
-			  <div>
-				1 of 3
-			  </div>
+			<ion-col #logcontainer>
+				<ion-card *ngFor="let log_item of downloaded" >
+						<!-- <p>{{ log_item.message }}</p> -->
+						<ion-card-header>
+							<ion-card-title>
+								{{ log_item.list_key }}
+							</ion-card-title>
+						</ion-card-header>
+						<ion-card-content>
+							{{ log_item.message }}
+						</ion-card-content>
+				</ion-card>
 			</ion-col>
 			<ion-col>
-			  <div>
-				2 of 3
-			  </div>
+
 			</ion-col>
-			<ion-col>
-			  <div>
-				3 of 3
-			  </div>
-			</ion-col>
+<!-- 			<ion-virtual-scroll [items]="downloaded" >
+				<ion-card *virtualItem="let item;">
+					<ion-card-header>
+						<ion-card-title>{{ item.list_key }}</ion-card-title>
+					</ion-card-header>
+					<ion-card-content>{{ item.message }}</ion-card-content>
+				</ion-card>
+			</ion-virtual-scroll> -->
 		</ion-row>
 	</ion-grid>
 </ion-content>
