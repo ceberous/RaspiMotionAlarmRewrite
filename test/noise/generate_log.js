@@ -25,6 +25,7 @@ function encrypt( message ) {
 	return encrypted;
 }
 
+
 function add_to_redis( options ) {
 	return new Promise( async ( resolve , reject )=> {
 		try {

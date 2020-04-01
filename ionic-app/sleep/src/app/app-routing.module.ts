@@ -18,6 +18,10 @@ const routes: Routes = [
   {
     path: 'log',
     loadChildren: () => import('./log/log.module').then( m => m.LogPageModule)
+  },
+  {
+    path: 'frame',
+    loadChildren: () => import('./frame/frame.module').then( m => m.FramePageModule)
   }
 ];
 

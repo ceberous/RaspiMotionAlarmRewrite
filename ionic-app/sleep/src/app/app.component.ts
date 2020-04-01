@@ -1,5 +1,12 @@
 import { Component } from '@angular/core';
 
+import { webSocket , WebSocketSubject } from 'rxjs/webSocket';
+import { environment } from '../environments/environment';
+// https://rxjs-dev.firebaseapp.com/api/webSocket/webSocket
+const WEBSOCKET_URL = `ws://${ environment.websocket.host }:${ environment.websocket.port }`;
+
+import { MessageService } from './services/message.service';
+
 import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
@@ -10,6 +17,9 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 	styleUrls: ['app.component.scss'] ,
 })
 export class AppComponent {
+	public websocket = webSocket({
+		url: WEBSOCKET_URL,
+	});
 	public appPages = [
 		{
 			title: 'Home',
@@ -42,4 +52,5 @@ export class AppComponent {
 			this.splashScreen.hide();
 		});
 	}
+
 }

@@ -75,7 +75,7 @@ def express_publish( options ):
 	options[ 'list_key_prefix' ] = "sleep.raspi.python." + options[ 'channel' ]
 	try:
 		print( options[ 'message' ] )
-		response = requests.post( 'http://localhost:6161/python-script' , data=options )
+		response = requests.post( 'http://localhost:80/python-script' , data=options )
 		#print( response.text )
 	except Exception as e:
 		print( e )
