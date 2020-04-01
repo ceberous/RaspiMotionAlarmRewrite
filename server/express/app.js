@@ -61,6 +61,11 @@ app.get( "/live" , function( req , res ) {
 	res.sendFile( HTML_Live_Path );
 });
 
+const ZERO_HTML_Live_Path = path.join( __dirname , "../../client/views/" , "zero.html" );
+app.get( "/zero" , function( req , res ) {
+	res.sendFile( ZERO_HTML_Live_Path );
+});
+
 const FramePATH = path.join( __dirname , "../../client" , "frame.jpeg" );
 app.get( "/live_image" , async function( req , res , next ) {
 	fs.readFile( FramePATH , function( err , data ) {
