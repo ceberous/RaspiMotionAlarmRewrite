@@ -119,12 +119,13 @@ function publish_new_item( options ) {
 				}
 			});
 			console.log( "publish_new_item() === "  + list_key );
-			//console.log( Custom_JSON_Serialized_Item_Object );
 			const encrypted = encrypt( Custom_JSON_Serialized_Item_Object );
-			//console.log( encrypted );
-			await redis_manager.redis.publish( `new_info` , encrypted );
-			// POSSIBLE BREAK
-			//await redis_manager.listLPUSH( list_key , encrypted );
+			const new_info_object = {
+				message: options.channel ,
+				data: encrypted
+			};
+			//await redis_manager.redis.publish( `new_info` , encrypted );
+			await redis_manager.redis.publish( "new_info" , JSON.stringify( new_info_object ) );
 			await redis_manager.listRPUSH( list_key , encrypted );
 			resolve();
 			return;
