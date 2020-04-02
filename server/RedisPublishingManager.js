@@ -2,6 +2,7 @@ const process = require( "process" );
 const path = require( "path" );
 const util= require( "util" );
 const fs = require( "fs" );
+const md5 = require( "md5" );
 const RedisUtils = require( "redis-manager-utils" );
 const PersonalFilePath = path.join( process.env.HOME , ".config" , "personal" , "raspi_motion_alarm_rewrite.json" );
 const Personal = require( PersonalFilePath );
@@ -94,19 +95,23 @@ function publish_new_item( options ) {
 			const redis_manager = new RedisUtils( Personal.redis.database_number , Personal.redis.host , Personal.redis.port  );
 			await redis_manager.init();
 
-			const now = new Date( new Date().toLocaleString( "en-US" , { timeZone: "America/New_York" } ) );
+			const now_intermediate = new Date();
+			const now = new Date( now_intermediate.toLocaleString( "en-US" , { timeZone: "America/New_York" } ) );
 			const dd = String( now.getDate()).padStart( 2 , '0' );
 			const mm = String( now.getMonth() + 1 ).padStart( 2 , '0' );
 			const yyyy = now.getFullYear();
 			const hours = String( now.getHours() ).padStart( 2 , '0' );
 			const minutes = String( now.getMinutes() ).padStart( 2 , '0' );
 			const seconds = String( now.getSeconds() ).padStart( 2 , '0' );
+			const milliseconds = String( now_intermediate.getMilliseconds() ).padStart( 3 , '0' );
 
 			const list_key = `${ options.list_key_prefix }.${ yyyy }.${ mm }.${ dd }`;
-			const time_stamp_string = `${ yyyy }.${ mm }.${ dd } @@ ${ hours }:${ minutes }:${ seconds }`;
+			const time_stamp_string = `${ yyyy }.${ mm }.${ dd } @@ ${ hours }:${ minutes }:${ seconds }.${ milliseconds }`;
+			const unique_message_id = md5( time_stamp_string );
 			const Custom_JSON_Serialized_Item_Object = JSON.stringify({
 				...options ,
 				...{
+					message_id: unique_message_id ,
 					timestamp: now ,
 					list_key: list_key ,
 					time_stamp_string: time_stamp_string ,

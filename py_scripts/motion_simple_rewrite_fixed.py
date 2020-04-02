@@ -107,6 +107,16 @@ def redis_publish( options ):
 			sleep( 3 )
 			redis_connect()
 
+
+def calculate_text_position_from_clipping():
+	pass
+
+def add_text_to_image():
+	# https://www.meccanismocomplesso.org/en/opencv-python-drawing-shapes-and-text-on-images/
+	# https://www.life2coding.com/how-to-put-text-on-image-using-opencv-in-python/
+	# https://stackoverflow.com/questions/16615662/how-to-write-text-on-a-image-in-windows-using-python-opencv2
+	cv2.putText(image,"Hello World!!!", (x,y), cv2.FONT_HERSHEY_SIMPLEX, 2, 255)
+
 def update_loaded_config( config ):
 	if 'EMAIL_COOLOFF' in config:
 		LOADED_CONFIG[ 'EMAIL_COOLOFF' ] = config[ 'EMAIL_COOLOFF' ]
