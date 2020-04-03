@@ -7,6 +7,15 @@ const spawn = require( "child_process" ).spawn;
 function sleep( ms ) { return new Promise( resolve => setTimeout( resolve , ms ) ); }
 module.exports.sleep = sleep;
 
+function pluralize( noun , suffix = "s" ) {
+	if ( !noun ) { return; }
+	if ( noun.length < 2 ) { return noun; }
+	if ( noun.charAt( noun.length - 1 ) === "s" ) { return noun; }
+	return noun + "s";
+}
+module.exports.pluralize = pluralize;
+
+
 function OS_COMMAND( wTask ) {
 	return new Promise( ( resolve , reject )=> {
 		try {

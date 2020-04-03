@@ -6,6 +6,7 @@ const md5 = require( "md5" );
 const RedisUtils = require( "redis-manager-utils" );
 const PersonalFilePath = path.join( process.env.HOME , ".config" , "personal" , "raspi_motion_alarm_rewrite.json" );
 const Personal = require( PersonalFilePath );
+const pluralize = require( "../utils.js" ).pluralize;
 
 const MainFilePath = process.mainModule.paths[ 0 ].split( "node_modules" )[ 0 ].slice( 0 , -1 );
 const FramePath = path.join( MainFilePath , "client" , "frame.jpeg" );
@@ -121,7 +122,7 @@ function publish_new_item( options ) {
 			console.log( "publish_new_item() === "  + list_key );
 			const encrypted = encrypt( Custom_JSON_Serialized_Item_Object );
 			const new_info_object = {
-				message: options.channel ,
+				message: `new_${pluralize( options.channel )}` ,
 				data: encrypted
 			};
 			//await redis_manager.redis.publish( `new_info` , encrypted );
