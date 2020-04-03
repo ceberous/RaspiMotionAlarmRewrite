@@ -6,7 +6,7 @@ const md5 = require( "md5" );
 const RedisUtils = require( "redis-manager-utils" );
 const PersonalFilePath = path.join( process.env.HOME , ".config" , "personal" , "raspi_motion_alarm_rewrite.json" );
 const Personal = require( PersonalFilePath );
-const pluralize = require( "../utils.js" ).pluralize;
+const pluralize = require( "../utils/generic.js" ).pluralize;
 
 const MainFilePath = process.mainModule.paths[ 0 ].split( "node_modules" )[ 0 ].slice( 0 , -1 );
 const FramePath = path.join( MainFilePath , "client" , "frame.jpeg" );
