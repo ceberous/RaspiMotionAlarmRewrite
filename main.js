@@ -33,7 +33,8 @@ module.exports.port = PORT;
 const LOCAL_IP = ip.address();
 module.exports.local_ip = LOCAL_IP;
 const LIVE_HTML_PAGE = `<html><img alt="" id="liveimage" src=""/> <script type="text/javascript">(function(){setInterval(function(){var myImageElement=document.getElementById("liveimage");myImageElement.src="http://${ LOCAL_IP }:${ PORT }/live_image?" + new Date().getTime()},500)}());</script></html>`;
-const LIVE_HTML_PAGE_ZERO_TIER = `<html><img alt="" id="liveimage" src=""/> <script type="text/javascript">(function(){setInterval(function(){var myImageElement=document.getElementById("liveimage");myImageElement.src="http://${ Personal.zerotier.address }:${ PORT }/live_image?" + new Date().getTime()},500)}());</script></html>`;
+//const LIVE_HTML_PAGE_ZERO_TIER = `<html><img alt="" id="liveimage" src=""/> <script type="text/javascript">(function(){setInterval(function(){var myImageElement=document.getElementById("liveimage");myImageElement.src="http://${ Personal.zerotier.address }:${ PORT }/live_image?" + new Date().getTime()},500)}());</script></html>`;
+const LIVE_HTML_PAGE_TAILSCALE = `<html><img alt="" id="liveimage" src=""/> <script type="text/javascript">(function(){setInterval(function(){var myImageElement=document.getElementById("liveimage");myImageElement.src="http://${ Personal.tailscale.address }:${ PORT }/live_image?" + new Date().getTime()},500)}());</script></html>`;
 
 ( async ()=> {
 
@@ -54,7 +55,7 @@ const LIVE_HTML_PAGE_ZERO_TIER = `<html><img alt="" id="liveimage" src=""/> <scr
 
 	// 2.) Write 'Current' DHCP IP Address to Static HTML File
 	fs.writeFileSync( path.join( __dirname , "client" , "views" , "live.html" ) , LIVE_HTML_PAGE );
-	fs.writeFileSync( path.join( __dirname , "client" , "views" , "zero.html" ) , LIVE_HTML_PAGE_ZERO_TIER );
+	fs.writeFileSync( path.join( __dirname , "client" , "views" , "tailscale.html" ) , LIVE_HTML_PAGE_TAILSCALE );
 
 	// 3.) Start Express Server With WebSocket Server Attachment
 	const express_app = require( "./server/express/app.js" );
