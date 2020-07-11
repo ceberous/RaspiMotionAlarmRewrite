@@ -61,9 +61,14 @@ app.get( "/live" , function( req , res ) {
 	res.sendFile( HTML_Live_Path );
 });
 
-const ZERO_HTML_Live_Path = path.join( __dirname , "../../client/views/" , "zero.html" );
-app.get( "/zero" , function( req , res ) {
-	res.sendFile( ZERO_HTML_Live_Path );
+// const ZERO_HTML_Live_Path = path.join( __dirname , "../../client/views/" , "zero.html" );
+// app.get( "/zero" , function( req , res ) {
+// 	res.sendFile( ZERO_HTML_Live_Path );
+// });
+
+const TAILSCALE_HTML_Live_Path = path.join( __dirname , "../../client/views/" , "tailscale.html" );
+app.get( "/tailscale" , function( req , res ) {
+	res.sendFile( TAILSCALE_HTML_Live_Path );
 });
 
 const FramePATH = path.join( __dirname , "../../client" , "frame.jpeg" );
