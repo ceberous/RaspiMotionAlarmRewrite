@@ -191,7 +191,7 @@ def twilio_message( number , message ):
 
 	except Exception as e:
 		print ( e )
-		express_publish( { "channel": "errors" , "message": "failed to send sms" } )
+		express_publish( { "channel": "errors" , "message": "failed to send sms: " + "Error = " + str( e ) } )
 
 def twilio_call( number ):
 	try:
@@ -199,7 +199,7 @@ def twilio_call( number ):
 	except Exception as e:
 		print( e )
 		print( "failed to make twilio call" )
-		express_publish( { "channel": "errors" , "message": "Failed to Make Twilio Call to: " + str( number ) } )
+		express_publish( { "channel": "errors" , "message": "Failed to Make Twilio Call to: " + str( number ) +  " Error = " + str( e ) } )
 
 def broadcast_error( message ):
 	#print( message )
