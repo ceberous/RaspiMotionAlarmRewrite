@@ -69,6 +69,9 @@ function load_custom_event_list() {
 						message: options.message
 					});
 					break;
+				case "publish_new_image_set_for_sleep":
+					Publishing.new_sleep_image_set();
+					break;
 				default:
 					break;
 			}

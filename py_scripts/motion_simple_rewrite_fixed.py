@@ -264,6 +264,7 @@ class TenvisVideo():
 		self.total_motion = 0
 		self.video_index = 0
 		self.last_email_time = None
+		self.last_saved_actual_sleep_image_set_time = datetime.now( eastern_tz )
 
 		if 'opencv' in Personal:
 			update_loaded_config( Personal[ 'opencv' ] )
@@ -330,6 +331,17 @@ class TenvisVideo():
 			# https://stackoverflow.com/questions/39622281/capture-one-frame-from-a-video-file-after-every-10-seconds
 			cv2.imwrite( frameLiveImagePath , frame )
 			sleep( .1 )
+
+			# Tell Server to Save Image Set for Image Classifier of Actual Sleeping.
+			sleep_now_time = datetime.now( eastern_tz )
+			seconds_difference = int( ( self.last_saved_actual_sleep_image_set_time - sleep_now_time ).total_seconds() )
+			if  seconds_difference > 60:
+				self.last_saved_actual_sleep_image_set_time = sleep_now_time
+				express_publish({
+					"channel": "commands" ,
+					"command": "publish_new_image_set_for_sleep" ,
+					"message": "new image set ready for image classifier" ,
+				})
 
 			if self.last_email_time is not None:
 				wNow = datetime.now( eastern_tz )

@@ -135,3 +135,35 @@ function publish_new_item( options ) {
 	});
 }
 module.exports.new_item = publish_new_item;
+
+
+function publish_new_sleep_image_set() {
+	return new Promise( async ( resolve , reject )=> {
+		try {
+			await custom_publish_image_b64({
+				channel: "frames" ,
+				message: "Added New Frame" ,
+				image_path: FramePath ,
+				list_key_prefix: "sleep.images.sleeping.frames"
+			});
+
+			await custom_publish_image_b64({
+				channel: "deltas" ,
+				message: "Added New Delta" ,
+				image_path: FrameDeltaPath ,
+				list_key_prefix: "sleep.images.sleeping.deltas"
+			});
+
+			await custom_publish_image_b64({
+				channel: "thresholds" ,
+				message: "Added New Threshold" ,
+				image_path: FrameThresholdPath ,
+				list_key_prefix: "sleep.images.sleeping.thresholds"
+			});
+			resolve();
+			return;
+		}
+		catch( error ) { console.log( error ); reject( error ); return; }
+	});
+}
+module.exports.new_sleep_image_set = publish_new_sleep_image_set;
